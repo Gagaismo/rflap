@@ -22,11 +22,39 @@ export const blankOf = (notation) => (notation === 'jflap' ? JFLAP_BLANK : DELTA
 
 const isDelimiter = (s) => typeof s === 'string' && (s.includes(LEFT_DELIMITER) || s.includes(RIGHT_DELIMITER));
 
-/** 'all' when some transition reads or writes ⟨ or ⟩ (what `Model::detect` of the engine does), else 'mt'. */
+const ASCII_LEFT = '<';
+const ASCII_RIGHT = '>';
+
+const actionsOf = (doc) => (doc && doc.type === 'turing' && doc.automaton ? doc.automaton.transitions.flatMap((t) => t.label.actions || []) : []);
+
+/**
+ * True when a Turing machine without ⟨ ⟩ uses both ASCII `<` and `>` as symbols: the pair is the alias of the
+ * delimiters (a machine that uses only one keeps it as an ordinary symbol). Mirrors the rule of rflap-api.
+ */
+export function usesAsciiDelimiters(doc) {
+  const actions = actionsOf(doc);
+  if (actions.some((a) => isDelimiter(a.read) || isDelimiter(a.write))) return false;
+  const has = (symbol) => actions.some((a) => a.read === symbol || a.write === symbol);
+  return has(ASCII_LEFT) && has(ASCII_RIGHT);
+}
+
+/**
+ * The document with `<` and `>` turned into ⟨ and ⟩ when `usesAsciiDelimiters` says so, else the same document.
+ * The editor commits through it, so it never stores ASCII delimiters.
+ */
+export function convertAsciiDelimiters(doc) {
+  if (!usesAsciiDelimiters(doc)) return doc;
+  const swap = (s) => (s === ASCII_LEFT ? LEFT_DELIMITER : s === ASCII_RIGHT ? RIGHT_DELIMITER : s);
+  const next = structuredClone(doc);
+  for (const t of next.automaton.transitions) for (const a of t.label.actions || []) ((a.read = swap(a.read)), (a.write = swap(a.write)));
+  return next;
+}
+
+/** 'all' when some transition reads or writes ⟨ or ⟩ (or `<` and `>` both, their alias), else 'mt'. */
 export function inferModel(doc) {
   if (!doc || doc.type !== 'turing' || !doc.automaton) return 'mt';
-  const used = doc.automaton.transitions.some((t) => (t.label.actions || []).some((a) => isDelimiter(a.read) || isDelimiter(a.write)));
-  return used ? 'all' : 'mt';
+  const used = actionsOf(doc).some((a) => isDelimiter(a.read) || isDelimiter(a.write));
+  return used || usesAsciiDelimiters(doc) ? 'all' : 'mt';
 }
 
 export const modelOf = (value) => (MODELS.includes(value) ? value : 'mt');
@@ -155,6 +183,7 @@ export function sequenceView(entry) {
     accepted: Boolean(entry.accepted),
     steps: entry.steps ?? Math.max(0, configs.length - 1),
     violation: entry.violation || null,
+    notes: entry.notes || [],
     text: sequence,
   };
 }
@@ -250,4 +279,32 @@ export function multipistaOf(info) {
   const m = info && info.multipista;
   if (!m || !m.applicable) return null;
   return { multipista: Boolean(m.is_multipista), tapes: m.tapes, offending: m.offending || [] };
+}
+
+// ---------------------------------------------------------------- multiple run of a Turing machine
+
+/** True when a typed input already carries the delimiters (`⟨aba⟩` or `<aba>`): the engine places its own. */
+export function inputHasDelimiters(text) {
+  const x = String(text ?? '').trim();
+  return x.length >= 2 && (x.startsWith(LEFT_DELIMITER) || x.startsWith(ASCII_LEFT)) && (x.endsWith(RIGHT_DELIMITER) || x.endsWith(ASCII_RIGHT));
+}
+
+/** The criterion a Turing machine run accepts by: an ALL always by final state (the course), an MT as chosen. */
+export function acceptanceUsed(model, chosen) {
+  return model === 'all' ? 'final_state' : chosen || 'final_state';
+}
+
+/** The `catedra_run` request of a batch of inputs (the multiple run of an ALL: the tape is ⟨w⟩). */
+export function catedraBatchRequest(document, inputs, model, maxSteps) {
+  return { op: 'catedra_run', document, inputs, model, max_steps: maxSteps };
+}
+
+/** The runs of `catedra_run` as rows of the multiple run: `{outcome, accepted, notes, message}`. */
+export function catedraRows(results) {
+  return (results || []).map((r) => ({
+    outcome: r.verdict === 'accepted' ? 'accepted' : r.verdict === 'no_halt' ? 'undecided' : 'rejected',
+    accepted: Boolean(r.accepted),
+    notes: r.notes || [],
+    message: r.violation ? r.violation.message : null,
+  }));
 }

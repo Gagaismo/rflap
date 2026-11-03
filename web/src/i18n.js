@@ -245,6 +245,8 @@ export const dictionaries = {
     'multi.paste_hint': 'ab\nabb\n…',
     'multi.load': 'Load list',
     'multi.summary': '{accepted} of {total} accepted',
+    'multi.criterion': 'Criterion: {criterion}',
+    'sim.delimiters_warning': 'The input already carries the delimiters; Rflap places them itself.',
 
     'structure.states': 'States',
     'structure.transitions': 'Transitions',
@@ -557,6 +559,8 @@ export const dictionaries = {
     'multi.paste_hint': 'ab\nabb\n…',
     'multi.load': 'Cargar lista',
     'multi.summary': '{accepted} de {total} aceptadas',
+    'multi.criterion': 'Criterio: {criterion}',
+    'sim.delimiters_warning': 'La entrada ya trae los delimitadores; Rflap los coloca solo.',
 
     'structure.states': 'Estados',
     'structure.transitions': 'Transiciones',
