@@ -1,0 +1,502 @@
+{
+ "ok": {
+  "acceptance": null,
+  "accepted": [
+   "ab",
+   "aab",
+   "bab",
+   "aaab",
+   "abab",
+   "baab",
+   "bbab"
+  ],
+  "description": "ends_with(\"ab\")",
+  "document": {
+   "finals": [
+    2
+   ],
+   "initial": 0,
+   "notes": [],
+   "states": {
+    "0": {
+     "id": 0,
+     "label": "ends with no start of \"ab\"",
+     "name": "q0",
+     "output": null,
+     "point": {
+      "x": 30,
+      "y": 30
+     }
+    },
+    "1": {
+     "id": 1,
+     "label": "ends with \"a\", the start of \"ab\"",
+     "name": "q1",
+     "output": null,
+     "point": {
+      "x": 168,
+      "y": 110
+     }
+    },
+    "2": {
+     "id": 2,
+     "label": "ends with \"ab\"",
+     "name": "q2",
+     "output": null,
+     "point": {
+      "x": 30,
+      "y": 190
+     }
+    }
+   },
+   "transitions": [
+    {
+     "control": null,
+     "from": 0,
+     "label": "a",
+     "to": 1
+    },
+    {
+     "control": null,
+     "from": 0,
+     "label": "b",
+     "to": 0
+    },
+    {
+     "control": null,
+     "from": 1,
+     "label": "a",
+     "to": 1
+    },
+    {
+     "control": null,
+     "from": 1,
+     "label": "b",
+     "to": 2
+    },
+    {
+     "control": null,
+     "from": 2,
+     "label": "a",
+     "to": 1
+    },
+    {
+     "control": null,
+     "from": 2,
+     "label": "b",
+     "to": 0
+    }
+   ],
+   "type": "fa"
+  },
+  "kind": "dfa",
+  "regex": "(b*aa*b(aa*b)*b)*b*aa*b(aa*b)*",
+  "states": [
+   {
+    "accepting": false,
+    "access_word": "",
+    "initial": true,
+    "meaning": "ends with no start of \"ab\"",
+    "name": "q0"
+   },
+   {
+    "accepting": false,
+    "access_word": "a",
+    "initial": false,
+    "meaning": "ends with \"a\", the start of \"ab\"",
+    "name": "q1"
+   },
+   {
+    "accepting": true,
+    "access_word": "ab",
+    "initial": false,
+    "meaning": "ends with \"ab\"",
+    "name": "q2"
+   }
+  ],
+  "stats": {
+   "alphabet": [
+    "a",
+    "b"
+   ],
+   "final_states": 1,
+   "has_trap_state": false,
+   "states": 3,
+   "states_before_minimization": 3,
+   "transitions": 6
+  },
+  "verification": {
+   "cross_check": {
+    "inconclusive": 0,
+    "max_len": 8,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "ok": true,
+    "regex_agrees": true,
+    "requested_len": 8,
+    "strings_checked": 511
+   },
+   "examples": [
+    {
+     "actual": true,
+     "detail": null,
+     "expected_accept": true,
+     "passed": true,
+     "word": "ab"
+    },
+    {
+     "actual": true,
+     "detail": null,
+     "expected_accept": true,
+     "passed": true,
+     "word": "aab"
+    },
+    {
+     "actual": false,
+     "detail": null,
+     "expected_accept": false,
+     "passed": true,
+     "word": ""
+    },
+    {
+     "actual": false,
+     "detail": null,
+     "expected_accept": false,
+     "passed": true,
+     "word": "ba"
+    }
+   ],
+   "failed_examples": 0,
+   "ok": true
+  }
+ },
+ "failing": {
+  "acceptance": null,
+  "accepted": [
+   "ab",
+   "aab",
+   "bab",
+   "aaab",
+   "abab",
+   "baab",
+   "bbab"
+  ],
+  "description": "ends_with(\"ab\")",
+  "document": {
+   "finals": [
+    2
+   ],
+   "initial": 0,
+   "notes": [],
+   "states": {
+    "0": {
+     "id": 0,
+     "label": "ends with no start of \"ab\"",
+     "name": "q0",
+     "output": null,
+     "point": {
+      "x": 30,
+      "y": 30
+     }
+    },
+    "1": {
+     "id": 1,
+     "label": "ends with \"a\", the start of \"ab\"",
+     "name": "q1",
+     "output": null,
+     "point": {
+      "x": 168,
+      "y": 110
+     }
+    },
+    "2": {
+     "id": 2,
+     "label": "ends with \"ab\"",
+     "name": "q2",
+     "output": null,
+     "point": {
+      "x": 30,
+      "y": 190
+     }
+    }
+   },
+   "transitions": [
+    {
+     "control": null,
+     "from": 0,
+     "label": "a",
+     "to": 1
+    },
+    {
+     "control": null,
+     "from": 0,
+     "label": "b",
+     "to": 0
+    },
+    {
+     "control": null,
+     "from": 1,
+     "label": "a",
+     "to": 1
+    },
+    {
+     "control": null,
+     "from": 1,
+     "label": "b",
+     "to": 2
+    },
+    {
+     "control": null,
+     "from": 2,
+     "label": "a",
+     "to": 1
+    },
+    {
+     "control": null,
+     "from": 2,
+     "label": "b",
+     "to": 0
+    }
+   ],
+   "type": "fa"
+  },
+  "kind": "dfa",
+  "regex": "(b*aa*b(aa*b)*b)*b*aa*b(aa*b)*",
+  "states": [
+   {
+    "accepting": false,
+    "access_word": "",
+    "initial": true,
+    "meaning": "ends with no start of \"ab\"",
+    "name": "q0"
+   },
+   {
+    "accepting": false,
+    "access_word": "a",
+    "initial": false,
+    "meaning": "ends with \"a\", the start of \"ab\"",
+    "name": "q1"
+   },
+   {
+    "accepting": true,
+    "access_word": "ab",
+    "initial": false,
+    "meaning": "ends with \"ab\"",
+    "name": "q2"
+   }
+  ],
+  "stats": {
+   "alphabet": [
+    "a",
+    "b"
+   ],
+   "final_states": 1,
+   "has_trap_state": false,
+   "states": 3,
+   "states_before_minimization": 3,
+   "transitions": 6
+  },
+  "verification": {
+   "cross_check": {
+    "inconclusive": 0,
+    "max_len": 8,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "ok": true,
+    "regex_agrees": true,
+    "requested_len": 8,
+    "strings_checked": 511
+   },
+   "examples": [
+    {
+     "actual": true,
+     "detail": null,
+     "expected_accept": true,
+     "passed": true,
+     "word": "ab"
+    },
+    {
+     "actual": false,
+     "detail": "the constraint rejects this string",
+     "expected_accept": true,
+     "passed": false,
+     "word": "b"
+    },
+    {
+     "actual": false,
+     "detail": null,
+     "expected_accept": false,
+     "passed": true,
+     "word": "ba"
+    }
+   ],
+   "failed_examples": 1,
+   "ok": false
+  }
+ },
+ "template": {
+  "acceptance": "final_state",
+  "accepted": [
+   "",
+   "ab",
+   "aabb"
+  ],
+  "description": "a^n b^n with n >= 0",
+  "document": {
+   "finals": [
+    2
+   ],
+   "initial": 0,
+   "notes": [],
+   "states": {
+    "0": {
+     "id": 0,
+     "label": "reading as, one A pushed per a",
+     "name": "q0",
+     "output": null,
+     "point": {
+      "x": 30,
+      "y": 30
+     }
+    },
+    "1": {
+     "id": 1,
+     "label": "reading bs, one A popped per b",
+     "name": "q1",
+     "output": null,
+     "point": {
+      "x": 213,
+      "y": 136
+     }
+    },
+    "2": {
+     "id": 2,
+     "label": "accept: as many bs as as",
+     "name": "q2",
+     "output": null,
+     "point": {
+      "x": 30,
+      "y": 242
+     }
+    }
+   },
+   "transitions": [
+    {
+     "control": null,
+     "from": 0,
+     "label": {
+      "input": "a",
+      "pop": "",
+      "push": "A"
+     },
+     "to": 0
+    },
+    {
+     "control": null,
+     "from": 0,
+     "label": {
+      "input": "b",
+      "pop": "A",
+      "push": ""
+     },
+     "to": 1
+    },
+    {
+     "control": null,
+     "from": 1,
+     "label": {
+      "input": "b",
+      "pop": "A",
+      "push": ""
+     },
+     "to": 1
+    },
+    {
+     "control": null,
+     "from": 1,
+     "label": {
+      "input": "",
+      "pop": "Z",
+      "push": "Z"
+     },
+     "to": 2
+    },
+    {
+     "control": null,
+     "from": 0,
+     "label": {
+      "input": "",
+      "pop": "Z",
+      "push": "Z"
+     },
+     "to": 2
+    }
+   ],
+   "type": "pda"
+  },
+  "kind": "pda",
+  "regex": null,
+  "states": [
+   {
+    "accepting": false,
+    "access_word": null,
+    "initial": true,
+    "meaning": "reading as, one A pushed per a",
+    "name": "q0"
+   },
+   {
+    "accepting": false,
+    "access_word": null,
+    "initial": false,
+    "meaning": "reading bs, one A popped per b",
+    "name": "q1"
+   },
+   {
+    "accepting": true,
+    "access_word": null,
+    "initial": false,
+    "meaning": "accept: as many bs as as",
+    "name": "q2"
+   }
+  ],
+  "stats": {
+   "alphabet": [
+    "a",
+    "b"
+   ],
+   "final_states": 1,
+   "has_trap_state": false,
+   "states": 3,
+   "states_before_minimization": null,
+   "transitions": 5
+  },
+  "verification": {
+   "cross_check": {
+    "inconclusive": 0,
+    "max_len": 8,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "ok": true,
+    "regex_agrees": null,
+    "requested_len": 8,
+    "strings_checked": 511
+   },
+   "examples": [],
+   "failed_examples": 0,
+   "ok": true
+  }
+ },
+ "syntaxError": {
+  "error": {
+   "code": "design_error",
+   "message": "at position 20: expected a condition: `starts_with(\"..\")`, `ends_with(\"..\")`, `contains(\"..\")`, `regex(\"..\")`, `length`, `count(..)`, `not` or `(`, found end of input",
+   "details": {
+    "error": "constraint_syntax",
+    "expected": "a condition: `starts_with(\"..\")`, `ends_with(\"..\")`, `contains(\"..\")`, `regex(\"..\")`, `length`, `count(..)`, `not` or `(`",
+    "found": "end of input",
+    "message": "at position 20: expected a condition: `starts_with(\"..\")`, `ends_with(\"..\")`, `contains(\"..\")`, `regex(\"..\")`, `length`, `count(..)`, `not` or `(`, found end of input",
+    "position": 20
+   }
+  }
+ }
+}

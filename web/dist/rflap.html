@@ -832,6 +832,287 @@ button.lambda {
   }
 }
 
+/* ---------------------------------------------------------------- T12b: grammar, regex, design, L-system, pumping */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.with-lambda {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  max-width: 100%;
+}
+
+input.wide {
+  width: 100%;
+}
+
+.production-table input.narrow {
+  width: 9ch;
+}
+
+.production-table td:nth-child(4) input {
+  width: 22ch;
+}
+
+.row-buttons {
+  white-space: nowrap;
+}
+
+.replay-region {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin: 6px 0;
+}
+
+.replay-region:focus-visible {
+  outline: 2px solid var(--focus);
+}
+
+.step-sentence {
+  font-weight: 600;
+}
+
+.production-list {
+  list-style: none;
+  padding: 0;
+  columns: 2 14em;
+}
+
+.production-list li {
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.production-list .prod-added {
+  background: color-mix(in srgb, var(--ok) 16%, transparent);
+  font-weight: 700;
+}
+
+.production-list .prod-focus {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  font-weight: 700;
+}
+
+.prod-note {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.removed del {
+  color: var(--danger);
+}
+
+table.configs td.conflict,
+table.configs tr.failed-row td {
+  background: color-mix(in srgb, var(--danger) 18%, transparent);
+  color: var(--danger);
+  font-weight: 700;
+}
+
+table.configs tr.selected-row td {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.status-ok,
+.status-bad {
+  margin: 6px 0;
+}
+
+.status-bad {
+  color: var(--danger);
+}
+
+.status-ok .badge,
+.status-bad .badge {
+  margin-right: 4px;
+}
+
+.action-accept {
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.action-reject {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.tree-scroll {
+  overflow: auto;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--canvas-bg);
+}
+
+svg.parse-tree .tree-edge {
+  stroke: var(--canvas-ink);
+  stroke-width: 1.2;
+}
+
+svg.parse-tree .tree-node rect {
+  fill: var(--surface-2);
+  stroke: var(--canvas-ink);
+}
+
+svg.parse-tree .tree-node.leaf rect {
+  fill: var(--canvas-bg);
+  stroke: var(--accent);
+}
+
+svg.parse-tree .tree-node.open rect {
+  stroke-dasharray: 4 3;
+  stroke: var(--danger);
+}
+
+svg.parse-tree .tree-node.hot rect {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+svg.parse-tree text {
+  fill: var(--canvas-ink);
+  font-family: var(--mono);
+  font-size: 14px;
+}
+
+svg.parse-tree .tree-note {
+  font-size: 11px;
+  fill: var(--muted);
+}
+
+.big-form {
+  font-size: 1.25em;
+  overflow-wrap: anywhere;
+}
+
+ul.choices {
+  list-style: none;
+  padding: 0;
+}
+
+ul.choices li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 4px 0;
+}
+
+ul.compact-list,
+ul.groups {
+  padding-left: 18px;
+  margin: 4px 0;
+}
+
+ul.compact-list li.current,
+ul.groups li.current {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+img.engine-svg {
+  max-width: 100%;
+  background: var(--canvas-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+[data-theme='dark'] img.engine-svg {
+  background: #fff;
+}
+
+.marker mark {
+  background: color-mix(in srgb, var(--danger) 35%, transparent);
+  color: inherit;
+  text-decoration: underline wavy var(--danger);
+}
+
+.design-panel details {
+  margin: 8px 0;
+}
+
+.design-panel textarea {
+  width: 100%;
+}
+
+pre.description {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.lsystem-picture {
+  overflow: auto;
+  max-height: 70vh;
+}
+
+pre.expansion {
+  max-height: 8em;
+}
+
+.pumping-box {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 10px 8px;
+  margin: 8px 0;
+}
+
+.pumping-box.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.pumping-box h4 {
+  margin: 4px 0;
+}
+
+.decomposition .part {
+  display: inline-block;
+  padding: 2px 6px;
+  margin: 0 2px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.decomposition .part small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.decomposition .part-v,
+.decomposition .part-y {
+  background: color-mix(in srgb, var(--warn) 22%, transparent);
+}
+
+.decomposition-inputs .form-row {
+  display: grid;
+  grid-template-columns: 2em 1fr 6em;
+  align-items: center;
+  gap: 6px;
+}
+
+.case-row {
+  display: block;
+  margin: 2px 0;
+}
+
+.conclusion {
+  font-weight: 700;
+}
+
 </style>
 </head>
 <body>
@@ -883,6 +1164,12 @@ function append(node, children) {
     if (child == null || child === false) continue;
     node.append(child instanceof Node ? child : document.createTextNode(String(child)));
   }
+}
+
+/** `node.append(...)` that skips `null` / `false` (native `append(null)` writes the text "null") and flattens arrays. */
+function put(node, ...children) {
+  append(node, children);
+  return node;
 }
 
 function clear(node) {
@@ -1210,7 +1497,7 @@ const dictionaries = {
     'assistant.verification': 'Design verification',
     'host.from_assistant': 'From the assistant',
 
-    'document.hint': 'Document of type {type}. A dedicated editor for this type is not available yet.',
+    'document.hint': 'The document of type {type} as JSON (what is saved with Save as .json).',
 
     'chat.send': 'Send to chat',
     'chat.send_hint': 'Tell the assistant about the current automaton',
@@ -1512,7 +1799,7 @@ const dictionaries = {
     'assistant.verification': 'Verificación del diseño',
     'host.from_assistant': 'Del asistente',
 
-    'document.hint': 'Documento de tipo {type}. Todavía no hay un editor propio para este tipo.',
+    'document.hint': 'El documento de tipo {type} como JSON (lo que guarda Guardar como .json).',
 
     'chat.send': 'Enviar al chat',
     'chat.send_hint': 'Contale al asistente cómo quedó el autómata',
@@ -2794,6 +3081,648 @@ registerPanel({
   },
 });
 
+// ---- replay.js
+// The step state machine every replay uses (conversion steps, transformations, parser traces) and the
+// control bar that drives it: previous / next / do all, keyboard and automatic play.
+
+
+class Replay {
+  constructor(count = 0) {
+    this.count = Math.max(0, count);
+    this.index = 0;
+  }
+
+  /** 1-based position shown to the user; 0 when there is nothing to replay. */
+  get position() {
+    return this.count === 0 ? 0 : this.index + 1;
+  }
+
+  get atStart() {
+    return this.index <= 0;
+  }
+
+  get atEnd() {
+    return this.count === 0 || this.index >= this.count - 1;
+  }
+
+  /** Every mover answers whether the index changed. */
+  goTo(to) {
+    if (!Number.isFinite(to) || this.count === 0) return false;
+    const next = Math.max(0, Math.min(this.count - 1, Math.trunc(to)));
+    const moved = next !== this.index;
+    this.index = next;
+    return moved;
+  }
+
+  next() {
+    return this.goTo(this.index + 1);
+  }
+
+  prev() {
+    return this.goTo(this.index - 1);
+  }
+
+  first() {
+    return this.goTo(0);
+  }
+
+  last() {
+    return this.goTo(this.count - 1);
+  }
+
+  /** JFLAP's "do all": jump to the end. */
+  doAll() {
+    return this.last();
+  }
+
+  reset(count, { keep = false } = {}) {
+    this.count = Math.max(0, count);
+    this.index = keep ? Math.max(0, Math.min(this.count - 1, this.index)) : 0;
+  }
+}
+
+const KEYS = {
+  ArrowRight: 'next',
+  n: 'next',
+  ArrowLeft: 'prev',
+  p: 'prev',
+  Home: 'first',
+  End: 'last',
+  a: 'last',
+  ' ': 'play',
+};
+
+/** The replay action a key press asks for, or null (application shortcuts are never taken). */
+function replayKeyAction(event) {
+  if (event.ctrlKey || event.metaKey || event.altKey) return null;
+  return KEYS[event.key] || null;
+}
+
+/**
+ * The control bar. `onChange()` redraws after any move. Returns `{node, stop}`; `stop` ends the automatic
+ * play (call it from the panel's destroy). Keys work while the bar's container has focus.
+ */
+function replayBar(replay, onChange, { interval = 900, key = '' } = {}) {
+  let timer = null;
+  const stop = () => {
+    if (timer) clearInterval(timer);
+    timer = null;
+  };
+  let node = null;
+  /** The panels redraw everything on a change: keep the keyboard focus where it was (same button, or the region). */
+  const refocus = () => {
+    const active = document.activeElement;
+    const index = [...node.querySelectorAll('button')].indexOf(active);
+    const inside = node.parentElement && node.parentElement.contains(active);
+    return () => {
+      if (!key || (index < 0 && !inside)) return;
+      const fresh = document.querySelector(`[data-replay-key="${key}"]`);
+      if (!fresh) return;
+      const target = index >= 0 ? [...fresh.querySelectorAll('button')][index] : null;
+      if (target && !target.disabled) target.focus();
+      else if (fresh.parentElement) fresh.parentElement.focus();
+    };
+  };
+  const act = (name) => {
+    const restore = node ? refocus() : () => {};
+    if (name === 'play') {
+      if (timer) stop();
+      else if (!replay.atEnd) timer = setInterval(() => (replay.next() ? onChange() : (stop(), onChange())), interval);
+    } else {
+      stop();
+      replay[name === 'last' ? 'doAll' : name]();
+    }
+    onChange();
+    restore();
+  };
+  const button = (label, name, disabled, title) => h('button', { type: 'button', title: title || label, 'aria-label': title || label, disabled, onclick: () => act(name) }, label);
+  node = h(
+    'div',
+    { class: 'button-row replay-bar', role: 'group', 'aria-label': t('replay.controls'), 'data-replay-key': key || null },
+    button('⏮', 'first', replay.atStart, t('replay.first')),
+    button(`◀ ${t('replay.previous')}`, 'prev', replay.atStart),
+    h('span', { role: 'status', 'aria-live': 'polite' }, t('replay.position', { n: replay.position, total: replay.count })),
+    button(`${t('replay.next')} ▶`, 'next', replay.atEnd),
+    button(`${t('replay.do_all')} ⏭`, 'last', replay.atEnd),
+    button(timer ? `⏸ ${t('replay.pause')}` : `⏵ ${t('replay.play')}`, 'play', replay.atEnd && !timer),
+  );
+  return { node, stop, act };
+}
+
+/** Wires the keyboard to a container: n/→ next, p/← previous, Home, End/a (do all), Space (play). */
+function replayKeys(container, act) {
+  container.setAttribute('tabindex', '0');
+  container.addEventListener('keydown', (event) => {
+    const target = event.target;
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) return;
+    const action = replayKeyAction(event);
+    if (action) {
+      event.preventDefault();
+      act(action);
+    }
+  });
+}
+
+// ---- widgets.js
+// Small DOM pieces the T12b panels share (tables, images of engine SVG, labelled rows).
+
+
+/** `<table class="configs">` with a caption for screen readers. `rows` are arrays of cells (nodes, strings or `{text, class}`). */
+function dataTable(caption, headers, rows, { rowClass = () => '', className = 'configs' } = {}) {
+  const cell = (c, tag = 'td') => (c && typeof c === 'object' && !(c instanceof Node) && 'text' in c ? h(tag, { class: c.class || '', title: c.title }, c.text) : h(tag, {}, c));
+  return h(
+    'table',
+    { class: className },
+    caption ? h('caption', { class: 'sr-only' }, caption) : null,
+    headers && headers.length ? h('thead', {}, h('tr', {}, headers.map((header) => h('th', { scope: 'col' }, header)))) : null,
+    h('tbody', {}, rows.map((row, index) => h('tr', { class: rowClass(index, row) }, row.map((c) => cell(c))))),
+  );
+}
+
+/** An engine SVG as an image: an <img> with a data URI never runs scripts, whatever the SVG contains. */
+function svgImage(svg, alt, className = 'engine-svg') {
+  return h('img', { class: className, alt, src: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}` });
+}
+
+/** `<label>` + control in a row. */
+function labelled(label, control, hint) {
+  const id = control.id || `w-${Math.random().toString(36).slice(2, 9)}`;
+  control.id = id;
+  return h('div', { class: 'form-row' }, h('label', { for: id }, label), h('div', { class: 'form-input' }, control), hint ? h('small', {}, hint) : null);
+}
+
+/** An `<input>` or `<textarea>` with a λ button next to it. */
+function withLambda(control) {
+  const insert = () => {
+    const start = control.selectionStart ?? control.value.length;
+    const end = control.selectionEnd ?? control.value.length;
+    control.value = control.value.slice(0, start) + 'λ' + control.value.slice(end);
+    control.focus();
+    control.setSelectionRange(start + 1, start + 1);
+    control.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+  return h('span', { class: 'with-lambda' }, control, h('button', { type: 'button', class: 'lambda', title: t('dialog.insert_lambda'), 'aria-label': t('dialog.insert_lambda'), onclick: insert }, 'λ'));
+}
+
+/** The accepted / rejected / error badge of a parse outcome. */
+function outcomeBadge(outcome) {
+  const key = `parse.outcome.${outcome}`;
+  return h('span', { class: `outcome outcome-${outcome === 'accepted' ? 'accepted' : outcome === 'rejected' ? 'rejected' : 'undecided'}` }, t(key) === key ? String(outcome) : t(key));
+}
+
+/** A line that says the same in words what a colour says: `ok` or not. */
+function statusLine(ok, okText, badText) {
+  return h('p', { class: ok ? 'status-ok' : 'status-bad', role: 'status' }, h('span', { class: ok ? 'badge ok' : 'badge bad' }, ok ? '✓' : '✗'), ' ', ok ? okText : badText);
+}
+
+// ---- replay-model.js
+// Pure replay models of the automata conversions: each one turns the `steps` list the engine returns into
+// one frame per step (the state of the conversion after that step), so the views only have to draw them.
+
+const GTG_LAMBDA = 'λ';
+
+/** Which view fits a list of steps: 'subset', 'minimize', 'gtg' (FA to RE), 'regex-nfa', or null. */
+function conversionKind(steps) {
+  if (!Array.isArray(steps) || !steps.length) return null;
+  const first = steps[0];
+  if (first.kind === 'new_state') return 'subset';
+  if (first.kind === 'initial_partition') return 'minimize';
+  if (['add_final_state', 'collapse_parallel', 'add_empty_transitions', 'eliminate_state'].includes(first.kind)) return 'gtg';
+  if (['decat', 'destar', 'deparens', 'deor'].includes(first.action)) return 'regex-nfa';
+  return null;
+}
+
+// ---------------------------------------------------------------- NFA -> DFA
+
+/** After each step: the DFA states with the NFA states they stand for, the transitions so far, what to highlight. */
+function subsetFrames(steps) {
+  const states = [];
+  const transitions = [];
+  return steps.map((step) => {
+    let added = null;
+    let focus = { states: [], nfa: [] };
+    if (step.kind === 'new_state') {
+      added = { state: step.state, nfa: step.nfa_states };
+      states.push(added);
+      focus = { states: [step.state], nfa: step.nfa_states };
+    } else if (step.kind === 'add_transition') {
+      transitions.push({ from: step.from, symbol: step.symbol, to: step.to });
+      focus = { states: [...new Set([step.from, step.to])], nfa: [] };
+    }
+    return { step, states: states.map((s) => ({ ...s })), transitions: transitions.map((x) => ({ ...x })), added, focus };
+  });
+}
+
+// ---------------------------------------------------------------- minimization
+
+const groupKey = (group) => group.join(',');
+
+/** The partition after each step, the groups the step produced, and the keys of every group seen so far (for the tree). */
+function partitionFrames(steps) {
+  let groups = [];
+  const seen = new Set();
+  return steps.map((step) => {
+    let changed = [];
+    if (step.kind === 'initial_partition') {
+      groups = step.groups.map((g) => [...g]);
+      changed = groups;
+    } else if (step.kind === 'split') {
+      const at = groups.findIndex((g) => groupKey(g) === groupKey(step.group));
+      if (at >= 0) groups = [...groups.slice(0, at), ...step.into.map((g) => [...g]), ...groups.slice(at + 1)];
+      changed = step.into;
+    }
+    groups.forEach((g) => seen.add(groupKey(g)));
+    return {
+      step,
+      groups: groups.map((g) => [...g]),
+      changed: changed.map((g) => [...g]),
+      symbol: step.kind === 'split' ? step.symbol : null,
+      merge: step.kind === 'merge_group' ? step.state : null,
+      seen: [...seen],
+    };
+  });
+}
+
+/**
+ * The distinguishability tree as far as the replay has got: a node shows its children (and the symbol that
+ * told them apart) only once all of them have appeared as groups of the partition.
+ */
+function prunedTree(tree, seenKeys) {
+  const seen = new Set(seenKeys);
+  const walk = (node) => {
+    const expanded = node.children.length > 0 && node.children.every((c) => seen.has(groupKey(c.states)));
+    return { states: node.states, symbol: expanded ? node.symbol : null, children: expanded ? node.children.map(walk) : [] };
+  };
+  return walk(tree);
+}
+
+/** `{q0, q1}` for a node of the tree. */
+const treeNodeLabel = (node, nameOf) => `{${node.states.map(nameOf).join(', ')}}`;
+
+// ---------------------------------------------------------------- FA -> RE: the generalized transition graph
+
+const labelOf = (label) => (label === '' ? GTG_LAMBDA : label);
+const GTG_EMPTY = 'ø';
+
+function sortedIds(set) {
+  return [...set].sort((a, b) => a - b);
+}
+
+/**
+ * The graph after each step of the state elimination: `{step, states, finals, edges: [{from, to, label}],
+ * eliminated, emptyPairs, expression}`. Edges that stand for ø are not drawn (`emptyPairs` counts them).
+ * `source` is the full FA document the conversion started from.
+ */
+function gtgFrames(source, steps) {
+  const states = new Set(Object.keys(source.states).map(Number));
+  let finals = [...source.finals];
+  let edges = source.transitions.map((x) => ({ from: x.from, to: x.to, label: labelOf(x.label) }));
+  return steps.map((step) => {
+    let eliminated = null;
+    let emptyPairs = 0;
+    let expression = null;
+    switch (step.kind) {
+      case 'add_final_state':
+        states.add(step.state);
+        edges = [...edges, ...step.old_finals.map((from) => ({ from, to: step.state, label: GTG_LAMBDA }))];
+        finals = [step.state];
+        break;
+      case 'collapse_parallel':
+        edges = [...edges.filter((e) => !(e.from === step.from && e.to === step.to)), { from: step.from, to: step.to, label: step.label }];
+        break;
+      case 'add_empty_transitions':
+        emptyPairs = step.pairs.length;
+        break;
+      case 'eliminate_state':
+        states.delete(step.state);
+        eliminated = step.state;
+        edges = step.edges.filter((e) => e.label !== GTG_EMPTY).map((e) => ({ ...e }));
+        break;
+      case 'result':
+        expression = step.expression;
+        break;
+      default:
+        break;
+    }
+    return { step, states: sortedIds(states), finals: [...finals], edges: edges.map((e) => ({ ...e })), eliminated, emptyPairs, expression };
+  });
+}
+
+const pointFor = (index) => ({ x: 60 + (index % 6) * 130, y: 60 + Math.floor(index / 6) * 110 });
+
+/** A full FA document of a frame, with the positions of the source states, ready for the engine's `render`. */
+function gtgDocument(source, frame) {
+  const states = {};
+  frame.states.forEach((id, index) => {
+    const known = source.states[id];
+    states[id] = known ? { ...known } : { id, name: `q${id}`, label: null, output: null, point: pointFor(index) };
+  });
+  return {
+    type: 'fa',
+    initial: source.initial,
+    finals: [...frame.finals],
+    notes: [],
+    states,
+    transitions: frame.edges.filter((e) => e.label !== GTG_EMPTY).map((e) => ({ from: e.from, to: e.to, label: e.label === GTG_LAMBDA ? '' : e.label, control: null })),
+  };
+}
+
+// ---------------------------------------------------------------- RE -> NFA (de-expressionify)
+
+/** The generalized graph after each `decat` / `destar` / `deor` / `deparens` step, starting from one edge 0 → 1. */
+function regexNfaFrames(steps) {
+  if (!steps.length) return [];
+  const states = new Set([0, 1]);
+  let edges = [{ from: 0, to: 1, label: steps[0].transition.label }];
+  return steps.map((step) => {
+    const gone = step.transition;
+    const at = edges.findIndex((e) => e.from === gone.from && e.to === gone.to && e.label === gone.label);
+    if (at >= 0) edges = edges.filter((_, i) => i !== at);
+    edges = [...edges, ...step.added.map((e) => ({ ...e }))];
+    step.new_states.forEach((id) => states.add(id));
+    return { step, action: step.action, states: sortedIds(states), edges: edges.map((e) => ({ ...e })), replaced: { ...gone }, addedStates: [...step.new_states], addedEdges: step.added.map((e) => ({ ...e })) };
+  });
+}
+
+/** A full FA document of a regex-to-NFA frame, positioned like the finished NFA (`finalDoc`). */
+function nfaGraphDocument(finalDoc, frame) {
+  const states = {};
+  for (const id of frame.states) states[id] = { ...finalDoc.states[id] };
+  return {
+    type: 'fa',
+    initial: finalDoc.initial,
+    finals: [...finalDoc.finals],
+    notes: [],
+    states,
+    transitions: frame.edges.map((e) => ({ from: e.from, to: e.to, label: e.label === GTG_LAMBDA ? '' : e.label, control: null })),
+  };
+}
+
+// ---- tree.js
+// Parse trees: `{symbol, children: [...]}` as the engine returns them. The layout is pure (tested in node);
+// `treeSvg` draws it as an accessible SVG.
+
+
+registerStrings({ en: { 'tree.label': 'Parse tree' }, es: { 'tree.label': 'Árbol de derivación' } });
+
+const TREE_LAMBDA = 'λ';
+
+/**
+ * Leaves go left to right with a fixed gap, every parent is centered over its first and last child, and
+ * the depth sets the row. Returns `{nodes: [{id, symbol, x, y, leaf, open}], edges: [{from, to}], width, height}`.
+ * `open` marks a variable without children in a partial tree (the user parse still has to expand it).
+ */
+function layoutTree(tree, { charWidth = 9, minLeaf = 34, gap = 14, rowHeight = 56, pad = 24, note = (node) => node.note } = {}) {
+  const nodes = [];
+  const edges = [];
+  let cursor = pad;
+  let deepest = 0;
+  const widthOf = (node) => Math.max(minLeaf, [...String(node.symbol)].length * charWidth + 12, [...String(note(node) || '')].length * (charWidth - 2) + 12);
+  function place(node, depth, parent) {
+    const id = nodes.length;
+    const entry = { id, symbol: node.symbol, x: 0, y: pad + depth * rowHeight, leaf: !node.children || node.children.length === 0, open: false, note: note(node) || '', width: widthOf(node) };
+    nodes.push(entry);
+    if (parent !== null) edges.push({ from: parent, to: id });
+    deepest = Math.max(deepest, depth);
+    if (entry.leaf) {
+      entry.open = isVariable(node.symbol);
+      entry.x = cursor + entry.width / 2;
+      cursor += entry.width + gap;
+    } else {
+      const placed = node.children.map((child) => place(child, depth + 1, id));
+      entry.x = (nodes[placed[0]].x + nodes[placed[placed.length - 1]].x) / 2;
+    }
+    return id;
+  }
+  if (tree) place(tree, 0, null);
+  return { nodes, edges, width: cursor - gap + pad, height: pad * 2 + deepest * rowHeight };
+}
+
+const isVariable = (symbol) => typeof symbol === 'string' && symbol !== TREE_LAMBDA && /^\p{Lu}/u.test(symbol);
+
+/** The terminals of the leaves, left to right, without λ. A tree that is only a root yields the root symbol. */
+function treeYield(tree) {
+  if (!tree) return '';
+  if (!tree.children || tree.children.length === 0) return tree.symbol === TREE_LAMBDA ? '' : tree.symbol;
+  return tree.children.map(treeYield).join('');
+}
+
+/** SVG of a layout. `label` is the accessible name (for example the derivation). */
+function treeSvg(layout, { label = '', highlight = null } = {}) {
+  const svg = svgEl('svg', { class: 'parse-tree', role: 'img', 'aria-label': label || t('tree.label'), width: layout.width, height: layout.height, viewBox: `0 0 ${layout.width} ${layout.height}` });
+  const at = (id) => layout.nodes[id];
+  for (const edge of layout.edges) svg.append(svgEl('line', { x1: at(edge.from).x, y1: at(edge.from).y + 12, x2: at(edge.to).x, y2: at(edge.to).y - 12, class: 'tree-edge' }));
+  for (const node of layout.nodes) {
+    const classes = ['tree-node', node.leaf ? 'leaf' : 'inner', node.open ? 'open' : '', highlight && highlight.has(node.id) ? 'hot' : ''].filter(Boolean).join(' ');
+    const group = svgEl('g', { class: classes, transform: `translate(${node.x} ${node.y})` });
+    group.append(svgEl('rect', { x: -node.width / 2, y: -13, width: node.width, height: 26, rx: node.leaf ? 13 : 4 }), svgEl('text', { 'text-anchor': 'middle', y: 5 }, node.symbol));
+    if (node.note) group.append(svgEl('text', { 'text-anchor': 'middle', y: 24, class: 'tree-note' }, node.note));
+    svg.append(group);
+  }
+  return svg;
+}
+
+// ---- replay-views.js
+// The richer views of the conversion replay: the subset table of NFA -> DFA, the distinguishability tree of the
+// minimization, and the generalized transition graph of FA -> RE and RE -> NFA. They draw the frames of
+// replay-model.js; the graphs are drawn by the engine (`render`), nothing is re-implemented here.
+
+
+registerStrings({
+  en: {
+    'replay.controls': 'Step controls',
+    'replay.first': 'First step',
+    'replay.previous': 'Previous',
+    'replay.next': 'Next',
+    'replay.do_all': 'Do all',
+    'replay.play': 'Play',
+    'replay.pause': 'Pause',
+    'replay.position': 'Step {n} of {total}',
+    'replay.keys': 'Keys: n / → next, p / ← previous, Home first, End or a do all, Space play.',
+    'replay.subset.table': 'DFA states built so far',
+    'replay.subset.caption': 'DFA states and the NFA states they stand for',
+    'replay.subset.dfa': 'DFA state',
+    'replay.subset.nfa': 'NFA states',
+    'replay.subset.transitions': 'Transitions so far',
+    'replay.subset.no_transitions': 'No transitions yet.',
+    'replay.min.partition': 'Groups of equivalent states so far',
+    'replay.min.group_split': 'The group {group} is split on {symbol} into {into}.',
+    'replay.min.initial': 'Initial partition: final and non-final states.',
+    'replay.min.merge': 'The group is merged into the state {state}.',
+    'replay.min.tree': 'Distinguishability tree',
+    'replay.min.split_on': 'split on {symbol}',
+    'replay.gtg.graph': 'Generalized transition graph',
+    'replay.gtg.alt': 'Generalized transition graph after step {n}',
+    'replay.gtg.edges': 'Labels',
+    'replay.gtg.col.from': 'From',
+    'replay.gtg.col.label': 'Label',
+    'replay.gtg.col.to': 'To',
+    'replay.gtg.eliminated': 'State {state} was eliminated.',
+    'replay.gtg.empty': '{n} missing transitions were added as ø (not drawn).',
+    'replay.gtg.result': 'Regular expression: {expression}',
+    'replay.regex.graph': 'Graph after this step',
+    'replay.regex.alt': 'Graph of the regular expression after step {n}',
+    'replay.regex.replaced': 'Replaced the transition {from} → {to} labeled {label} by:',
+    'replay.regex.rendering': 'Drawing…',
+    'replay.render_failed': 'The engine could not draw this step: {message}',
+  },
+  es: {
+    'replay.controls': 'Controles de pasos',
+    'replay.first': 'Primer paso',
+    'replay.previous': 'Anterior',
+    'replay.next': 'Siguiente',
+    'replay.do_all': 'Hacer todo',
+    'replay.play': 'Reproducir',
+    'replay.pause': 'Pausar',
+    'replay.position': 'Paso {n} de {total}',
+    'replay.keys': 'Teclas: n / → siguiente, p / ← anterior, Inicio primero, Fin o a hacer todo, Espacio reproducir.',
+    'replay.subset.table': 'Estados del AFD construidos hasta ahora',
+    'replay.subset.caption': 'Estados del AFD y los estados del AFN que representan',
+    'replay.subset.dfa': 'Estado del AFD',
+    'replay.subset.nfa': 'Estados del AFN',
+    'replay.subset.transitions': 'Transiciones hasta ahora',
+    'replay.subset.no_transitions': 'Todavía no hay transiciones.',
+    'replay.min.partition': 'Grupos de estados equivalentes hasta ahora',
+    'replay.min.group_split': 'El grupo {group} se divide con {symbol} en {into}.',
+    'replay.min.initial': 'Partición inicial: estados finales y no finales.',
+    'replay.min.merge': 'El grupo se fusiona en el estado {state}.',
+    'replay.min.tree': 'Árbol de distinguibilidad',
+    'replay.min.split_on': 'se divide con {symbol}',
+    'replay.gtg.graph': 'Grafo de transiciones generalizado',
+    'replay.gtg.alt': 'Grafo de transiciones generalizado después del paso {n}',
+    'replay.gtg.edges': 'Etiquetas',
+    'replay.gtg.col.from': 'Desde',
+    'replay.gtg.col.label': 'Etiqueta',
+    'replay.gtg.col.to': 'Hasta',
+    'replay.gtg.eliminated': 'Se eliminó el estado {state}.',
+    'replay.gtg.empty': 'Se agregaron {n} transiciones faltantes como ø (no se dibujan).',
+    'replay.gtg.result': 'Expresión regular: {expression}',
+    'replay.regex.graph': 'Grafo después de este paso',
+    'replay.regex.alt': 'Grafo de la expresión regular después del paso {n}',
+    'replay.regex.replaced': 'Se reemplazó la transición {from} → {to} con etiqueta {label} por:',
+    'replay.regex.rendering': 'Dibujando…',
+    'replay.render_failed': 'El motor no pudo dibujar este paso: {message}',
+  },
+});
+
+const cache = new WeakMap();
+
+/** `{kind, frames}` of a step list (computed once per list). */
+function framesFor(info) {
+  if (!cache.has(info)) {
+    const kind = conversionKind(info.steps);
+    const frames =
+      kind === 'subset' ? subsetFrames(info.steps)
+      : kind === 'minimize' ? partitionFrames(info.steps)
+      : kind === 'gtg' && info.sourceDoc ? gtgFrames(info.sourceDoc, info.steps)
+      : kind === 'regex-nfa' ? regexNfaFrames(info.steps)
+      : null;
+    cache.set(info, { kind: frames ? kind : null, frames });
+  }
+  return cache.get(info);
+}
+
+const nameFrom = (doc, id) => (doc && doc.states && doc.states[id] ? doc.states[id].name : `#${id}`);
+const setText = (ids, nameOf) => `{${ids.map(nameOf).join(', ')}}`;
+const edgeText = (e, nameOf) => `${nameOf(e.from)} —${e.label === '' ? 'λ' : e.label}→ ${nameOf(e.to)}`;
+
+async function drawn(tab, document, alt, highlight = []) {
+  try {
+    const r = await tab.api({ op: 'render', document, format: 'svg', highlight_states: highlight, dark: Boolean(tab.dark) });
+    return svgImage(r.content, alt, 'engine-svg step-graph');
+  } catch (error) {
+    return h('p', { class: 'form-error', role: 'alert' }, t('replay.render_failed', { message: error.message }));
+  }
+}
+
+function subsetDetail(tab, info, frame) {
+  const sourceName = (id) => nameFrom(info.sourceDoc || (info.source && info.source.doc), id);
+  const dfaName = (id) => nameFrom(tab.doc, id);
+  const hot = new Set(frame.focus.states);
+  return h(
+    'div',
+    { class: 'replay-detail' },
+    h('h4', {}, t('replay.subset.table')),
+    dataTable(
+      t('replay.subset.caption'),
+      [t('replay.subset.dfa'), t('replay.subset.nfa')],
+      frame.states.map((s) => [{ text: dfaName(s.state), class: 'mono' }, { text: setText(s.nfa, sourceName), class: 'mono' }]),
+      { rowClass: (i) => (hot.has(frame.states[i].state) ? 'selected-row' : '') },
+    ),
+    h('h4', {}, t('replay.subset.transitions')),
+    frame.transitions.length
+      ? h('ul', { class: 'mono compact-list' }, frame.transitions.map((x) => h('li', { class: hot.has(x.from) && hot.has(x.to) ? 'current' : '' }, `${dfaName(x.from)} —${x.symbol}→ ${dfaName(x.to)}`)))
+      : h('p', { class: 'muted' }, t('replay.subset.no_transitions')),
+  );
+}
+
+function minimizeDetail(tab, info, frame, frames) {
+  const nameOf = (id) => nameFrom(info.sourceDoc || (info.source && info.source.doc), id);
+  const group = (g) => setText(g, nameOf);
+  const step = frame.step;
+  const sentence =
+    step.kind === 'split' ? t('replay.min.group_split', { group: group(step.group), symbol: step.symbol, into: step.into.map(group).join(', ') })
+    : step.kind === 'initial_partition' ? t('replay.min.initial')
+    : t('replay.min.merge', { state: nameFrom(tab.doc, step.state) });
+  const parts = [
+    h('p', { class: 'step-sentence', role: 'status' }, sentence),
+    h('h4', {}, t('replay.min.partition')),
+    h('ul', { class: 'mono groups' }, frame.groups.map((g) => h('li', { class: frame.changed.some((c) => c.join(',') === g.join(',')) ? 'current' : '' }, group(g)))),
+  ];
+  if (info.tree) {
+    const pruned = prunedTree(info.tree, frame.seen);
+    const label = (node) => ({ symbol: treeNodeLabel(node, nameOf), note: node.symbol ? t('replay.min.split_on', { symbol: node.symbol }) : '', children: node.children.map(label) });
+    parts.push(h('h4', {}, t('replay.min.tree')), h('div', { class: 'tree-scroll' }, treeSvg(layoutTree(label(pruned)), { label: t('replay.min.tree') })));
+  }
+  return h('div', { class: 'replay-detail' }, parts);
+}
+
+async function gtgDetail(tab, info, frame, index) {
+  const nameOf = (id) => nameFrom(info.sourceDoc, id) === `#${id}` ? `q${id}` : nameFrom(info.sourceDoc, id);
+  const graph = await drawn(tab, gtgDocument(info.sourceDoc, frame), t('replay.gtg.alt', { n: index + 1 }));
+  const notes = [];
+  if (frame.eliminated !== null) notes.push(h('p', { role: 'status' }, t('replay.gtg.eliminated', { state: nameOf(frame.eliminated) })));
+  if (frame.emptyPairs) notes.push(h('p', { class: 'muted' }, t('replay.gtg.empty', { n: frame.emptyPairs })));
+  if (frame.expression !== null) notes.push(h('p', { class: 'mono big-form', role: 'status' }, t('replay.gtg.result', { expression: frame.expression })));
+  return h(
+    'div',
+    { class: 'replay-detail' },
+    h('h4', {}, t('replay.gtg.graph')),
+    graph,
+    notes,
+    h('h4', {}, t('replay.gtg.edges')),
+    dataTable(t('replay.gtg.edges'), [t('replay.gtg.col.from'), t('replay.gtg.col.label'), t('replay.gtg.col.to')], frame.edges.map((e) => [nameOf(e.from), { text: e.label, class: 'mono' }, nameOf(e.to)])),
+  );
+}
+
+async function regexDetail(tab, frame, index) {
+  const document = nfaGraphDocument(tab.doc, frame);
+  const graph = await drawn(tab, document, t('replay.regex.alt', { n: index + 1 }), frame.addedStates);
+  return h(
+    'div',
+    { class: 'replay-detail' },
+    h('h4', {}, t('replay.regex.graph')),
+    graph,
+    h('p', { class: 'muted' }, t('replay.regex.replaced', { from: nameFrom(tab.doc, frame.replaced.from), to: nameFrom(tab.doc, frame.replaced.to), label: frame.replaced.label })),
+    h('ul', { class: 'mono compact-list' }, frame.addedEdges.map((e) => h('li', {}, edgeText(e, (id) => nameFrom(tab.doc, id))))),
+  );
+}
+
+/**
+ * The detail below a step: a node, or null when the steps have no richer view. `info` is `tab.steps`
+ * (`{steps, source, to, tree, sourceDoc}`); `index` the current step.
+ */
+async function conversionDetail(tab, info, index) {
+  const { kind, frames } = framesFor(info);
+  if (!kind || !frames[index]) return null;
+  const frame = frames[index];
+  if (kind === 'subset') return subsetDetail(tab, info, frame);
+  if (kind === 'minimize') return minimizeDetail(tab, info, frame, frames);
+  if (kind === 'gtg') return gtgDetail(tab, info, frame, index);
+  if (kind === 'regex-nfa' && tab.type === 'fa') return regexDetail(tab, frame, index);
+  return null;
+}
+
 // ---- steps.js
 // Step viewer for the `steps` list a conversion returns (subset construction, minimization, state
 // elimination, ...). Each step is shown readably and the states it mentions are highlighted: ids of the
@@ -2849,6 +3778,7 @@ const show = (value) => {
   if (value === null || value === undefined) return '—';
   if (typeof value === 'string') return value === '' ? 'λ' : value;
   if (Array.isArray(value) && value.every((v) => typeof v !== 'object' || v === null)) return `{${value.map(show).join(', ')}}`;
+  if (typeof value === 'object' && 'from' in value && 'to' in value && 'label' in value) return `${show(value.from)} —${show(value.label)}→ ${show(value.to)}`;
   if (typeof value === 'object') return JSON.stringify(value);
   return String(value);
 };
@@ -2885,8 +3815,9 @@ registerPanel({
   mount(root, tab) {
     const body = h('div', { class: 'panel-body' });
     root.append(body);
-    let index = 0;
-    let timer = null;
+    const replay = new Replay(tab.steps ? tab.steps.steps.length : 0);
+    let bar = null;
+    let drawing = 0;
 
     function source() {
       const s = tab.steps && tab.steps.source;
@@ -2899,7 +3830,7 @@ registerPanel({
     };
 
     function highlight() {
-      const ids = collectStateIds(tab.steps.steps[index]);
+      const ids = collectStateIds(tab.steps.steps[replay.index]);
       const from = source();
       const known = (target) => new Set(target && target.isAutomaton ? stateList(target.doc).map((x) => x.id) : []);
       if (from) {
@@ -2918,34 +3849,9 @@ registerPanel({
       tab.setOverlay('steps', null);
     }
 
-    function go(to) {
-      index = Math.max(0, Math.min(tab.steps.steps.length - 1, to));
-      draw();
-    }
-
-    function stop() {
-      if (timer) clearInterval(timer);
-      timer = null;
-    }
-
-    function play() {
-      if (timer) {
-        stop();
-        draw();
-        return;
-      }
-      timer = setInterval(() => {
-        if (index >= tab.steps.steps.length - 1) {
-          stop();
-          draw();
-          return;
-        }
-        go(index + 1);
-      }, 900);
-      draw();
-    }
-
     function draw() {
+      if (bar) bar.stop();
+      const mine = ++drawing;
       clear(body);
       if (!tab.steps || !tab.steps.steps.length) {
         body.append(h('p', { class: 'muted' }, t('steps.none')));
@@ -2954,37 +3860,48 @@ registerPanel({
       }
       const all = tab.steps.steps;
       const from = source();
-      body.append(
+      bar = replayBar(replay, draw, { key: `steps-${tab.id}` });
+      const detail = h('div', { class: 'replay-extra' });
+      const region = h(
+        'div',
+        { class: 'replay-region', 'aria-label': t('panel.steps') },
+        bar.node,
+        stepView(resolveStep(all[replay.index], nameIn(from), nameIn(tab))),
+        detail,
+        h('p', { class: 'muted' }, t('replay.keys')),
+      );
+      put(
+        body,
         h('p', { class: 'muted' }, tab.steps.title || ''),
         from ? h('p', { class: 'muted' }, t('steps.source', { title: from.title })) : null,
-        h(
-          'div',
-          { class: 'button-row' },
-          h('button', { type: 'button', onclick: () => go(index - 1), disabled: index === 0 }, t('steps.previous')),
-          h('span', { role: 'status', 'aria-live': 'polite' }, t('steps.position', { n: index + 1, total: all.length })),
-          h('button', { type: 'button', onclick: () => go(index + 1), disabled: index >= all.length - 1 }, t('steps.next')),
-          h('button', { type: 'button', onclick: play }, timer ? t('steps.pause') : t('steps.play')),
-        ),
-        stepView(resolveStep(all[index], nameIn(from), nameIn(tab))),
+        region,
         h(
           'ol',
           { class: 'step-list' },
           all.map((st, i) =>
-            h('li', { class: i === index ? 'current' : '' }, h('button', { type: 'button', class: 'link', 'aria-current': i === index ? 'step' : null, onclick: () => go(i) }, stepTitle(st))),
+            h('li', { class: i === replay.index ? 'current' : '' }, h('button', { type: 'button', class: 'link', 'aria-current': i === replay.index ? 'step' : null, onclick: () => (replay.goTo(i), draw()) }, stepTitle(st))),
           ),
         ),
       );
+      replayKeys(region, bar.act);
       highlight();
+      conversionDetail(tab, tab.steps, replay.index)
+        .then((node) => {
+          if (node && mine === drawing) detail.append(node);
+        })
+        .catch(() => {
+          /* the generic step view above already says everything the steps carry */
+        });
     }
 
     draw();
     const off = tab.on('steps', () => {
-      index = 0;
+      replay.reset(tab.steps ? tab.steps.steps.length : 0);
       draw();
     });
     return {
       destroy() {
-        stop();
+        if (bar) bar.stop();
         clearHighlight();
         off();
       },
@@ -3061,8 +3978,8 @@ registerPanel({
 });
 
 // ---- info.js
-// "Document" panel: the document of any type as readable JSON, with copy. It is the fallback view for the
-// types that have no dedicated panel yet (grammar, regex, L-system, pumping lemma: T12b adds those).
+// "Document" panel: the document of any type as readable JSON, to read or copy. The grammar, regex, L-system
+// and pumping lemma environments have their own panels; this one is the last tab of every type.
 
 
 registerPanel({
@@ -3265,12 +4182,13 @@ const sim = (tab, method) => tab.app.showPanel(tab, 'simulate', method);
 registerAction({ id: 'input.step_closure', menu: 'input', label: 'input.step_closure', order: 0, appliesTo: ['fa', 'pda'], run: (tab) => { simSettings(tab).mode = 'closure'; return sim(tab, 'step'); } });
 registerAction({ id: 'input.step_state', menu: 'input', label: 'input.step_state', order: 1, appliesTo: ['fa', 'pda'], run: (tab) => { simSettings(tab).mode = 'step_by_state'; return sim(tab, 'step'); } });
 registerAction({ id: 'input.step', menu: 'input', label: 'input.step', order: 2, appliesTo: ['turing', 'mealy', 'moore'], run: (tab) => sim(tab, 'step') });
-registerAction({ id: 'input.run', menu: 'input', label: 'input.run', order: 3, run: (tab) => sim(tab, 'run') });
+registerAction({ id: 'input.run', menu: 'input', label: 'input.run', order: 3, appliesTo: GRAPH_TYPES, run: (tab) => sim(tab, 'run') });
 registerAction({
   id: 'input.multiple',
   menu: 'input',
   label: 'input.multiple',
   order: 4,
+  appliesTo: GRAPH_TYPES,
   run: (tab) => tab.app.showPanel(tab, 'multiple'),
 });
 
@@ -3303,7 +4221,8 @@ async function convertToTab(tab, to, titleKey) {
   return guarded(tab, async () => {
     const r = await tab.api({ op: 'convert', document: machineDocument(tab.doc, tab.path), to });
     const title = `${tab.title} → ${t(titleKey)}`;
-    const steps = r.steps && r.steps.length ? { title: t(titleKey), steps: r.steps, source: tab } : null;
+    // `to`, `tree` and `sourceDoc` let the step viewer draw the richer views (subset table, tree, graphs)
+    const steps = Array.isArray(r.steps) && r.steps.length ? { title: t(titleKey), steps: r.steps, source: tab, to, tree: r.tree || null, sourceDoc: tab.isAutomaton ? machineDocument(tab.doc, tab.path) : null } : null;
     const result = tab.openTab(r.document, { title, steps });
     if (steps) tab.app.showPanel(result, 'steps');
     return result;
@@ -3326,7 +4245,6 @@ const conversions = [
   ['fa', 'convert.fa', ['grammar'], 12],
   ['pda_ll', 'convert.pda_ll', ['grammar'], 13],
   ['pda_lr', 'convert.pda_lr', ['grammar'], 14],
-  ['cnf', 'convert.cnf', ['grammar'], 15],
 ];
 for (const [to, label, types, order] of conversions) {
   registerAction({ id: `convert.${to}.${types.join('-')}`, menu: 'convert', label, order, appliesTo: types, run: (tab) => convertToTab(tab, to, label) });
@@ -3466,6 +4384,2691 @@ registerAction({
   order: 1,
   run: () => messageDialog({ title: 'Rflap', body: h('div', {}, h('p', {}, t('help.about_text')), h('p', {}, t('help.credit'))) }),
 });
+
+// ---- grammar-model.js
+// Pure helpers of the grammar environment (no DOM): the production table, the replay of the
+// transformations, the parse tables and traces. Everything the engine computes stays in the engine; this
+// only shapes its answers for display.
+
+
+registerStrings({
+  en: {
+    'grammar.err.no_arrow': 'Line {line}: write productions as "A -> aB | b" ("{text}" has no arrow).',
+    'grammar.err.no_left': 'Line {line}: the production has no left side.',
+    'grammar.step.DerivesLambda': '{variable} derives λ ({production}).',
+    'grammar.step.RemoveLambda': 'Remove {production}.',
+    'grammar.step.Expand': 'Replace {production} by: {added}.',
+    'grammar.step.Edge': 'Unit production {production}: edge {from} → {to}.',
+    'grammar.step.Reach': '{variable} reaches by unit productions: {list}.',
+    'grammar.step.RemoveUnit': 'Remove the unit production {production}.',
+    'grammar.step.Add': 'Add {production} (through {via}).',
+    'grammar.step.DerivesTerminals': '{variable} derives a string of terminals ({production}).',
+    'grammar.step.RemoveNonDeriving': 'Remove {production}: it uses a variable that derives no string.',
+    'grammar.step.Reachable': '{variable} is reachable from the start variable.',
+    'grammar.step.RemoveUnreachable': 'Remove {production}: its variable is unreachable.',
+    'grammar.step.Terminals': 'Round {round}: replace the terminals of {production}; gives {added}.',
+    'grammar.step.Split': 'Round {round}: split {production} into {added}.',
+    'parse.action.replace': 'Replace {production}',
+    'parse.action.match': 'Match {symbol}',
+    'parse.action.accept': 'Accept',
+    'parse.action.reject': 'Reject',
+    'parse.action.reject_reason': 'Reject: {reason}',
+    'parse.action.shift': 'Shift to state {state}',
+    'parse.action.reduce': 'Reduce {production}',
+    'parse.user.at': '{symbol} at {n}',
+  },
+  es: {
+    'grammar.err.no_arrow': 'Línea {line}: escribí las producciones como "A -> aB | b" ("{text}" no tiene flecha).',
+    'grammar.err.no_left': 'Línea {line}: la producción no tiene lado izquierdo.',
+    'grammar.step.DerivesLambda': '{variable} deriva λ ({production}).',
+    'grammar.step.RemoveLambda': 'Se quita {production}.',
+    'grammar.step.Expand': 'Se reemplaza {production} por: {added}.',
+    'grammar.step.Edge': 'Producción unitaria {production}: arista {from} → {to}.',
+    'grammar.step.Reach': '{variable} alcanza por producciones unitarias: {list}.',
+    'grammar.step.RemoveUnit': 'Se quita la producción unitaria {production}.',
+    'grammar.step.Add': 'Se agrega {production} (a través de {via}).',
+    'grammar.step.DerivesTerminals': '{variable} deriva una cadena de terminales ({production}).',
+    'grammar.step.RemoveNonDeriving': 'Se quita {production}: usa una variable que no deriva ninguna cadena.',
+    'grammar.step.Reachable': '{variable} es alcanzable desde la variable inicial.',
+    'grammar.step.RemoveUnreachable': 'Se quita {production}: su variable es inalcanzable.',
+    'grammar.step.Terminals': 'Ronda {round}: se reemplazan los terminales de {production}; queda {added}.',
+    'grammar.step.Split': 'Ronda {round}: se divide {production} en {added}.',
+    'parse.action.replace': 'Reemplazar {production}',
+    'parse.action.match': 'Coincide {symbol}',
+    'parse.action.accept': 'Aceptar',
+    'parse.action.reject': 'Rechazar',
+    'parse.action.reject_reason': 'Rechazar: {reason}',
+    'parse.action.shift': 'Desplazar al estado {state}',
+    'parse.action.reduce': 'Reducir {production}',
+    'parse.user.at': '{symbol} en {n}',
+  },
+});
+
+const GRAMMAR_LAMBDA = 'λ';
+
+// ---------------------------------------------------------------- the production table
+
+/** `A -> aB` with λ for the empty right side, as the grammar is written in the table and on the page. */
+const productionText = (p) => `${p.lhs} → ${p.rhs === '' ? GRAMMAR_LAMBDA : p.rhs}`;
+
+const compact = (text) => text.replace(/\s+/g, '');
+const emptyAlternative = (text) => text === '' || text === GRAMMAR_LAMBDA || text === 'ε';
+
+/**
+ * Reads `S -> aSb | λ` lines into table rows. Blank lines and `#` comments are skipped; `->` and `→` both
+ * work; `λ`, `ε` or nothing is the empty string. Lines that cannot be read are returned as errors (1-based).
+ */
+function parseProductionText(text) {
+  const rows = [];
+  const errors = [];
+  String(text || '')
+    .split(/\r?\n/)
+    .forEach((raw, index) => {
+      const line = raw.trim();
+      if (line === '' || line.startsWith('#')) return;
+      const arrow = /->|→/.exec(line);
+      if (!arrow) {
+        errors.push({ line: index + 1, message: t('grammar.err.no_arrow', { line: index + 1, text: line }) });
+        return;
+      }
+      const lhs = compact(line.slice(0, arrow.index));
+      if (lhs === '') {
+        errors.push({ line: index + 1, message: t('grammar.err.no_left', { line: index + 1 }) });
+        return;
+      }
+      for (const alternative of line.slice(arrow.index + arrow[0].length).split('|')) {
+        const rhs = compact(alternative);
+        rows.push({ lhs, rhs: emptyAlternative(rhs) ? '' : rhs });
+      }
+    });
+  return { rows, errors };
+}
+
+/** The inverse of `parseProductionText`; consecutive productions of one variable share a line. */
+function serializeProductions(rows) {
+  const lines = [];
+  let last = null;
+  for (const row of rows) {
+    const rhs = row.rhs === '' ? GRAMMAR_LAMBDA : row.rhs;
+    if (last !== null && lines.length && row.lhs === last) lines[lines.length - 1] += ` | ${rhs}`;
+    else lines.push(`${row.lhs} -> ${rhs}`);
+    last = row.lhs;
+  }
+  return lines.join('\n');
+}
+
+/** The start variable of a table: the chosen one if some production has it on the left, else the first left side. */
+function startVariable(rows, chosen) {
+  if (chosen && rows.some((row) => row.lhs === chosen)) return chosen;
+  const first = rows.find((row) => row.lhs !== '');
+  return first ? first.lhs : '';
+}
+
+const addGrammarRow = (rows, at = rows.length) => [...rows.slice(0, at), { lhs: '', rhs: '' }, ...rows.slice(at)];
+const removeGrammarRow = (rows, at) => rows.filter((_, i) => i !== at);
+/** Edits a row; spaces are dropped and λ / ε (or nothing) on the right side is the empty string. */
+function setGrammarRow(rows, at, change) {
+  const clean = {};
+  if ('lhs' in change) clean.lhs = compact(change.lhs);
+  if ('rhs' in change) clean.rhs = emptyAlternative(compact(change.rhs)) ? '' : compact(change.rhs);
+  return rows.map((row, i) => (i === at ? { ...row, ...clean } : row));
+}
+
+/** Moves a row up (`-1`) or down (`1`); at the ends nothing moves. */
+function moveGrammarRow(rows, at, direction) {
+  const to = at + direction;
+  if (at < 0 || at >= rows.length || to < 0 || to >= rows.length) return rows;
+  const copy = [...rows];
+  [copy[at], copy[to]] = [copy[to], copy[at]];
+  return copy;
+}
+
+// ---------------------------------------------------------------- transformations, step by step
+
+const keyOf = (p) => `${p.lhs}\u0000${p.rhs}`;
+
+/** A serde-tagged step (`{"Edge": {...}}`, `"Accept"`) as `{kind, ...fields}`; steps that carry `kind` already are kept. */
+function flatStep(step) {
+  if (step && typeof step === 'object' && 'kind' in step) return step;
+  if (typeof step === 'string') return { kind: step };
+  const [kind] = Object.keys(step || {});
+  return kind === undefined ? { kind: '?' } : { kind, ...step[kind] };
+}
+
+const REMOVING = new Set(['RemoveLambda', 'RemoveUnit', 'RemoveNonDeriving', 'RemoveUnreachable']);
+
+/** Applies one step to a list of productions: what it removes, what it adds, what it points at. */
+function applyStep(list, step) {
+  const removed = [];
+  const added = [];
+  let next = list;
+  const take = (production) => {
+    const at = next.findIndex((p) => keyOf(p) === keyOf(production));
+    if (at >= 0) {
+      removed.push(next[at]);
+      next = next.filter((_, i) => i !== at);
+    }
+  };
+  const put = (production) => {
+    if (!next.some((p) => keyOf(p) === keyOf(production))) {
+      next = [...next, production];
+      added.push(production);
+    }
+  };
+  if (REMOVING.has(step.kind)) take(step.production);
+  else if (step.kind === 'Expand') {
+    take(step.production);
+    step.added.forEach(put);
+  } else if (step.kind === 'Add') put(step.production);
+  else if (step.kind === 'Terminals' || step.kind === 'Split') {
+    take(step.production);
+    step.replacement.forEach(put);
+  }
+  return { productions: next, removed, added };
+}
+
+/**
+ * The stages of a transformation in JFLAP's order. A single `remove_*` is one stage; the Chomsky normal
+ * form is lambda, unit, useless and the conversion proper. Each stage:
+ * `{name, input: [productions], steps: [flat steps], result: [productions], renames?}`.
+ */
+function grammarPhases(result, inputProductions) {
+  const staged = result.steps && !Array.isArray(result.steps) ? result.steps : null;
+  if (staged) {
+    const phases = [];
+    let input = inputProductions;
+    for (const name of ['lambda', 'unit', 'useless', 'cnf']) {
+      const phase = staged[name];
+      if (!phase) continue;
+      const out = phase.grammar.productions;
+      phases.push({ name, input: name === 'cnf' ? phase.input.productions : input, steps: phase.steps.map(flatStep), result: out, renames: phase.renames || null });
+      input = out;
+    }
+    return phases;
+  }
+  const names = { remove_lambda: 'lambda', remove_unit: 'unit', remove_useless: 'useless' };
+  return [{ name: names[result.to] || result.to, input: inputProductions, steps: (result.steps || []).map(flatStep), result: result.document.productions, renames: null }];
+}
+
+/** Renames variables (`[[old, new], ...]`) everywhere at once; the old names are matched longest first. */
+function renameProductions(list, renames) {
+  if (!renames || !renames.length) return list;
+  const to = new Map(renames);
+  const escape = (name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const pattern = new RegExp([...to.keys()].sort((a, b) => b.length - a.length).map(escape).join('|'), 'g');
+  const swap = (text) => text.replace(pattern, (name) => to.get(name));
+  return list.map((p) => ({ lhs: swap(p.lhs), rhs: swap(p.rhs) }));
+}
+
+/** The productions a stage reaches by applying its steps in order, and then its renaming of variables. */
+function replayedProductions(phase) {
+  let list = phase.input;
+  for (const step of phase.steps) list = applyStep(list, step).productions;
+  return renameProductions(list, phase.renames);
+}
+
+/**
+ * One frame per step plus a final frame per stage with the stage result:
+ * `{phase, step: flat step | null, productions: [{lhs, rhs, mark: 'keep'|'added'|'focus'}], removed: [production]}`.
+ */
+function grammarFrames(result, inputProductions) {
+  const frames = [];
+  for (const phase of grammarPhases(result, inputProductions)) {
+    let list = phase.input;
+    for (const step of phase.steps) {
+      const outcome = applyStep(list, step);
+      list = outcome.productions;
+      const focus = step.production && !outcome.added.length ? keyOf(step.production) : null;
+      frames.push({
+        phase: phase.name,
+        step,
+        productions: list.map((p) => ({ ...p, mark: outcome.added.some((a) => keyOf(a) === keyOf(p)) ? 'added' : keyOf(p) === focus ? 'focus' : 'keep' })),
+        removed: outcome.removed,
+      });
+    }
+    frames.push({ phase: phase.name, step: null, productions: phase.result.map((p) => ({ ...p, mark: 'keep' })), removed: [], renames: phase.renames });
+  }
+  return frames;
+}
+
+/** A sentence in the user's language for a step ("A derives λ", "Remove S → A", ...). */
+function describeGrammarStep(step) {
+  const flat = flatStep(step);
+  const p = flat.production ? productionText(flat.production) : '';
+  const known = `grammar.step.${flat.kind}`;
+  if (t(known) === known) return flat.kind;
+  const added = (flat.added || flat.replacement || []).map(productionText).join(', ');
+  return t(known, { production: p, variable: flat.variable ?? '', from: flat.from ?? '', to: flat.to ?? '', via: flat.via ?? '', added, round: flat.round ?? '', list: (flat.reachable || []).join(', ') });
+}
+
+// ---------------------------------------------------------------- parse tables
+
+const conflictCell = (entries) => entries.length > 1;
+
+/** FIRST/FOLLOW rows, the LL(1) table and the SLR(1) items, ACTION and GOTO as plain rows, conflicts flagged. */
+function tablesModel(result) {
+  const variables = Object.keys(result.first).sort();
+  const ll = result.ll1;
+  const lr = result.slr1;
+  return {
+    start: result.start,
+    firstFollow: variables.map((variable) => ({ variable, first: result.first[variable], follow: result.follow[variable] || [] })),
+    ll1: {
+      ok: ll.is_ll1,
+      terminals: ll.terminals,
+      rows: ll.variables.map((variable) => ({
+        variable,
+        cells: ll.terminals.map((terminal) => {
+          const entries = (ll.table[variable] && ll.table[variable][terminal]) || [];
+          return { terminal, entries, conflict: conflictCell(entries) };
+        }),
+      })),
+      conflicts: ll.conflicts,
+    },
+    slr1: {
+      ok: lr.is_slr1,
+      productions: lr.productions.map((text, n) => ({ n, text })),
+      states: lr.states.map((s) => ({ id: s.id, items: s.items, final: s.is_final, transitions: s.transitions })),
+      terminals: lr.terminals,
+      variables: lr.variables,
+      actionRows: lr.actions.map((row, state) => ({
+        state,
+        cells: lr.terminals.map((symbol) => {
+          const entries = row[symbol] || [];
+          return { symbol, entries, conflict: conflictCell(entries) };
+        }),
+      })),
+      gotoRows: lr.gotos.map((row, state) => ({ state, cells: lr.variables.map((variable) => ({ variable, target: variable in row ? row[variable] : null })) })),
+      conflicts: lr.conflicts,
+    },
+  };
+}
+
+// ---------------------------------------------------------------- parser traces
+
+const TRACE_KINDS = { Replace: 'replace', Match: 'match', Accept: 'accept', Reject: 'reject', Shift: 'shift', Reduce: 'reduce' };
+
+function actionParts(action) {
+  if (typeof action === 'string') return [action, {}];
+  const [kind] = Object.keys(action);
+  return [kind, action[kind] || {}];
+}
+
+/** The action of a parser step in words ("Replace S → aSb", "Shift to state 2"). */
+function describeParseAction(action) {
+  const [kind, body] = actionParts(action);
+  switch (kind) {
+    case 'Replace':
+      return t('parse.action.replace', { production: productionText(body.production) });
+    case 'Match':
+      return t('parse.action.match', { symbol: body.symbol });
+    case 'Accept':
+      return t('parse.action.accept');
+    case 'Reject':
+      return body.reason ? t('parse.action.reject_reason', { reason: body.reason }) : t('parse.action.reject');
+    case 'Shift':
+      return t('parse.action.shift', { state: body.state });
+    case 'Reduce':
+      return t('parse.action.reduce', { production: productionText(body.production) });
+    default:
+      return kind;
+  }
+}
+
+const kindOfAction = (action) => TRACE_KINDS[actionParts(action)[0]] || 'other';
+
+/** Rows `{n, stack, input, action, kind}` of an LL(1) parse. */
+function ll1Trace(result) {
+  return (result.steps || []).map((s, i) => ({ n: i + 1, stack: s.stack, input: s.input, action: describeParseAction(s.action), kind: kindOfAction(s.action) }));
+}
+
+/** Rows `{n, states, symbols, input, action, kind}` of an SLR(1) parse. */
+function slrTrace(result) {
+  return (result.steps || []).map((s, i) => ({ n: i + 1, states: s.states.join(' '), symbols: s.symbols, input: s.input, action: describeParseAction(s.action), kind: kindOfAction(s.action) }));
+}
+
+/** The CYK triangle: row `i`, cells `j >= i` with the variables deriving the substring `i..j`. */
+function cykModel(table, input) {
+  const chars = [...input];
+  return {
+    header: chars,
+    rows: table.cells.map((row, i) => ({
+      i,
+      cells: row.map((symbols, j) => ({ j, symbols, substring: chars.slice(i, j + 1).join('') })).filter((cell) => cell.j >= i),
+    })),
+  };
+}
+
+/** The derivation as a list of `{n, production, form}`: the production applied and the form it gives. */
+function derivationSteps(result) {
+  const derivation = result.derivation;
+  if (!derivation) return [];
+  return derivation.steps.map((s, i) => ({ n: i + 1, production: productionText(s.production), form: s.result }));
+}
+
+// ---------------------------------------------------------------- user-controlled parse
+
+/** The move for a choice: one occurrence, or several at once (`positions`). */
+function userMove({ production, position, positions }) {
+  if (positions && positions.length === 1) return { production, position: positions[0] };
+  if (positions && positions.length > 1) return { production, positions };
+  return position === undefined ? { production } : { production, position };
+}
+
+const withoutLastMove = (moves) => moves.slice(0, -1);
+
+/** What the user may still apply: `{production, text, positions, labels, all}` from the answer's `applicable`. */
+function userChoices(answer) {
+  return (answer.applicable || []).map((a) => {
+    const [lhs, ...rest] = a.text.split(' -> ');
+    const rhs = rest.join(' -> ');
+    return {
+      production: a.production,
+      text: productionText({ lhs, rhs: rhs === GRAMMAR_LAMBDA ? '' : rhs }),
+      positions: a.positions,
+      labels: a.positions.map((position) => t('parse.user.at', { symbol: lhs, n: position + 1 })),
+      all: a.positions.length > 1,
+    };
+  });
+}
+
+/** The input lines of the text area: one string each; `λ` or an empty line is the empty string. */
+function parseInputLines(text) {
+  const lines = String(text).split(/\r?\n/);
+  while (lines.length > 1 && lines[lines.length - 1].trim() === '') lines.pop();
+  return lines.map((line) => (line.trim() === 'λ' ? '' : line.trim()));
+}
+
+// ---- grammar-editor.js
+// Grammar environment, part 1: the production table editor (add / remove / reorder / λ / paste text) and the
+// type test. Documents of type `grammar` are `{type, productions: [{lhs, rhs}], start}`.
+
+
+registerStrings({
+  en: {
+    'panel.grammar_editor': 'Grammar',
+    'file.new_grammar': 'New grammar',
+    'grammar.start': 'Start variable',
+    'grammar.start_hint': 'Empty means the left side of the first production.',
+    'grammar.productions': 'Productions',
+    'grammar.col.lhs': 'Left side',
+    'grammar.col.rhs': 'Right side',
+    'grammar.lhs_of': 'Left side of production {n}',
+    'grammar.rhs_of': 'Right side of production {n} (empty or λ is the empty string)',
+    'grammar.add': 'Add production',
+    'grammar.remove': 'Remove production {n}',
+    'grammar.up': 'Move production {n} up',
+    'grammar.down': 'Move production {n} down',
+    'grammar.empty': 'The grammar has no productions yet.',
+    'grammar.text': 'As text',
+    'grammar.text_hint': 'One line per variable: S -> aSb | λ. Paste a grammar here and apply it.',
+    'grammar.apply_text': 'Replace the table with this text',
+    'grammar.text_applied': 'Productions read: {n}.',
+    'grammar.rejected': 'The engine did not accept the grammar: {message}',
+    'grammar.type': 'Grammar type',
+    'grammar.type.checking': 'Checking…',
+    'grammar.type.flags': 'Regular (right-linear): {right}. Left-linear: {left}. Context-free: {cf}. Context-sensitive: {cs}. Chomsky normal form: {cnf}. Greibach normal form: {gnf}.',
+  },
+  es: {
+    'panel.grammar_editor': 'Gramática',
+    'file.new_grammar': 'Nueva gramática',
+    'grammar.start': 'Variable inicial',
+    'grammar.start_hint': 'Vacío significa el lado izquierdo de la primera producción.',
+    'grammar.productions': 'Producciones',
+    'grammar.col.lhs': 'Lado izquierdo',
+    'grammar.col.rhs': 'Lado derecho',
+    'grammar.lhs_of': 'Lado izquierdo de la producción {n}',
+    'grammar.rhs_of': 'Lado derecho de la producción {n} (vacío o λ es la cadena vacía)',
+    'grammar.add': 'Agregar producción',
+    'grammar.remove': 'Quitar la producción {n}',
+    'grammar.up': 'Subir la producción {n}',
+    'grammar.down': 'Bajar la producción {n}',
+    'grammar.empty': 'La gramática todavía no tiene producciones.',
+    'grammar.text': 'Como texto',
+    'grammar.text_hint': 'Una línea por variable: S -> aSb | λ. Pegá una gramática acá y aplicala.',
+    'grammar.apply_text': 'Reemplazar la tabla con este texto',
+    'grammar.text_applied': 'Producciones leídas: {n}.',
+    'grammar.rejected': 'El motor no aceptó la gramática: {message}',
+    'grammar.type': 'Tipo de gramática',
+    'grammar.type.checking': 'Comprobando…',
+    'grammar.type.flags': 'Regular (lineal por la derecha): {right}. Lineal por la izquierda: {left}. Libre de contexto: {cf}. Sensible al contexto: {cs}. Forma normal de Chomsky: {cnf}. Forma normal de Greibach: {gnf}.',
+  },
+});
+
+const flagWord = (value) => (value ? t('word.yes') : t('word.no'));
+
+registerPanel({
+  id: 'grammar-editor',
+  title: 'panel.grammar_editor',
+  appliesTo: ['grammar'],
+  order: 10,
+  mount(root, tab) {
+    const body = h('div', { class: 'panel-body grammar-editor' });
+    root.append(body);
+    let rows = tab.doc.productions.map((p) => ({ ...p }));
+    let start = tab.doc.start || '';
+    let problem = '';
+    let notice = '';
+    let typeBox = null;
+    let busy = false;
+
+    /** Sends the table to the engine; only a grammar it accepts becomes the document (and an undo step). */
+    async function commit(nextRows, nextStart = start) {
+      rows = nextRows;
+      start = nextStart;
+      problem = '';
+      busy = true;
+      try {
+        const productions = rows.filter((r) => r.lhs !== '');
+        const doc = { type: 'grammar', productions, start: startVariable(productions, start) };
+        const { document } = await tab.api({ op: 'normalize', document: doc });
+        await tab.commit(document);
+      } catch (error) {
+        problem = t('grammar.rejected', { message: error.message });
+        draw();
+      } finally {
+        busy = false;
+      }
+    }
+
+    const field = (value, label, onchange, extra = {}) =>
+      h('input', { type: 'text', value, class: 'narrow mono', 'aria-label': label, spellcheck: 'false', autocomplete: 'off', onchange: (e) => onchange(e.target.value), ...extra });
+
+    function draw() {
+      const focused = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.cell : null;
+      clear(body);
+      const table = h(
+        'table',
+        { class: 'configs production-table' },
+        h('caption', { class: 'sr-only' }, t('grammar.productions')),
+        h('thead', {}, h('tr', {}, h('th', {}, '#'), h('th', {}, t('grammar.col.lhs')), h('th', {}), h('th', {}, t('grammar.col.rhs')), h('th', {}))),
+        h(
+          'tbody',
+          {},
+          rows.map((row, i) => {
+            const n = i + 1;
+            const lhs = field(row.lhs, t('grammar.lhs_of', { n }), (v) => commit(setGrammarRow(rows, i, { lhs: v })), { dataset: { cell: `l${i}` } });
+            const rhs = field(row.rhs === '' ? 'λ' : row.rhs, t('grammar.rhs_of', { n }), (v) => commit(setGrammarRow(rows, i, { rhs: v })), { dataset: { cell: `r${i}` } });
+            return h(
+              'tr',
+              {},
+              h('td', {}, n),
+              h('td', {}, lhs),
+              h('td', { 'aria-hidden': 'true' }, '→'),
+              h('td', {}, withLambda(rhs)),
+              h(
+                'td',
+                { class: 'row-buttons' },
+                h('button', { type: 'button', 'aria-label': t('grammar.up', { n }), title: t('grammar.up', { n }), disabled: i === 0, onclick: () => commit(moveGrammarRow(rows, i, -1)) }, '↑'),
+                h('button', { type: 'button', 'aria-label': t('grammar.down', { n }), title: t('grammar.down', { n }), disabled: i === rows.length - 1, onclick: () => commit(moveGrammarRow(rows, i, 1)) }, '↓'),
+                h('button', { type: 'button', 'aria-label': t('grammar.remove', { n }), title: t('grammar.remove', { n }), onclick: () => commit(removeGrammarRow(rows, i)) }, '✕'),
+              ),
+            );
+          }),
+        ),
+      );
+      const text = h('textarea', { rows: 5, class: 'mono', spellcheck: 'false', 'aria-label': t('grammar.text'), value: serializeProductions(rows) });
+      const startInput = h('input', { type: 'text', value: start, class: 'narrow mono', id: `gstart-${tab.id}`, onchange: (e) => commit(rows, e.target.value.trim()) });
+      typeBox = h('div', { class: 'grammar-type', 'aria-live': 'polite' }, t('grammar.type.checking'));
+      put(
+        body,
+        h('div', { class: 'form-row' }, h('label', { for: `gstart-${tab.id}` }, t('grammar.start')), startInput, h('small', {}, t('grammar.start_hint'))),
+        h('h3', {}, t('grammar.productions')),
+        rows.length ? table : h('p', { class: 'muted' }, t('grammar.empty')),
+        h('div', { class: 'button-row' }, h('button', { type: 'button', onclick: () => {
+            rows = addGrammarRow(rows);
+            draw();
+            focusCell(`l${rows.length - 1}`);
+          } }, t('grammar.add'))),
+        problem ? h('p', { class: 'form-error', role: 'alert' }, problem) : null,
+        h('h3', {}, t('grammar.text')),
+        h('p', { class: 'muted' }, t('grammar.text_hint')),
+        text,
+        h(
+          'div',
+          { class: 'button-row' },
+          h('button', { type: 'button', onclick: () => {
+            const parsed = parseProductionText(text.value);
+            if (parsed.errors.length) {
+              problem = parsed.errors.map((e) => e.message).join(' ');
+              notice = '';
+              draw();
+              return;
+            }
+            notice = t('grammar.text_applied', { n: parsed.rows.length });
+            commit(parsed.rows);
+          } }, t('grammar.apply_text')),
+        ),
+        notice ? h('p', { class: 'muted', role: 'status' }, notice) : null,
+        h('h3', {}, t('grammar.type')),
+        typeBox,
+      );
+      if (focused) focusCell(focused);
+      showType();
+    }
+
+    function focusCell(name) {
+      const node = body.querySelector(`[data-cell="${name}"]`);
+      if (node) node.focus();
+    }
+
+    let typeToken = 0;
+    async function showType() {
+      const token = ++typeToken;
+      const box = typeBox;
+      try {
+        const r = await tab.api({ op: 'grammar_type', grammar: tab.doc });
+        if (token !== typeToken || box !== typeBox) return;
+        const flags = r.report;
+        clear(box).append(
+          h('p', {}, h('strong', {}, r.message)),
+          h('p', { class: 'muted' }, t('grammar.type.flags', { right: flagWord(flags.right_linear), left: flagWord(flags.left_linear), cf: flagWord(flags.context_free), cs: flagWord(flags.context_sensitive), cnf: flagWord(flags.cnf), gnf: flagWord(flags.gnf) })),
+        );
+      } catch (error) {
+        if (token === typeToken && box === typeBox) clear(box).append(statusLine(false, '', error.message));
+      }
+    }
+
+    const redraw = debounce(() => {
+      if (busy) return;
+      rows = [...tab.doc.productions.map((p) => ({ ...p })), ...rows.filter((r) => r.lhs === '')]; // rows still being typed stay
+      start = tab.doc.start || '';
+      problem = '';
+      draw();
+    }, 0);
+    draw();
+    const off = tab.on('doc', redraw);
+    return { destroy: off, focus: () => focusCell('l0') };
+  },
+});
+
+registerAction({
+  id: 'file.new.grammar',
+  menu: 'file',
+  label: 'file.new_grammar',
+  order: 5,
+  run: (tab) => tab.app.newTab({ type: 'grammar', productions: [], start: '' }),
+});
+
+// ---- grammar-transform.js
+// Grammar environment, part 2: the transformations (remove λ, unit and useless productions, Chomsky normal
+// form) replayed step by step in JFLAP's order. The steps come from the engine's `convert`.
+
+
+registerStrings({
+  en: {
+    'panel.grammar_transform': 'Transform',
+    'transform.intro': 'Pick a transformation and step through it, like JFLAP\'s "Transform Grammar". Keys: n / → next, p / ← previous, End do all.',
+    'transform.lambda': 'Remove λ-productions',
+    'transform.unit': 'Remove unit productions',
+    'transform.useless': 'Remove useless productions',
+    'transform.cnf': 'Chomsky normal form',
+    'transform.phase.lambda': 'Step 1: remove λ-productions',
+    'transform.phase.unit': 'Step 2: remove unit productions',
+    'transform.phase.useless': 'Step 3: remove useless productions',
+    'transform.phase.cnf': 'Step 4: Chomsky normal form',
+    'transform.phase_single': 'Phase: {name}',
+    'transform.result': 'Result of this phase',
+    'transform.renamed': 'Variables renamed: {renames}.',
+    'transform.removed': 'Removed:',
+    'transform.productions': 'Productions',
+    'transform.mark.added': 'added',
+    'transform.mark.focus': 'in use',
+    'transform.open': 'Open the result in a new tab',
+    'transform.apply': 'Replace this grammar with the result',
+    'transform.none': 'Nothing to transform: the grammar has no productions.',
+  },
+  es: {
+    'panel.grammar_transform': 'Transformar',
+    'transform.intro': 'Elegí una transformación y recorrela paso a paso, como "Transform Grammar" de JFLAP. Teclas: n / → siguiente, p / ← anterior, Fin hacer todo.',
+    'transform.lambda': 'Eliminar producciones λ',
+    'transform.unit': 'Eliminar producciones unitarias',
+    'transform.useless': 'Eliminar producciones inútiles',
+    'transform.cnf': 'Forma normal de Chomsky',
+    'transform.phase.lambda': 'Paso 1: eliminar producciones λ',
+    'transform.phase.unit': 'Paso 2: eliminar producciones unitarias',
+    'transform.phase.useless': 'Paso 3: eliminar producciones inútiles',
+    'transform.phase.cnf': 'Paso 4: forma normal de Chomsky',
+    'transform.phase_single': 'Fase: {name}',
+    'transform.result': 'Resultado de esta fase',
+    'transform.renamed': 'Variables renombradas: {renames}.',
+    'transform.removed': 'Quitadas:',
+    'transform.productions': 'Producciones',
+    'transform.mark.added': 'agregada',
+    'transform.mark.focus': 'en uso',
+    'transform.open': 'Abrir el resultado en una pestaña nueva',
+    'transform.apply': 'Reemplazar esta gramática con el resultado',
+    'transform.none': 'No hay nada que transformar: la gramática no tiene producciones.',
+  },
+});
+
+const OPERATIONS = [
+  ['remove_lambda', 'transform.lambda', 'removeLambda'],
+  ['remove_unit', 'transform.unit', 'removeUnit'],
+  ['remove_useless', 'transform.useless', 'removeUseless'],
+  ['cnf', 'transform.cnf', 'cnf'],
+];
+
+registerPanel({
+  id: 'grammar-transform',
+  title: 'panel.grammar_transform',
+  appliesTo: ['grammar'],
+  order: 20,
+  mount(root, tab) {
+    const body = h('div', { class: 'panel-body' });
+    root.append(body);
+    const replay = new Replay(0);
+    let run = null; // { to, result, frames }
+    let bar = null;
+
+    async function start(to) {
+      if (!tab.doc.productions.length) {
+        tab.notify(t('transform.none'), 'error');
+        return;
+      }
+      await guarded(tab, async () => {
+        const result = await tab.api({ op: 'convert', document: tab.doc, to });
+        const frames = grammarFrames(result, tab.doc.productions);
+        run = { to, result, frames };
+        replay.reset(frames.length);
+        draw();
+        body.querySelector('.replay-region')?.focus();
+      });
+    }
+
+    function frameView(frame) {
+      const heading = run.to === 'cnf' ? t(`transform.phase.${frame.phase}`) : t(`transform.${frame.phase}`);
+      const parts = [h('h3', {}, heading)];
+      parts.push(h('p', { class: 'step-sentence', role: 'status' }, frame.step ? describeGrammarStep(frame.step) : t('transform.result')));
+      if (frame.step === null && frame.renames && frame.renames.length) parts.push(h('p', { class: 'muted' }, t('transform.renamed', { renames: frame.renames.map(([a, b]) => `${a} → ${b}`).join(', ') })));
+      if (frame.removed.length) parts.push(h('p', { class: 'removed' }, `${t('transform.removed')} `, frame.removed.map((p) => h('del', { class: 'mono' }, `${productionText(p)}  `))));
+      parts.push(
+        h(
+          'ul',
+          { class: 'production-list', 'aria-label': t('transform.productions') },
+          frame.productions.map((p) => h('li', { class: `mono prod-${p.mark}` }, productionText(p), p.mark === 'keep' ? null : h('span', { class: 'prod-note' }, ` (${t(`transform.mark.${p.mark}`)})`))),
+        ),
+      );
+      return parts;
+    }
+
+    function draw() {
+      if (bar) bar.stop();
+      clear(body);
+      body.append(
+        h('p', { class: 'muted' }, t('transform.intro')),
+        h('div', { class: 'button-row' }, OPERATIONS.map(([to, label]) => h('button', { type: 'button', class: run && run.to === to ? 'primary' : '', onclick: () => start(to) }, t(label)))),
+      );
+      if (!run) return;
+      bar = replayBar(replay, draw, { key: `transform-${tab.id}` });
+      const region = h('div', { class: 'replay-region', 'aria-label': t('panel.grammar_transform') }, bar.node, frameView(run.frames[replay.index]));
+      replayKeys(region, bar.act);
+      body.append(
+        region,
+        h(
+          'div',
+          { class: 'button-row' },
+          h('button', { type: 'button', onclick: () => tab.openTab(run.result.document, { title: `${tab.title} → ${t(OPERATIONS.find((o) => o[0] === run.to)[1])}` }) }, t('transform.open')),
+          h('button', { type: 'button', onclick: () => tab.commit(run.result.document).then(() => { run = null; draw(); }) }, t('transform.apply')),
+        ),
+      );
+    }
+
+    draw();
+    const off = tab.on('doc', (e) => {
+      if (e.cause !== 'edit' || !run) return;
+      run = null;
+      draw();
+    });
+    const api = { destroy: () => (bar && bar.stop(), off()) };
+    for (const [to, , method] of OPERATIONS) api[method] = () => start(to);
+    return api;
+  },
+});
+
+const MENU_ORDER = { remove_lambda: 15, remove_unit: 16, remove_useless: 17, cnf: 18 };
+for (const [to, label, method] of OPERATIONS) {
+  registerAction({ id: `convert.step.${to}`, menu: 'convert', label, appliesTo: ['grammar'], order: MENU_ORDER[to], run: (tab) => tab.app.showPanel(tab, 'grammar-transform', method) });
+}
+
+// ---- grammar-tables.js
+// Grammar environment, part 3: FIRST / FOLLOW, the LL(1) table and the SLR(1) items, ACTION and GOTO tables,
+// with the conflicts highlighted (JFLAP's "LL(1) Parse" and "SLR(1) Parse" tables).
+
+
+registerStrings({
+  en: {
+    'panel.grammar_tables': 'Tables',
+    'tables.compute': 'Compute the tables',
+    'tables.first_follow': 'FIRST and FOLLOW',
+    'tables.col.variable': 'Variable',
+    'tables.col.first': 'FIRST',
+    'tables.col.follow': 'FOLLOW',
+    'tables.ll1': 'LL(1) table',
+    'tables.ll1.ok': 'The grammar is LL(1): no cell has more than one production.',
+    'tables.ll1.bad': 'The grammar is not LL(1): the highlighted cells have several productions.',
+    'tables.slr': 'SLR(1) parse table',
+    'tables.slr.ok': 'The grammar is SLR(1): no ACTION cell has a conflict.',
+    'tables.slr.bad': 'The grammar is not SLR(1): the highlighted ACTION cells have conflicts.',
+    'tables.productions': 'Numbered productions',
+    'tables.items': 'Items of each state',
+    'tables.state': 'State',
+    'tables.items_of': 'Items',
+    'tables.goes': 'Transitions',
+    'tables.action': 'ACTION',
+    'tables.goto': 'GOTO',
+    'tables.conflict': 'conflict',
+    'tables.conflicts': 'Conflicts',
+    'tables.ll1_conflict': 'In row {variable}, column {terminal}: {entries}.',
+    'tables.slr_conflict': 'In state {state} on {symbol}: {actions}.',
+    'tables.final_state': 'accepting item state',
+    'tables.empty': 'The grammar has no productions.',
+  },
+  es: {
+    'panel.grammar_tables': 'Tablas',
+    'tables.compute': 'Calcular las tablas',
+    'tables.first_follow': 'PRIMEROS y SIGUIENTES',
+    'tables.col.variable': 'Variable',
+    'tables.col.first': 'PRIMEROS',
+    'tables.col.follow': 'SIGUIENTES',
+    'tables.ll1': 'Tabla LL(1)',
+    'tables.ll1.ok': 'La gramática es LL(1): ninguna celda tiene más de una producción.',
+    'tables.ll1.bad': 'La gramática no es LL(1): las celdas resaltadas tienen varias producciones.',
+    'tables.slr': 'Tabla de análisis SLR(1)',
+    'tables.slr.ok': 'La gramática es SLR(1): ninguna celda de ACCIÓN tiene conflicto.',
+    'tables.slr.bad': 'La gramática no es SLR(1): las celdas de ACCIÓN resaltadas tienen conflictos.',
+    'tables.productions': 'Producciones numeradas',
+    'tables.items': 'Ítems de cada estado',
+    'tables.state': 'Estado',
+    'tables.items_of': 'Ítems',
+    'tables.goes': 'Transiciones',
+    'tables.action': 'ACCIÓN',
+    'tables.goto': 'IR_A',
+    'tables.conflict': 'conflicto',
+    'tables.conflicts': 'Conflictos',
+    'tables.ll1_conflict': 'En la fila {variable}, columna {terminal}: {entries}.',
+    'tables.slr_conflict': 'En el estado {state} con {symbol}: {actions}.',
+    'tables.final_state': 'estado con ítem de aceptación',
+    'tables.empty': 'La gramática no tiene producciones.',
+  },
+});
+
+const cellView = (cell) => ({ text: cell.entries.join(' / '), class: cell.conflict ? 'conflict' : '', title: cell.conflict ? t('tables.conflict') : undefined });
+
+/** The three tables as DOM; conflicts get the `conflict` class and a text marker (not only a colour). */
+function tablesView(model) {
+  const parts = [];
+  parts.push(
+    h('h3', {}, t('tables.first_follow')),
+    dataTable(t('tables.first_follow'), [t('tables.col.variable'), t('tables.col.first'), t('tables.col.follow')], model.firstFollow.map((r) => [{ text: r.variable, class: 'mono' }, { text: `{ ${r.first.join(', ')} }`, class: 'mono' }, { text: `{ ${r.follow.join(', ')} }`, class: 'mono' }])),
+  );
+  const ll = model.ll1;
+  parts.push(
+    h('h3', {}, t('tables.ll1')),
+    statusLine(ll.ok, t('tables.ll1.ok'), t('tables.ll1.bad')),
+    dataTable(t('tables.ll1'), ['', ...ll.terminals], ll.rows.map((r) => [{ text: r.variable, class: 'mono' }, ...r.cells.map(cellView)])),
+  );
+  if (ll.conflicts.length) {
+    parts.push(h('h4', {}, t('tables.conflicts')), h('ul', {}, ll.conflicts.map((c) => h('li', { class: 'mono' }, t('tables.ll1_conflict', { variable: c.variable, terminal: c.terminal, entries: c.entries.join(' / ') })))));
+  }
+  const lr = model.slr1;
+  parts.push(
+    h('h3', {}, t('tables.slr')),
+    statusLine(lr.ok, t('tables.slr.ok'), t('tables.slr.bad')),
+    h('h4', {}, t('tables.productions')),
+    h('ol', { start: 0, class: 'mono' }, lr.productions.map((p) => h('li', {}, p.text))),
+    h('h4', {}, t('tables.items')),
+    dataTable(t('tables.items'), [t('tables.state'), t('tables.items_of'), t('tables.goes')], lr.states.map((s) => [
+      { text: `${s.id}${s.final ? ' ✓' : ''}`, title: s.final ? t('tables.final_state') : undefined },
+      h('div', { class: 'mono' }, s.items.map((item) => h('div', {}, item))),
+      { text: Object.entries(s.transitions).map(([symbol, to]) => `${symbol}→${to}`).join('  '), class: 'mono' },
+    ])),
+    h('h4', {}, `${t('tables.action')} / ${t('tables.goto')}`),
+    dataTable(
+      `${t('tables.action')} / ${t('tables.goto')}`,
+      [t('tables.state'), ...lr.terminals, ...lr.variables],
+      lr.actionRows.map((row, i) => [row.state, ...row.cells.map(cellView), ...lr.gotoRows[i].cells.map((c) => (c.target === null ? '' : String(c.target)))]),
+    ),
+  );
+  if (lr.conflicts.length) {
+    parts.push(h('h4', {}, t('tables.conflicts')), h('ul', {}, lr.conflicts.map((c) => h('li', { class: 'mono' }, t('tables.slr_conflict', { state: c.state, symbol: c.symbol, actions: c.actions.join(' / ') })))));
+  }
+  return parts;
+}
+
+registerPanel({
+  id: 'grammar-tables',
+  title: 'panel.grammar_tables',
+  appliesTo: ['grammar'],
+  order: 30,
+  mount(root, tab) {
+    const body = h('div', { class: 'panel-body' });
+    const output = h('div', { class: 'tables-output' });
+    root.append(body);
+    let token = 0;
+
+    async function compute() {
+      const mine = ++token;
+      clear(output);
+      if (!tab.doc.productions.length) {
+        output.append(h('p', { class: 'muted' }, t('tables.empty')));
+        return;
+      }
+      await guarded(tab, async () => {
+        const result = await tab.api({ op: 'parse_tables', grammar: tab.doc });
+        if (mine === token) clear(output).append(...tablesView(tablesModel(result)));
+      });
+    }
+
+    body.append(h('div', { class: 'button-row' }, h('button', { type: 'button', class: 'primary', onclick: compute }, t('tables.compute'))), output);
+    compute();
+    const off = tab.on('doc', (e) => e.cause !== 'path' && e.cause !== 'flags' && compute());
+    return { destroy: off, focus: compute };
+  },
+});
+
+registerAction({ id: 'input.tables', menu: 'input', label: 'tables.compute', appliesTo: ['grammar'], order: 5, run: (tab) => tab.app.showPanel(tab, 'grammar-tables') });
+
+// ---- grammar-parse.js
+// Grammar environment, part 4: the parsers (brute force, LL(1), SLR(1), CYK) with their traces, the parse
+// tree and the derivation, the multiple-input table, and the user-controlled parse.
+
+
+registerStrings({
+  en: {
+    'panel.grammar_parse': 'Parse',
+    'panel.grammar_user': 'User parse',
+    'parse.inputs': 'Strings to parse (one per line, λ or an empty line for the empty string)',
+    'parse.parser': 'Parser',
+    'parse.parser.brute': 'Brute force',
+    'parse.parser.ll1': 'LL(1)',
+    'parse.parser.slr1': 'SLR(1)',
+    'parse.parser.cyk': 'CYK (needs Chomsky normal form)',
+    'parse.run': 'Parse',
+    'parse.budget': 'Brute force search limit (forms examined)',
+    'parse.results': 'Results',
+    'parse.col.input': 'String',
+    'parse.col.outcome': 'Result',
+    'parse.col.detail': 'Detail',
+    'parse.show': 'Show',
+    'parse.outcome.accepted': 'Accepted',
+    'parse.outcome.rejected': 'Rejected',
+    'parse.outcome.error': 'Cannot parse',
+    'parse.trace': 'Trace',
+    'parse.col.n': '#',
+    'parse.col.stack': 'Stack',
+    'parse.col.states': 'States',
+    'parse.col.symbols': 'Symbols',
+    'parse.col.input_left': 'Input',
+    'parse.col.action': 'Action',
+    'parse.derivation': 'Derivation',
+    'parse.derivation_none': 'No derivation: the string was not accepted.',
+    'parse.col.production': 'Production',
+    'parse.col.form': 'Sentential form',
+    'parse.tree': 'Parse tree',
+    'parse.tree_none': 'No parse tree.',
+    'parse.tree_yield': 'Yield: {text}',
+    'parse.cyk': 'CYK table',
+    'parse.cyk_hint': 'Row i, column j: the variables that derive the substring from position i to j.',
+    'parse.examined': 'Forms examined: {n}.',
+    'parse.empty': 'Write at least one string (an empty line parses the empty string).',
+    'parse.error': 'Error: {message}',
+    'parse.user.target': 'String to derive',
+    'parse.user.start': 'Start',
+    'parse.user.form': 'Sentential form',
+    'parse.user.choices': 'Productions you can apply',
+    'parse.user.none': 'No production applies to the current form.',
+    'parse.user.apply': 'Apply {production} ({label})',
+    'parse.user.all': 'Apply to all {n} occurrences',
+    'parse.user.undo': 'Undo',
+    'parse.user.reset': 'Start over',
+    'parse.user.done': 'Done: the form is the string.',
+    'parse.user.moves': 'Moves: {n}',
+    'parse.user.error': 'That move is not allowed: {message}',
+  },
+  es: {
+    'panel.grammar_parse': 'Análisis',
+    'panel.grammar_user': 'Análisis manual',
+    'parse.inputs': 'Cadenas a analizar (una por línea, λ o una línea vacía para la cadena vacía)',
+    'parse.parser': 'Analizador',
+    'parse.parser.brute': 'Fuerza bruta',
+    'parse.parser.ll1': 'LL(1)',
+    'parse.parser.slr1': 'SLR(1)',
+    'parse.parser.cyk': 'CYK (necesita forma normal de Chomsky)',
+    'parse.run': 'Analizar',
+    'parse.budget': 'Límite de la búsqueda por fuerza bruta (formas examinadas)',
+    'parse.results': 'Resultados',
+    'parse.col.input': 'Cadena',
+    'parse.col.outcome': 'Resultado',
+    'parse.col.detail': 'Detalle',
+    'parse.show': 'Ver',
+    'parse.outcome.accepted': 'Aceptada',
+    'parse.outcome.rejected': 'Rechazada',
+    'parse.outcome.error': 'No se puede analizar',
+    'parse.trace': 'Traza',
+    'parse.col.n': '#',
+    'parse.col.stack': 'Pila',
+    'parse.col.states': 'Estados',
+    'parse.col.symbols': 'Símbolos',
+    'parse.col.input_left': 'Entrada',
+    'parse.col.action': 'Acción',
+    'parse.derivation': 'Derivación',
+    'parse.derivation_none': 'No hay derivación: la cadena no fue aceptada.',
+    'parse.col.production': 'Producción',
+    'parse.col.form': 'Forma sentencial',
+    'parse.tree': 'Árbol de derivación',
+    'parse.tree_none': 'No hay árbol de derivación.',
+    'parse.tree_yield': 'Frontera: {text}',
+    'parse.cyk': 'Tabla CYK',
+    'parse.cyk_hint': 'Fila i, columna j: las variables que derivan la subcadena de la posición i a la j.',
+    'parse.examined': 'Formas examinadas: {n}.',
+    'parse.empty': 'Escribí al menos una cadena (una línea vacía analiza la cadena vacía).',
+    'parse.error': 'Error: {message}',
+    'parse.user.target': 'Cadena a derivar',
+    'parse.user.start': 'Empezar',
+    'parse.user.form': 'Forma sentencial',
+    'parse.user.choices': 'Producciones que podés aplicar',
+    'parse.user.apply': 'Aplicar {production} ({label})',
+    'parse.user.none': 'Ninguna producción se aplica a la forma actual.',
+    'parse.user.all': 'Aplicar a las {n} apariciones',
+    'parse.user.undo': 'Deshacer',
+    'parse.user.reset': 'Empezar de nuevo',
+    'parse.user.done': 'Listo: la forma es la cadena.',
+    'parse.user.moves': 'Movimientos: {n}',
+    'parse.user.error': 'Ese movimiento no está permitido: {message}',
+  },
+});
+
+const PARSERS = ['brute', 'll1', 'slr1', 'cyk'];
+
+function treeBlock(tree, derivation) {
+  if (!tree) return h('p', { class: 'muted' }, t('parse.tree_none'));
+  const label = derivation && derivation.length ? derivation.map((d) => d.form).join(' ⇒ ') : t('parse.tree');
+  return h('div', { class: 'tree-box' }, h('div', { class: 'tree-scroll' }, treeSvg(layoutTree(tree), { label })), h('p', { class: 'muted mono' }, t('parse.tree_yield', { text: treeYield(tree) || 'λ' })));
+}
+
+function derivationBlock(result) {
+  const steps = derivationSteps(result);
+  if (!steps.length) return h('p', { class: 'muted' }, t('parse.derivation_none'));
+  return dataTable(
+    t('parse.derivation'),
+    [t('parse.col.n'), t('parse.col.production'), t('parse.col.form')],
+    [[0, '', { text: result.derivation.start, class: 'mono' }], ...steps.map((s) => [s.n, { text: s.production, class: 'mono' }, { text: s.form === '' ? 'λ' : s.form, class: 'mono' }])],
+  );
+}
+
+function cykBlock(result) {
+  const model = cykModel(result.table, result.input);
+  return h(
+    'div',
+    {},
+    h('h4', {}, t('parse.cyk')),
+    h('p', { class: 'muted' }, t('parse.cyk_hint')),
+    dataTable(
+      t('parse.cyk'),
+      ['', ...model.header.map((c, j) => `${j + 1}:${c}`)],
+      model.rows.map((row) => [
+        `${row.i + 1}:${model.header[row.i]}`,
+        ...model.header.map((_, j) => {
+          const cell = row.cells.find((c) => c.j === j);
+          return cell ? { text: cell.symbols.length ? `{${cell.symbols.join(',')}}` : '∅', class: 'mono', title: cell.substring } : '';
+        }),
+      ]),
+    ),
+  );
+}
+
+registerPanel({
+  id: 'grammar-parse',
+  title: 'panel.grammar_parse',
+  appliesTo: ['grammar'],
+  order: 40,
+  mount(root, tab) {
+    const body = h('div', { class: 'panel-body' });
+    root.append(body);
+    const inputs = h('textarea', { rows: 3, class: 'mono', spellcheck: 'false', 'aria-label': t('parse.inputs'), value: '' });
+    const parser = h('select', { 'aria-label': t('parse.parser') }, PARSERS.map((p) => h('option', { value: p }, t(`parse.parser.${p}`))));
+    const budget = h('input', { type: 'number', min: 1, value: '20000', class: 'narrow', 'aria-label': t('parse.budget') });
+    const output = h('div', { class: 'parse-output', 'aria-live': 'polite' });
+    let answer = null; // { parser, results }
+    let selected = 0;
+    const replay = new Replay(0);
+    let bar = null;
+
+    async function run() {
+      const list = parseInputLines(inputs.value);
+      await guarded(tab, async () => {
+        const request = { op: 'parse', grammar: tab.doc, inputs: list, parser: parser.value };
+        if (parser.value === 'brute') request.budget = Math.max(1, Number(budget.value) || 20000);
+        answer = await tab.api(request);
+        selected = 0;
+        showDetail();
+      });
+    }
+
+    function showDetail() {
+      if (bar) bar.stop();
+      clear(output);
+      if (!answer) return;
+      const results = answer.results;
+      output.append(
+        h('h3', {}, t('parse.results')),
+        dataTable(
+          t('parse.results'),
+          [t('parse.col.input'), t('parse.col.outcome'), ''],
+          results.map((r, i) => [
+            { text: r.input === '' ? 'λ' : r.input, class: 'mono' },
+            outcomeBadge(r.outcome),
+            h('button', { type: 'button', 'aria-pressed': String(i === selected), onclick: () => ((selected = i), replay.reset(0), showDetail()) }, t('parse.show')),
+          ]),
+          { rowClass: (i) => (i === selected ? 'selected-row' : '') },
+        ),
+      );
+      const r = results[selected];
+      if (!r) return;
+      output.append(h('h3', {}, r.input === '' ? 'λ' : r.input), outcomeBadge(r.outcome));
+      if (r.outcome === 'error') {
+        output.append(h('p', { class: 'form-error', role: 'alert' }, t('parse.error', { message: r.error.message })));
+        return;
+      }
+      if (r.candidates_examined !== undefined) output.append(h('p', { class: 'muted' }, t('parse.examined', { n: r.candidates_examined })));
+      const rows = answer.parser === 'll1' ? ll1Trace(r) : answer.parser === 'slr1' ? slrTrace(r) : [];
+      if (rows.length) {
+        if (replay.count !== rows.length) {
+          replay.reset(rows.length);
+          replay.last();
+        }
+        bar = replayBar(replay, showDetail, { key: `parse-${tab.id}` });
+        const head = answer.parser === 'll1' ? [t('parse.col.n'), t('parse.col.stack'), t('parse.col.input_left'), t('parse.col.action')] : [t('parse.col.n'), t('parse.col.states'), t('parse.col.symbols'), t('parse.col.input_left'), t('parse.col.action')];
+        const shown = rows.slice(0, replay.index + 1);
+        const region = h(
+          'div',
+          { class: 'replay-region', 'aria-label': t('parse.trace') },
+          h('h4', {}, t('parse.trace')),
+          bar.node,
+          dataTable(t('parse.trace'), head, shown.map((row) => (answer.parser === 'll1' ? [row.n, { text: row.stack || 'λ', class: 'mono' }, { text: row.input, class: 'mono' }, { text: row.action, class: `action-${row.kind}` }] : [row.n, { text: row.states, class: 'mono' }, { text: row.symbols || 'λ', class: 'mono' }, { text: row.input, class: 'mono' }, { text: row.action, class: `action-${row.kind}` }])), { rowClass: (i) => (i === replay.index ? 'selected-row' : '') }),
+        );
+        replayKeys(region, bar.act);
+        output.append(region);
+      }
+      if (answer.parser === 'cyk' && r.table) output.append(cykBlock(r));
+      output.append(h('h4', {}, t('parse.derivation')), derivationBlock(r), h('h4', {}, t('parse.tree')), treeBlock(r.tree, derivationSteps(r)));
+    }
+
+    const setParser = (name) => () => {
+      parser.value = name;
+      inputs.focus();
+    };
+    body.append(
+      h('div', { class: 'form-row' }, h('label', { for: `pin-${tab.id}` }, t('parse.inputs')), withLambda(Object.assign(inputs, { id: `pin-${tab.id}` }))),
+      h('div', { class: 'sim-options' }, h('label', { class: 'inline' }, t('parse.parser'), parser), h('label', { class: 'inline' }, t('parse.budget'), budget)),
+      h('div', { class: 'button-row' }, h('button', { type: 'button', class: 'primary', onclick: run }, t('parse.run'))),
+      output,
+    );
+    inputs.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        run();
+      }
+    });
+    const off = tab.on('doc', (e) => {
+      if (e.cause === 'edit' || e.cause === 'undo' || e.cause === 'redo') {
+        answer = null;
+        clear(output);
+      }
+    });
+    return { destroy: () => (bar && bar.stop(), off()), focus: () => inputs.focus(), useBrute: setParser('brute'), useLL1: setParser('ll1'), useSLR1: setParser('slr1'), useCYK: setParser('cyk') };
+  },
+});
+
+registerPanel({
+  id: 'grammar-user',
+  title: 'panel.grammar_user',
+  appliesTo: ['grammar'],
+  order: 50,
+  mount(root, tab) {
+    const body = h('div', { class: 'panel-body' });
+    root.append(body);
+    const target = h('input', { type: 'text', class: 'mono', id: `utarget-${tab.id}`, spellcheck: 'false', value: '' });
+    let moves = [];
+    let state = null; // the last answer of user_parse
+    let problem = '';
+
+    async function refresh(nextMoves) {
+      problem = '';
+      try {
+        const text = target.value.trim() === 'λ' ? '' : target.value.trim();
+        state = await tab.api({ op: 'user_parse', grammar: tab.doc, target: text, moves: nextMoves });
+        moves = nextMoves;
+      } catch (error) {
+        problem = error.code === 'invalid_move' ? t('parse.user.error', { message: error.message }) : error.message;
+        if (!state) moves = [];
+      }
+      draw();
+    }
+
+    function choiceButtons(choice) {
+      const buttons = choice.positions.map((position, i) =>
+        h('button', { type: 'button', title: choice.text, onclick: () => refresh([...moves, userMove({ production: choice.production, position })]) }, t('parse.user.apply', { production: choice.text, label: choice.labels[i] })),
+      );
+      if (choice.all) buttons.push(h('button', { type: 'button', onclick: () => refresh([...moves, userMove({ production: choice.production, positions: choice.positions })]) }, t('parse.user.all', { n: choice.positions.length })));
+      return h('li', {}, buttons);
+    }
+
+    function draw() {
+      clear(body);
+      body.append(
+        h('div', { class: 'form-row' }, h('label', { for: target.id }, t('parse.user.target')), withLambda(target)),
+        h('div', { class: 'button-row' }, h('button', { type: 'button', class: 'primary', onclick: () => refresh([]) }, state ? t('parse.user.reset') : t('parse.user.start')), h('button', { type: 'button', disabled: !moves.length, onclick: () => refresh(withoutLastMove(moves)) }, t('parse.user.undo'))),
+      );
+      if (problem) body.append(h('p', { class: 'form-error', role: 'alert' }, problem));
+      if (!state) return;
+      const choices = userChoices(state);
+      body.append(
+        h('h3', {}, t('parse.user.form')),
+        h('p', { class: 'mono big-form', role: 'status' }, state.sentential === '' ? 'λ' : state.sentential),
+        h('p', { class: 'muted' }, t('parse.user.moves', { n: moves.length })),
+      );
+      if (state.finished) body.append(h('p', { class: 'status-ok', role: 'status' }, t('parse.user.done')));
+      else {
+        body.append(h('h3', {}, t('parse.user.choices')), choices.length ? h('ul', { class: 'choices' }, choices.map(choiceButtons)) : h('p', { class: 'muted' }, t('parse.user.none')));
+      }
+      body.append(h('h3', {}, t('parse.derivation')), derivationBlock({ derivation: state.derivation, ...state }), h('h3', {}, t('parse.tree')), treeBlock(state.tree, derivationSteps({ derivation: state.derivation })));
+    }
+
+    draw();
+    const off = tab.on('doc', (e) => {
+      if (e.cause === 'edit' || e.cause === 'undo' || e.cause === 'redo') {
+        state = null;
+        moves = [];
+        draw();
+      }
+    });
+    return { destroy: off, focus: () => target.focus() };
+  },
+});
+
+const PARSE_ACTIONS = [
+  ['brute', 'parse.parser.brute', 'useBrute', 10],
+  ['ll1', 'parse.parser.ll1', 'useLL1', 11],
+  ['slr1', 'parse.parser.slr1', 'useSLR1', 12],
+  ['cyk', 'parse.parser.cyk', 'useCYK', 13],
+];
+for (const [id, label, method, order] of PARSE_ACTIONS) {
+  registerAction({ id: `input.parse.${id}`, menu: 'input', label, appliesTo: ['grammar'], order, run: (tab) => tab.app.showPanel(tab, 'grammar-parse', method) });
+}
+registerAction({ id: 'input.parse.user', menu: 'input', label: 'panel.grammar_user', appliesTo: ['grammar'], order: 14, run: (tab) => tab.app.showPanel(tab, 'grammar-user') });
+
+// ---- design-model.js
+// Pure side of the design panel (S4): the form -> `design` request mapping with its validation messages,
+// and the view model of the answer (states with meanings, regex, verification report).
+
+
+registerStrings({
+  en: {
+    'design.err.alphabet': 'Write the alphabet: the symbols the strings are made of, such as "ab".',
+    'design.err.constraint': 'Write the constraint, for example: ends_with("ab") and count(a) % 2 == 0.',
+    'design.err.regex': 'Write the regular expression, for example: (a+b)*abb.',
+    'design.err.grammar': 'Write the regular grammar, one production per line, for example: S -> aS | bA.',
+    'design.err.example_symbol': 'The example "{word}" uses a symbol that is not in the alphabet "{alphabet}".',
+    'design.err.template_symbol': 'The symbol "{symbol}" of the template is not in the alphabet "{alphabet}".',
+    'design.err.template_char': 'The template symbol {name} must be exactly one character.',
+    'design.err.template_different': 'The two symbols of the template must be different.',
+    'design.err.min': 'The minimum n is 0 or 1.',
+    'design.err.pairs': 'Write the bracket pairs as two characters each, separated by spaces, for example: () [].',
+    'design.err.check_len': 'The length checked by brute force must be a whole number from 0 to 12.',
+  },
+  es: {
+    'design.err.alphabet': 'Escribí el alfabeto: los símbolos de las cadenas, por ejemplo "ab".',
+    'design.err.constraint': 'Escribí la restricción, por ejemplo: ends_with("ab") and count(a) % 2 == 0.',
+    'design.err.regex': 'Escribí la expresión regular, por ejemplo: (a+b)*abb.',
+    'design.err.grammar': 'Escribí la gramática regular, una producción por línea, por ejemplo: S -> aS | bA.',
+    'design.err.example_symbol': 'El ejemplo "{word}" usa un símbolo que no está en el alfabeto "{alphabet}".',
+    'design.err.template_symbol': 'El símbolo "{symbol}" de la plantilla no está en el alfabeto "{alphabet}".',
+    'design.err.template_char': 'El símbolo {name} de la plantilla debe ser exactamente un carácter.',
+    'design.err.template_different': 'Los dos símbolos de la plantilla deben ser distintos.',
+    'design.err.min': 'El mínimo n es 0 o 1.',
+    'design.err.pairs': 'Escribí los pares de paréntesis con dos caracteres cada uno, separados por espacios, por ejemplo: () [].',
+    'design.err.check_len': 'La longitud comprobada por fuerza bruta debe ser un entero de 0 a 12.',
+  },
+});
+
+const DESIGN_MODES = ['constraint_text', 'regex', 'regular_grammar', 'template'];
+const DESIGN_TEMPLATES = ['an_bn', 'an_bm', 'equal_count', 'balanced_brackets', 'wcwr', 'even_palindrome', 'palindrome'];
+const DESIGN_MAX_CHECK_LEN = 12;
+
+function designDefaults() {
+  return {
+    alphabet: 'ab',
+    mode: 'constraint_text',
+    text: '',
+    template: 'an_bn',
+    a: 'a',
+    b: 'b',
+    c: 'c',
+    min: '0',
+    relation: 'le',
+    pairs: '()',
+    accept: '',
+    reject: '',
+    checkLen: '8',
+    trap: true,
+  };
+}
+
+/** One example per line; `λ` or `""` is the empty string, blank lines are skipped. */
+function parseExampleLines(text) {
+  return String(text || '')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line !== '')
+    .map((line) => (line === 'λ' || line === '""' ? '' : line));
+}
+
+const symbolsOf = (text) => [...new Set([...String(text || '')].filter((c) => !/[\s,]/u.test(c)))];
+
+function templateOf(form, alphabet) {
+  const known = new Set(alphabet);
+  const symbol = (name, value) => {
+    const chars = [...String(value || '').trim()];
+    if (chars.length !== 1) throw new Error(t('design.err.template_char', { name }));
+    if (!known.has(chars[0])) throw new Error(t('design.err.template_symbol', { symbol: chars[0], alphabet: alphabet.join('') }));
+    return chars[0];
+  };
+  switch (form.template) {
+    case 'an_bn':
+    case 'an_bm': {
+      const a = symbol('a', form.a);
+      const b = symbol('b', form.b);
+      if (a === b) throw new Error(t('design.err.template_different'));
+      if (form.template === 'an_bm') return { name: 'an_bm', a, b, relation: form.relation };
+      if (!['0', '1'].includes(String(form.min).trim())) throw new Error(t('design.err.min'));
+      return { name: 'an_bn', a, b, min: Number(form.min) };
+    }
+    case 'equal_count': {
+      const a = symbol('a', form.a);
+      const b = symbol('b', form.b);
+      if (a === b) throw new Error(t('design.err.template_different'));
+      return { name: 'equal_count', a, b };
+    }
+    case 'balanced_brackets': {
+      const tokens = String(form.pairs || '').trim().split(/\s+/).filter(Boolean);
+      if (!tokens.length || tokens.some((p) => [...p].length !== 2)) throw new Error(t('design.err.pairs'));
+      const pairs = tokens.map((p) => [...p]);
+      for (const symbolOfPair of pairs.flat()) symbol('pair', symbolOfPair);
+      return { name: 'balanced_brackets', pairs };
+    }
+    case 'wcwr':
+      return { name: 'wcwr', c: symbol('c', form.c) };
+    default:
+      return { name: form.template };
+  }
+}
+
+/**
+ * The `design` request the form describes. Throws an `Error` whose message says what to fix (shown under the
+ * form); nothing is sent to the engine until the form is consistent.
+ */
+function designRequest(form) {
+  const alphabet = symbolsOf(form.alphabet);
+  if (!alphabet.length) throw new Error(t('design.err.alphabet'));
+  const text = String(form.text || '').trim();
+  let language;
+  if (form.mode === 'constraint_text') {
+    if (!text) throw new Error(t('design.err.constraint'));
+    language = { constraint_text: text };
+  } else if (form.mode === 'regex') {
+    if (!text) throw new Error(t('design.err.regex'));
+    language = { regex: text };
+  } else if (form.mode === 'regular_grammar') {
+    if (!text) throw new Error(t('design.err.grammar'));
+    language = { regular_grammar: String(form.text).trim() };
+  } else {
+    language = { template: templateOf(form, alphabet) };
+  }
+  const known = new Set(alphabet);
+  const examples = { accept: parseExampleLines(form.accept), reject: parseExampleLines(form.reject) };
+  for (const word of [...examples.accept, ...examples.reject]) {
+    if ([...word].some((c) => !known.has(c))) throw new Error(t('design.err.example_symbol', { word, alphabet: alphabet.join('') }));
+  }
+  const request = { op: 'design', spec: { alphabet: alphabet.join(''), language, examples } };
+  const options = {};
+  const length = String(form.checkLen ?? '8').trim();
+  if (length !== '8') {
+    const n = Number(length);
+    if (length === '' || !Number.isInteger(n) || n < 0 || n > DESIGN_MAX_CHECK_LEN) throw new Error(t('design.err.check_len'));
+    options.check_len = n;
+  }
+  if (form.trap === false) options.include_trap_state = false;
+  if (Object.keys(options).length) request.options = options;
+  return request;
+}
+
+/** The answer of `design` shaped for the report: states with meanings, regex, examples, brute-force check. */
+function designView(result) {
+  const verification = result.verification || {};
+  const examples = (verification.examples || []).map((e) => ({ word: e.word, expected: e.expected_accept, actual: e.actual, passed: e.passed, detail: e.detail }));
+  const cross = verification.cross_check || {};
+  return {
+    kind: result.kind,
+    ok: verification.ok === true,
+    description: result.description,
+    acceptance: result.acceptance,
+    states: (result.states || []).map((s) => ({ name: s.name, meaning: s.meaning, initial: s.initial, accepting: s.accepting, accessWord: s.access_word })),
+    regex: result.regex ?? null,
+    stats: result.stats,
+    accepted: result.accepted || [],
+    examples,
+    failed: examples.filter((e) => !e.passed),
+    crossCheck: { ok: cross.ok !== false, checked: cross.strings_checked ?? 0, maxLen: cross.max_len ?? 0, mismatches: cross.mismatch_count ?? 0, inconclusive: cross.inconclusive ?? 0, regexAgrees: cross.regex_agrees ?? null },
+  };
+}
+
+/** The text of a constraint split around the character a syntax error points at. */
+function constraintMarker(text, position) {
+  const chars = [...text];
+  const at = Math.max(0, Math.min(position, chars.length));
+  return { before: chars.slice(0, at).join(''), at: chars[at] ?? '', after: chars.slice(at + 1).join('') };
+}
+
+/** A failed `design` call: its message and, for a constraint syntax error, where in the text it points. */
+function designErrorView(error, constraintText) {
+  const details = error && error.details;
+  const position = details && details.error === 'constraint_syntax' && Number.isInteger(details.position) ? details.position : null;
+  return { message: error.message, position, marker: position === null ? null : constraintMarker(constraintText || '', position) };
+}
+
+// ---- regex-panel.js
+// Regular expression environment: the editor with live validation, the conversions (the step-by-step replay of
+// RE -> NFA lives in the step viewer of the new tab), and equivalence against another tab.
+
+
+registerStrings({
+  en: {
+    'panel.regex_editor': 'Expression',
+    'file.new_regex': 'New regular expression',
+    'regex.expression': 'Regular expression',
+    'regex.valid': 'The expression is valid.',
+    'regex.invalid': 'Not valid: {message}',
+    'regex.apply': 'Use this expression',
+    'regex.syntax': 'Syntax',
+    'regex.syntax_text': '+ is union, * is star, writing symbols side by side is concatenation, parentheses group, λ is the empty string and ø the empty language. Example: (a+b)*abb.',
+    'regex.convert': 'Convert',
+    'regex.to_nfa': 'To NFA (step by step)',
+    'regex.to_dfa': 'To DFA',
+    'regex.to_min': 'To minimal DFA',
+    'regex.convert_hint': 'The conversion opens a new tab; its "Steps" panel replays the de-expressionify steps with the generalized graph at each step.',
+    'regex.equivalent': 'Compare with another tab…',
+    'regex.equivalent_title': 'Are the two languages equal?',
+    'regex.other_tab': 'Other document',
+    'regex.need_other': 'Open another finite automaton, regular expression or regular grammar first.',
+    'regex.are_equal': '"{a}" and "{b}" describe the same language.',
+    'regex.not_equal': '"{a}" and "{b}" differ: the string {word} is accepted by only one of them.',
+  },
+  es: {
+    'panel.regex_editor': 'Expresión',
+    'file.new_regex': 'Nueva expresión regular',
+    'regex.expression': 'Expresión regular',
+    'regex.valid': 'La expresión es válida.',
+    'regex.invalid': 'No es válida: {message}',
+    'regex.apply': 'Usar esta expresión',
+    'regex.syntax': 'Sintaxis',
+    'regex.syntax_text': '+ es unión, * es clausura, escribir símbolos juntos es concatenación, los paréntesis agrupan, λ es la cadena vacía y ø el lenguaje vacío. Ejemplo: (a+b)*abb.',
+    'regex.convert': 'Convertir',
+    'regex.to_nfa': 'A AFN (paso a paso)',
+    'regex.to_dfa': 'A AFD',
+    'regex.to_min': 'A AFD mínimo',
+    'regex.convert_hint': 'La conversión abre una pestaña nueva; su panel "Pasos" reproduce los pasos de "de-expressionify" con el grafo generalizado en cada paso.',
+    'regex.equivalent': 'Comparar con otra pestaña…',
+    'regex.equivalent_title': '¿Los dos lenguajes son iguales?',
+    'regex.other_tab': 'Otro documento',
+    'regex.need_other': 'Abrí primero otro autómata finito, expresión regular o gramática regular.',
+    'regex.are_equal': '"{a}" y "{b}" describen el mismo lenguaje.',
+    'regex.not_equal': '"{a}" y "{b}" difieren: la cadena {word} la acepta solo uno de los dos.',
+  },
+});
+
+/** Pick one of the other open tabs that is a finite-automaton-like document, and compare languages. */
+async function askEquivalence(tab) {
+  const others = tab.app.tabs().filter((x) => x !== tab && ['fa', 'regex', 'grammar'].includes(x.type));
+  if (!others.length) {
+    tab.notify(t('regex.need_other'), 'error');
+    return;
+  }
+  const answer = await formDialog({
+    title: t('regex.equivalent_title'),
+    fields: [{ name: 'tab', label: t('regex.other_tab'), type: 'select', options: others.map((x) => [x.id, x.title]), value: others[0].id }],
+  });
+  if (!answer) return;
+  const other = others.find((x) => String(x.id) === String(answer.tab));
+  await guarded(tab, async () => {
+    const r = await tab.api({ op: 'equivalent', a: tab.doc, b: other.doc });
+    const text = r.equivalent ? t('regex.are_equal', { a: tab.title, b: other.title }) : t('regex.not_equal', { a: tab.title, b: other.title, word: r.counterexample === '' ? 'λ' : r.counterexample });
+    await messageDialog({ title: t('regex.equivalent_title'), body: h('p', { role: 'status' }, text) });
+  });
+}
+
+registerPanel({
+  id: 'regex-editor',
+  title: 'panel.regex_editor',
+  appliesTo: ['regex'],
+  order: 10,
+  mount(root, tab) {
+    const body = h('div', { class: 'panel-body' });
+    root.append(body);
+    const input = h('input', { type: 'text', class: 'mono wide', id: `regex-${tab.id}`, value: tab.doc.expression || '', spellcheck: 'false', autocomplete: 'off', 'aria-describedby': `regex-status-${tab.id}` });
+    const status = h('div', { class: 'regex-status', id: `regex-status-${tab.id}`, role: 'status', 'aria-live': 'polite' });
+    let valid = false;
+    let token = 0;
+
+    const validate = debounce(async () => {
+      const mine = ++token;
+      const text = input.value;
+      try {
+        await tab.api({ op: 'normalize', document: { type: 'regex', expression: text } });
+        if (mine !== token) return;
+        valid = true;
+        clear(status).append(h('p', { class: 'status-ok' }, h('span', { class: 'badge ok' }, '✓'), ` ${t('regex.valid')}`));
+      } catch (error) {
+        if (mine !== token) return;
+        valid = false;
+        const position = error.details && Number.isInteger(error.details.position) ? error.details.position : null;
+        const marker = position === null ? null : constraintMarker(text, position);
+        put(
+          clear(status),
+          h('p', { class: 'status-bad' }, h('span', { class: 'badge bad' }, '✗'), ` ${t('regex.invalid', { message: error.message })}`),
+          marker ? h('p', { class: 'mono marker', 'aria-hidden': 'true' }, marker.before, h('mark', {}, marker.at || '␣'), marker.after) : null,
+        );
+      }
+    }, 200);
+
+    /** Commits the typed expression when it is valid and different; resolves with whether the tab holds it. */
+    async function apply() {
+      if (input.value === tab.doc.expression) return true;
+      try {
+        await tab.api({ op: 'normalize', document: { type: 'regex', expression: input.value } });
+      } catch (error) {
+        valid = false;
+        tab.notify(t('regex.invalid', { message: error.message }), 'error');
+        return false;
+      }
+      return tab.edit((d) => {
+        d.expression = input.value;
+      });
+    }
+
+    const convert = (to, label) => async () => {
+      if (await apply()) convertToTab(tab, to, label);
+    };
+
+    input.addEventListener('input', validate);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        apply();
+      }
+    });
+    body.append(
+      h('div', { class: 'form-row' }, h('label', { for: input.id }, t('regex.expression')), withLambda(input)),
+      status,
+      h('div', { class: 'button-row' }, h('button', { type: 'button', class: 'primary', onclick: apply }, t('regex.apply'))),
+      h('h3', {}, t('regex.syntax')),
+      h('p', { class: 'muted' }, t('regex.syntax_text')),
+      h('h3', {}, t('regex.convert')),
+      h(
+        'div',
+        { class: 'button-row' },
+        h('button', { type: 'button', onclick: convert('nfa', 'convert.nfa') }, t('regex.to_nfa')),
+        h('button', { type: 'button', onclick: convert('dfa', 'convert.dfa') }, t('regex.to_dfa')),
+        h('button', { type: 'button', onclick: convert('minimal_dfa', 'convert.minimal') }, t('regex.to_min')),
+        h('button', { type: 'button', onclick: () => askEquivalence(tab) }, t('regex.equivalent')),
+      ),
+      h('p', { class: 'muted' }, t('regex.convert_hint')),
+    );
+    validate();
+    const off = tab.on('doc', () => {
+      if (document.activeElement !== input && input.value !== tab.doc.expression) {
+        input.value = tab.doc.expression || '';
+        validate();
+      }
+    });
+    return { destroy: off, focus: () => input.focus() };
+  },
+});
+
+registerAction({ id: 'file.new.regex', menu: 'file', label: 'file.new_regex', order: 5.1, run: (tab) => tab.app.newTab({ type: 'regex', expression: '' }) });
+registerAction({ id: 'convert.equivalent.regex', menu: 'convert', label: 'regex.equivalent', appliesTo: ['regex'], order: 21, run: (tab) => askEquivalence(tab) });
+
+// ---- design-panel.js
+// Design panel (S4): describe a language (constraint, regular expression, regular grammar or a template for a
+// non-regular one) with example strings; the engine builds, minimizes, verifies and explains the automaton.
+
+
+registerStrings({
+  en: {
+    'panel.design': 'Design',
+    'file.new_design': 'New automaton from a language…',
+    'design.intro': 'Describe the language and give example strings: Rflap builds the minimal automaton, checks it against every string up to a length and tells you what each state means.',
+    'design.alphabet': 'Alphabet',
+    'design.alphabet_hint': 'The symbols of the strings, for example ab (spaces and commas are ignored).',
+    'design.mode': 'The language is described by',
+    'design.mode.constraint_text': 'A constraint',
+    'design.mode.regex': 'A regular expression',
+    'design.mode.regular_grammar': 'A regular grammar',
+    'design.mode.template': 'A template (non-regular languages)',
+    'design.text.constraint_text': 'Constraint',
+    'design.text.regex': 'Regular expression',
+    'design.text.regular_grammar': 'Regular grammar (one production per line)',
+    'design.syntax_title': 'Constraint syntax',
+    'design.syntax_help': 'Conditions: starts_with("w"), ends_with("w"), contains("w"), regex("r"), length <op> n, length % m == r, count(a) <op> n, count(a,b) % m == r, count(a) <op> count(b). Combine them with not, and, xor, or (tightest first) and parentheses. <op> is ==, !=, <, <=, > or >=. Example: ends_with("ab") and count(a) % 2 == 0.',
+    'design.template': 'Template',
+    'design.template.an_bn': 'aⁿbⁿ',
+    'design.template.an_bm': 'aⁿbᵐ with a relation',
+    'design.template.equal_count': 'As many a as b (any order)',
+    'design.template.balanced_brackets': 'Balanced brackets',
+    'design.template.wcwr': 'w c wᴿ',
+    'design.template.even_palindrome': 'Even palindromes (w wᴿ)',
+    'design.template.palindrome': 'All palindromes',
+    'design.template.a': 'Symbol a',
+    'design.template.b': 'Symbol b',
+    'design.template.c': 'Separator c',
+    'design.template.min': 'Minimum n (0 or 1)',
+    'design.template.relation': 'Relation between n and m',
+    'design.template.relation.le': 'n ≤ m',
+    'design.template.relation.ge': 'n ≥ m',
+    'design.template.relation.ne': 'n ≠ m',
+    'design.template.pairs': 'Bracket pairs',
+    'design.template.pairs_hint': 'Two characters per pair, separated by spaces: () []',
+    'design.accept': 'Strings it must accept (one per line)',
+    'design.reject': 'Strings it must reject (one per line)',
+    'design.examples_hint': 'λ or "" is the empty string.',
+    'design.options': 'Options',
+    'design.check_len': 'Check every string up to this length',
+    'design.trap': 'Keep the trap (sink) state',
+    'design.run': 'Design the automaton',
+    'design.running': 'Designing…',
+    'design.error': 'The engine could not design it: {message}',
+    'design.error_at': 'Where: ',
+    'design.result': 'Result',
+    'design.summary': '{kind} with {states} states. {transitions} transitions.',
+    'design.kind.dfa': 'Minimal DFA',
+    'design.kind.pda': 'Pushdown automaton',
+    'design.kind.nfa': 'NFA',
+    'design.verified': 'Verified: it agrees with the description on every example and every string checked.',
+    'design.not_verified': 'Not verified: the automaton disagrees with some of your examples (in red below). Check the description or the examples.',
+    'design.states': 'States and what they mean',
+    'design.col.state': 'State',
+    'design.col.role': 'Role',
+    'design.col.meaning': 'Meaning',
+    'design.col.reach': 'Reached by',
+    'design.initial': 'initial',
+    'design.accepting': 'accepting',
+    'design.regex': 'Equivalent regular expression',
+    'design.regex_none': 'No regular expression: the language is not regular, or the automaton is too large.',
+    'design.verification': 'Verification',
+    'design.examples': 'Your examples',
+    'design.col.string': 'String',
+    'design.col.expected': 'You expected',
+    'design.col.got': 'Automaton says',
+    'design.col.why': 'Note',
+    'design.expected.accept': 'accept',
+    'design.expected.reject': 'reject',
+    'design.passed': 'ok',
+    'design.failed': 'FAILED',
+    'design.cross': 'Checked {n} strings up to length {len} against the description: {mismatches} disagreements.',
+    'design.accepted': 'Shortest accepted strings',
+    'design.open': 'Open the automaton in a new tab',
+    'design.preview': 'Drawing of the designed automaton',
+  },
+  es: {
+    'panel.design': 'Diseño',
+    'file.new_design': 'Nuevo autómata desde un lenguaje…',
+    'design.intro': 'Describí el lenguaje y dá cadenas de ejemplo: Rflap construye el autómata mínimo, lo comprueba contra todas las cadenas hasta una longitud y te dice qué significa cada estado.',
+    'design.alphabet': 'Alfabeto',
+    'design.alphabet_hint': 'Los símbolos de las cadenas, por ejemplo ab (se ignoran espacios y comas).',
+    'design.mode': 'El lenguaje se describe con',
+    'design.mode.constraint_text': 'Una restricción',
+    'design.mode.regex': 'Una expresión regular',
+    'design.mode.regular_grammar': 'Una gramática regular',
+    'design.mode.template': 'Una plantilla (lenguajes no regulares)',
+    'design.text.constraint_text': 'Restricción',
+    'design.text.regex': 'Expresión regular',
+    'design.text.regular_grammar': 'Gramática regular (una producción por línea)',
+    'design.syntax_title': 'Sintaxis de las restricciones',
+    'design.syntax_help': 'Condiciones: starts_with("w"), ends_with("w"), contains("w"), regex("r"), length <op> n, length % m == r, count(a) <op> n, count(a,b) % m == r, count(a) <op> count(b). Combinalas con not, and, xor, or (de la más fuerte a la más débil) y paréntesis. <op> es ==, !=, <, <=, > o >=. Ejemplo: ends_with("ab") and count(a) % 2 == 0.',
+    'design.template': 'Plantilla',
+    'design.template.an_bn': 'aⁿbⁿ',
+    'design.template.an_bm': 'aⁿbᵐ con una relación',
+    'design.template.equal_count': 'Tantas a como b (en cualquier orden)',
+    'design.template.balanced_brackets': 'Paréntesis balanceados',
+    'design.template.wcwr': 'w c wᴿ',
+    'design.template.even_palindrome': 'Palíndromos pares (w wᴿ)',
+    'design.template.palindrome': 'Todos los palíndromos',
+    'design.template.a': 'Símbolo a',
+    'design.template.b': 'Símbolo b',
+    'design.template.c': 'Separador c',
+    'design.template.min': 'Mínimo n (0 o 1)',
+    'design.template.relation': 'Relación entre n y m',
+    'design.template.relation.le': 'n ≤ m',
+    'design.template.relation.ge': 'n ≥ m',
+    'design.template.relation.ne': 'n ≠ m',
+    'design.template.pairs': 'Pares de paréntesis',
+    'design.template.pairs_hint': 'Dos caracteres por par, separados por espacios: () []',
+    'design.accept': 'Cadenas que debe aceptar (una por línea)',
+    'design.reject': 'Cadenas que debe rechazar (una por línea)',
+    'design.examples_hint': 'λ o "" es la cadena vacía.',
+    'design.options': 'Opciones',
+    'design.check_len': 'Comprobar todas las cadenas hasta esta longitud',
+    'design.trap': 'Conservar el estado trampa (sumidero)',
+    'design.run': 'Diseñar el autómata',
+    'design.running': 'Diseñando…',
+    'design.error': 'El motor no pudo diseñarlo: {message}',
+    'design.error_at': 'Dónde: ',
+    'design.result': 'Resultado',
+    'design.summary': '{kind} con {states} estados. {transitions} transiciones.',
+    'design.kind.dfa': 'AFD mínimo',
+    'design.kind.pda': 'Autómata de pila',
+    'design.kind.nfa': 'AFN',
+    'design.verified': 'Verificado: coincide con la descripción en todos los ejemplos y todas las cadenas comprobadas.',
+    'design.not_verified': 'No verificado: el autómata no coincide con algunos de tus ejemplos (en rojo abajo). Revisá la descripción o los ejemplos.',
+    'design.states': 'Estados y qué significan',
+    'design.col.state': 'Estado',
+    'design.col.role': 'Rol',
+    'design.col.meaning': 'Significado',
+    'design.col.reach': 'Se llega con',
+    'design.initial': 'inicial',
+    'design.accepting': 'de aceptación',
+    'design.regex': 'Expresión regular equivalente',
+    'design.regex_none': 'Sin expresión regular: el lenguaje no es regular o el autómata es demasiado grande.',
+    'design.verification': 'Verificación',
+    'design.examples': 'Tus ejemplos',
+    'design.col.string': 'Cadena',
+    'design.col.expected': 'Esperabas',
+    'design.col.got': 'El autómata dice',
+    'design.col.why': 'Nota',
+    'design.expected.accept': 'aceptar',
+    'design.expected.reject': 'rechazar',
+    'design.passed': 'bien',
+    'design.failed': 'FALLÓ',
+    'design.cross': 'Se comprobaron {n} cadenas de hasta {len} símbolos contra la descripción: {mismatches} diferencias.',
+    'design.accepted': 'Cadenas aceptadas más cortas',
+    'design.open': 'Abrir el autómata en una pestaña nueva',
+    'design.preview': 'Dibujo del autómata diseñado',
+  },
+});
+
+const kindLabel = (kind) => (t(`design.kind.${kind}`) === `design.kind.${kind}` ? kind : t(`design.kind.${kind}`));
+
+registerPanel({
+  id: 'design',
+  title: 'panel.design',
+  appliesTo: ['*'],
+  order: 80,
+  mount(root, tab) {
+    const body = h('div', { class: 'panel-body design-panel' });
+    root.append(body);
+    const form = designDefaults();
+    const id = (name) => `design-${tab.id}-${name}`;
+    const output = h('div', { class: 'design-output', 'aria-live': 'polite' });
+    const errorBox = h('div', { class: 'design-error', role: 'alert' });
+    const templateBox = h('div', { class: 'design-template' });
+    const textLabel = h('label', { for: id('text') });
+    const text = h('textarea', { id: id('text'), rows: 3, class: 'mono', spellcheck: 'false', oninput: (e) => (form.text = e.target.value) });
+    const syntax = h('details', { class: 'design-syntax' }, h('summary', {}, t('design.syntax_title')), h('p', { class: 'muted' }, t('design.syntax_help')));
+    let last = null; // { result, view }
+    let running = false;
+
+    const bind = (name, control) => {
+      control.addEventListener('input', () => (form[name] = control.type === 'checkbox' ? control.checked : control.value));
+      return control;
+    };
+    const field = (name, label, control, hint) => h('div', { class: 'form-row' }, h('label', { for: control.id }, label), h('div', { class: 'form-input' }, control), hint ? h('small', {}, hint) : null);
+
+    function drawMode() {
+      textLabel.textContent = t(`design.text.${form.mode === 'template' ? 'constraint_text' : form.mode}`);
+      const templated = form.mode === 'template';
+      textLabel.parentElement.hidden = templated;
+      syntax.hidden = form.mode !== 'constraint_text';
+      templateBox.hidden = !templated;
+    }
+
+    function drawTemplate() {
+      clear(templateBox);
+      const symbol = (name) => bind(name, h('input', { type: 'text', id: id(name), value: form[name], class: 'narrow mono', maxlength: 1 }));
+      const select = h('select', { id: id('template'), onchange: (e) => ((form.template = e.target.value), drawTemplate()) }, DESIGN_TEMPLATES.map((name) => h('option', { value: name, selected: name === form.template }, t(`design.template.${name}`))));
+      templateBox.append(field('template', t('design.template'), select));
+      if (['an_bn', 'an_bm', 'equal_count'].includes(form.template)) templateBox.append(field('a', t('design.template.a'), symbol('a')), field('b', t('design.template.b'), symbol('b')));
+      if (form.template === 'an_bn') templateBox.append(field('min', t('design.template.min'), bind('min', h('input', { type: 'number', id: id('min'), min: 0, max: 1, value: form.min, class: 'narrow' }))));
+      if (form.template === 'an_bm') {
+        const relation = h('select', { id: id('relation'), onchange: (e) => (form.relation = e.target.value) }, ['le', 'ge', 'ne'].map((r) => h('option', { value: r, selected: r === form.relation }, t(`design.template.relation.${r}`))));
+        templateBox.append(field('relation', t('design.template.relation'), relation));
+      }
+      if (form.template === 'wcwr') templateBox.append(field('c', t('design.template.c'), symbol('c')));
+      if (form.template === 'balanced_brackets') templateBox.append(field('pairs', t('design.template.pairs'), bind('pairs', h('input', { type: 'text', id: id('pairs'), value: form.pairs, class: 'mono' })), t('design.template.pairs_hint')));
+    }
+
+    function showError(error, constraint) {
+      clear(errorBox);
+      if (!error) return;
+      const view = error.code ? designErrorView(error, constraint) : { message: error.message, marker: null };
+      errorBox.append(h('p', { class: 'form-error' }, error.code ? t('design.error', { message: view.message }) : view.message));
+      if (view.marker) errorBox.append(h('p', { class: 'mono marker' }, t('design.error_at'), view.marker.before, h('mark', {}, view.marker.at || '␣'), view.marker.after));
+    }
+
+    async function run() {
+      if (running) return;
+      clear(errorBox);
+      let request;
+      try {
+        request = designRequest(form);
+      } catch (error) {
+        showError(error);
+        return;
+      }
+      running = true;
+      clear(output).append(h('p', { class: 'muted', role: 'status' }, t('design.running')));
+      try {
+        const result = await tab.api(request);
+        last = { result, view: designView(result) };
+        clear(output);
+        await drawResult();
+      } catch (error) {
+        clear(output);
+        showError(error, form.text);
+      } finally {
+        running = false;
+      }
+    }
+
+    async function drawResult() {
+      const { result, view } = last;
+      const open = () => tab.openTab(result.document, { title: `${kindLabel(view.kind)}: ${view.description || ''}`.slice(0, 60) });
+      const picture = h('div', { class: 'design-preview' });
+      output.append(
+        h('h3', {}, t('design.result')),
+        h('p', {}, t('design.summary', { kind: kindLabel(view.kind), states: view.stats.states, transitions: view.stats.transitions })),
+        h('p', { class: view.ok ? 'status-ok' : 'status-bad', role: 'status' }, h('span', { class: view.ok ? 'badge ok' : 'badge bad' }, view.ok ? '✓' : '✗'), ' ', view.ok ? t('design.verified') : t('design.not_verified')),
+        h('div', { class: 'button-row' }, h('button', { type: 'button', class: 'primary', onclick: open }, t('design.open'))),
+        picture,
+        h('h3', {}, t('design.states')),
+        dataTable(
+          t('design.states'),
+          [t('design.col.state'), t('design.col.role'), t('design.col.meaning'), t('design.col.reach')],
+          view.states.map((s) => [{ text: s.name, class: 'mono' }, [s.initial ? t('design.initial') : '', s.initial && s.accepting ? ', ' : '', s.accepting ? t('design.accepting') : ''].join(''), s.meaning, { text: s.accessWord === null || s.accessWord === undefined ? '' : s.accessWord === '' ? 'λ' : s.accessWord, class: 'mono' }]),
+        ),
+        h('h3', {}, t('design.regex')),
+        view.regex ? h('pre', { class: 'description mono' }, view.regex) : h('p', { class: 'muted' }, t('design.regex_none')),
+        h('h3', {}, t('design.verification')),
+      );
+      if (view.examples.length) {
+        output.append(
+          h('h4', {}, t('design.examples')),
+          dataTable(
+            t('design.examples'),
+            [t('design.col.string'), t('design.col.expected'), t('design.col.got'), t('design.col.why')],
+            view.examples.map((e) => [
+              { text: e.word === '' ? 'λ' : e.word, class: 'mono' },
+              e.expected ? t('design.expected.accept') : t('design.expected.reject'),
+              { text: e.actual ? t('design.expected.accept') : t('design.expected.reject'), class: e.passed ? 'outcome-accepted' : 'outcome-rejected' },
+              e.passed ? t('design.passed') : [t('design.failed'), e.detail ? ` — ${e.detail}` : ''].join(''),
+            ]),
+            { rowClass: (i) => (view.examples[i].passed ? '' : 'failed-row') },
+          ),
+        );
+      }
+      output.append(h('p', { class: view.crossCheck.mismatches ? 'status-bad' : 'muted' }, t('design.cross', { n: view.crossCheck.checked, len: view.crossCheck.maxLen, mismatches: view.crossCheck.mismatches })));
+      if (view.accepted.length) output.append(h('h4', {}, t('design.accepted')), h('p', { class: 'mono' }, view.accepted.map((w) => (w === '' ? 'λ' : w)).join('   ')));
+      try {
+        const drawn = await tab.api({ op: 'render', document: result.document, format: 'svg', dark: Boolean(tab.dark) });
+        picture.append(svgImage(drawn.content, t('design.preview')));
+      } catch {
+        /* the report stands on its own */
+      }
+    }
+
+    const alphabet = bind('alphabet', h('input', { type: 'text', id: id('alphabet'), value: form.alphabet, class: 'mono', spellcheck: 'false', autocomplete: 'off' }));
+    const mode = h('select', { id: id('mode'), onchange: (e) => ((form.mode = e.target.value), drawMode()) }, DESIGN_MODES.map((m) => h('option', { value: m, selected: m === form.mode }, t(`design.mode.${m}`))));
+    const accept = bind('accept', h('textarea', { id: id('accept'), rows: 3, class: 'mono', spellcheck: 'false' }));
+    const reject = bind('reject', h('textarea', { id: id('reject'), rows: 3, class: 'mono', spellcheck: 'false' }));
+    const checkLen = bind('checkLen', h('input', { type: 'number', id: id('check'), min: 0, max: DESIGN_MAX_CHECK_LEN, value: form.checkLen, class: 'narrow' }));
+    const trap = bind('trap', h('input', { type: 'checkbox', id: id('trap'), checked: form.trap }));
+
+    body.append(
+      h('p', { class: 'muted' }, t('design.intro')),
+      field('alphabet', t('design.alphabet'), alphabet, t('design.alphabet_hint')),
+      field('mode', t('design.mode'), mode),
+      h('div', { class: 'form-row' }, textLabel, h('div', { class: 'form-input' }, text)),
+      syntax,
+      templateBox,
+      field('accept', t('design.accept'), accept, t('design.examples_hint')),
+      field('reject', t('design.reject'), reject),
+      h('details', {}, h('summary', {}, t('design.options')), field('check', t('design.check_len'), checkLen), h('div', { class: 'form-row' }, h('label', { for: id('trap') }, t('design.trap')), h('div', { class: 'form-input' }, trap))),
+      errorBox,
+      h('div', { class: 'button-row' }, h('button', { type: 'button', class: 'primary', onclick: run }, t('design.run'))),
+      output,
+    );
+    drawTemplate();
+    drawMode();
+    return { destroy() {}, focus: () => alphabet.focus() };
+  },
+});
+
+registerAction({
+  id: 'file.new.design',
+  menu: 'file',
+  label: 'file.new_design',
+  order: 5.9,
+  run: (tab) => tab.app.showPanel(tab, 'design'),
+});
+
+// ---- lsystem-model.js
+// Pure side of the L-system panel: the full document <-> the form rows (axiom, rules, parameters).
+
+
+registerStrings({
+  en: {
+    'lsystem.err.axiom': 'Write the axiom: the symbols the drawing starts from, such as "g".',
+    'lsystem.err.rule_left': 'A rule has a right side but no left side.',
+    'lsystem.err.rule_symbol': 'The left side of a rule is one symbol; "{lhs}" has several.',
+    'lsystem.err.parameter': 'A parameter needs a name (for example angle).',
+  },
+  es: {
+    'lsystem.err.axiom': 'Escribí el axioma: los símbolos desde los que empieza el dibujo, por ejemplo "g".',
+    'lsystem.err.rule_left': 'Una regla tiene lado derecho pero no lado izquierdo.',
+    'lsystem.err.rule_symbol': 'El lado izquierdo de una regla es un símbolo; "{lhs}" tiene varios.',
+    'lsystem.err.parameter': 'Un parámetro necesita un nombre (por ejemplo angle).',
+  },
+});
+
+/** A Koch-like curve that draws with `g` (JFLAP draws with `g`, moves with `f`, turns with `+` and `-`). */
+const LSYSTEM_EXAMPLE = {
+  axiom: 'g',
+  rules: [{ lhs: 'g', rhs: 'g + g - g - g + g' }],
+  parameters: [
+    { name: 'angle', value: '90' },
+    { name: 'distance', value: '4' },
+  ],
+};
+
+/** The form rows of a full L-system document (`axiom` and replacements are arrays of symbols). */
+function lsystemForm(doc) {
+  return {
+    axiom: (doc.axiom || []).join(' '),
+    rules: Object.entries(doc.rules || {}).flatMap(([lhs, replacements]) => replacements.map((symbols) => ({ lhs, rhs: symbols.join(' ') }))),
+    parameters: (doc.parameters || []).map(([name, value]) => ({ name, value })),
+  };
+}
+
+/** The compact document (`{type, axiom, rules: ['g -> g + g'], parameters}`) the engine reads; blank rows vanish. */
+function lsystemCompact(form) {
+  const axiom = String(form.axiom || '').trim();
+  if (!axiom) throw new Error(t('lsystem.err.axiom'));
+  const rules = [];
+  for (const row of form.rules) {
+    const lhs = String(row.lhs || '').trim();
+    const rhs = String(row.rhs || '').trim();
+    if (!lhs && !rhs) continue;
+    if (!lhs) throw new Error(t('lsystem.err.rule_left'));
+    if (/\s/.test(lhs)) throw new Error(t('lsystem.err.rule_symbol', { lhs }));
+    rules.push(`${lhs} -> ${rhs}`);
+  }
+  const parameters = {};
+  for (const row of form.parameters) {
+    const name = String(row.name || '').trim();
+    const value = String(row.value || '').trim();
+    if (!name && !value) continue;
+    if (!name) throw new Error(t('lsystem.err.parameter'));
+    parameters[name] = value;
+  }
+  return { type: 'lsystem', axiom, rules, parameters };
+}
+
+// ---- lsystem-panel.js
+// L-system environment (JFLAP's "L-System" window): axiom, rule table, drawing parameters, a depth slider and
+// the turtle drawing rendered by the engine (`lsystem_render`), with SVG export.
+
+
+registerStrings({
+  en: {
+    'panel.lsystem': 'L-system',
+    'file.new_lsystem': 'New L-system',
+    'lsystem.axiom': 'Axiom',
+    'lsystem.axiom_hint': 'Symbols separated by spaces, for example: g',
+    'lsystem.rules': 'Rules',
+    'lsystem.col.lhs': 'Symbol',
+    'lsystem.col.rhs': 'Replacement',
+    'lsystem.lhs_of': 'Symbol of rule {n}',
+    'lsystem.rhs_of': 'Replacement of rule {n}',
+    'lsystem.add_rule': 'Add rule',
+    'lsystem.remove_rule': 'Remove rule {n}',
+    'lsystem.parameters': 'Parameters',
+    'lsystem.col.name': 'Name',
+    'lsystem.col.value': 'Value',
+    'lsystem.name_of': 'Name of parameter {n}',
+    'lsystem.value_of': 'Value of parameter {n}',
+    'lsystem.add_parameter': 'Add parameter',
+    'lsystem.remove_parameter': 'Remove parameter {n}',
+    'lsystem.depth': 'Depth (rewrite levels)',
+    'lsystem.depth_value': 'Level {n}',
+    'lsystem.example': 'Load the example',
+    'lsystem.export': 'Export SVG',
+    'lsystem.drawing': 'Drawing',
+    'lsystem.drawing_alt': 'Turtle drawing of the L-system at level {n}',
+    'lsystem.size': 'The expansion has {n} symbols.',
+    'lsystem.expansion': 'Expansion',
+    'lsystem.help': 'Symbols: g draws forward, f moves without drawing, + and - turn, [ and ] save and restore the position, { and } fill a polygon. Parameters: angle (degrees), distance, lineWidth, color…',
+    'lsystem.rendering': 'Drawing…',
+    'lsystem.error': 'Cannot draw: {message}',
+    'lsystem.nothing': 'Nothing to export yet.',
+    'lsystem.exported': 'Saved {name}',
+  },
+  es: {
+    'panel.lsystem': 'Sistema L',
+    'file.new_lsystem': 'Nuevo sistema L',
+    'lsystem.axiom': 'Axioma',
+    'lsystem.axiom_hint': 'Símbolos separados por espacios, por ejemplo: g',
+    'lsystem.rules': 'Reglas',
+    'lsystem.col.lhs': 'Símbolo',
+    'lsystem.col.rhs': 'Reemplazo',
+    'lsystem.lhs_of': 'Símbolo de la regla {n}',
+    'lsystem.rhs_of': 'Reemplazo de la regla {n}',
+    'lsystem.add_rule': 'Agregar regla',
+    'lsystem.remove_rule': 'Quitar la regla {n}',
+    'lsystem.parameters': 'Parámetros',
+    'lsystem.col.name': 'Nombre',
+    'lsystem.col.value': 'Valor',
+    'lsystem.name_of': 'Nombre del parámetro {n}',
+    'lsystem.value_of': 'Valor del parámetro {n}',
+    'lsystem.add_parameter': 'Agregar parámetro',
+    'lsystem.remove_parameter': 'Quitar el parámetro {n}',
+    'lsystem.depth': 'Profundidad (niveles de reescritura)',
+    'lsystem.depth_value': 'Nivel {n}',
+    'lsystem.example': 'Cargar el ejemplo',
+    'lsystem.export': 'Exportar SVG',
+    'lsystem.drawing': 'Dibujo',
+    'lsystem.drawing_alt': 'Dibujo de la tortuga del sistema L en el nivel {n}',
+    'lsystem.size': 'La expansión tiene {n} símbolos.',
+    'lsystem.expansion': 'Expansión',
+    'lsystem.help': 'Símbolos: g dibuja hacia adelante, f avanza sin dibujar, + y - giran, [ y ] guardan y restauran la posición, { y } rellenan un polígono. Parámetros: angle (grados), distance, lineWidth, color…',
+    'lsystem.rendering': 'Dibujando…',
+    'lsystem.error': 'No se puede dibujar: {message}',
+    'lsystem.nothing': 'Todavía no hay nada para exportar.',
+    'lsystem.exported': 'Se guardó {name}',
+  },
+});
+
+const MAX_DEPTH = 12;
+
+registerPanel({
+  id: 'lsystem-editor',
+  title: 'panel.lsystem',
+  appliesTo: ['lsystem'],
+  order: 10,
+  mount(root, tab) {
+    const body = h('div', { class: 'panel-body lsystem-panel' });
+    root.append(body);
+    let form = lsystemForm(tab.doc);
+    let depth = 3;
+    let svg = '';
+    let token = 0;
+    let rebuilding = false;
+    const picture = h('div', { class: 'lsystem-picture', 'aria-live': 'polite' });
+    const info = h('p', { class: 'muted', role: 'status' });
+    const expansion = h('pre', { class: 'description mono expansion' });
+    const problem = h('p', { class: 'form-error', role: 'alert' });
+
+    /** The form rows -> the compact document -> normalize -> an undoable commit. */
+    async function push() {
+      problem.textContent = '';
+      try {
+        const { document } = await tab.api({ op: 'normalize', document: lsystemCompact(form) });
+        rebuilding = true;
+        await tab.commit(document);
+        rebuilding = false;
+        render();
+      } catch (error) {
+        rebuilding = false;
+        problem.textContent = error.message;
+      }
+    }
+
+    const render = debounce(async () => {
+      const mine = ++token;
+      let compact;
+      try {
+        compact = lsystemCompact(form);
+      } catch (error) {
+        clear(picture);
+        info.textContent = '';
+        return;
+      }
+      info.textContent = t('lsystem.rendering');
+      try {
+        const r = await tab.api({ op: 'lsystem_render', document: compact, depth });
+        if (mine !== token) return;
+        svg = r.svg;
+        clear(picture).append(svgImage(r.svg, t('lsystem.drawing_alt', { n: r.depth }), 'engine-svg lsystem-svg'));
+        info.textContent = t('lsystem.size', { n: r.expansion_length });
+        expansion.textContent = r.expansion === null || r.expansion === undefined ? '' : r.expansion;
+        expansion.hidden = !r.expansion;
+        problem.textContent = '';
+      } catch (error) {
+        if (mine !== token) return;
+        svg = '';
+        clear(picture);
+        info.textContent = '';
+        problem.textContent = t('lsystem.error', { message: error.message });
+      }
+    }, 150);
+
+    function exportSvg() {
+      if (!svg) {
+        toast(t('lsystem.nothing'), 'error');
+        return;
+      }
+      const name = `${(tab.title || 'lsystem').replace(/[^\p{L}\p{N}._ -]+/gu, '_').trim() || 'lsystem'}.svg`;
+      if (download(name, svg, 'image/svg+xml')) toast(t('lsystem.exported', { name }));
+      else textDialog({ title: name, text: svg, hint: t('file.download_blocked') });
+    }
+
+    const cell = (value, label, onchange, wide = false) => h('input', { type: 'text', value, class: `mono ${wide ? 'wide' : 'narrow'}`, 'aria-label': label, spellcheck: 'false', autocomplete: 'off', onchange: (e) => onchange(e.target.value) });
+
+    function draw() {
+      clear(body);
+      const axiom = h('input', { type: 'text', value: form.axiom, id: `axiom-${tab.id}`, class: 'mono wide', spellcheck: 'false', onchange: (e) => ((form.axiom = e.target.value), push()) });
+      const slider = h('input', { type: 'range', min: 0, max: MAX_DEPTH, value: depth, id: `depth-${tab.id}`, 'aria-valuetext': t('lsystem.depth_value', { n: depth }), oninput: (e) => {
+        depth = Number(e.target.value);
+        label.textContent = t('lsystem.depth_value', { n: depth });
+        e.target.setAttribute('aria-valuetext', label.textContent);
+        render();
+      } });
+      const label = h('output', { for: slider.id }, t('lsystem.depth_value', { n: depth }));
+      body.append(
+        h('p', { class: 'muted' }, t('lsystem.help')),
+        h('div', { class: 'form-row' }, h('label', { for: axiom.id }, t('lsystem.axiom')), axiom, h('small', {}, t('lsystem.axiom_hint'))),
+        h('h3', {}, t('lsystem.rules')),
+        h(
+          'table',
+          { class: 'configs' },
+          h('caption', { class: 'sr-only' }, t('lsystem.rules')),
+          h('thead', {}, h('tr', {}, h('th', {}, t('lsystem.col.lhs')), h('th', {}), h('th', {}, t('lsystem.col.rhs')), h('th', {}))),
+          h(
+            'tbody',
+            {},
+            form.rules.map((rule, i) =>
+              h(
+                'tr',
+                {},
+                h('td', {}, cell(rule.lhs, t('lsystem.lhs_of', { n: i + 1 }), (v) => ((form.rules[i].lhs = v), push()))),
+                h('td', { 'aria-hidden': 'true' }, '→'),
+                h('td', {}, cell(rule.rhs, t('lsystem.rhs_of', { n: i + 1 }), (v) => ((form.rules[i].rhs = v), push()), true)),
+                h('td', {}, h('button', { type: 'button', 'aria-label': t('lsystem.remove_rule', { n: i + 1 }), onclick: () => (form.rules.splice(i, 1), draw(), push()) }, '✕')),
+              ),
+            ),
+          ),
+        ),
+        h('div', { class: 'button-row' }, h('button', { type: 'button', onclick: () => (form.rules.push({ lhs: '', rhs: '' }), draw()) }, t('lsystem.add_rule'))),
+        h('h3', {}, t('lsystem.parameters')),
+        h(
+          'table',
+          { class: 'configs' },
+          h('caption', { class: 'sr-only' }, t('lsystem.parameters')),
+          h('thead', {}, h('tr', {}, h('th', {}, t('lsystem.col.name')), h('th', {}, t('lsystem.col.value')), h('th', {}))),
+          h(
+            'tbody',
+            {},
+            form.parameters.map((p, i) =>
+              h(
+                'tr',
+                {},
+                h('td', {}, cell(p.name, t('lsystem.name_of', { n: i + 1 }), (v) => ((form.parameters[i].name = v), push()))),
+                h('td', {}, cell(p.value, t('lsystem.value_of', { n: i + 1 }), (v) => ((form.parameters[i].value = v), push()))),
+                h('td', {}, h('button', { type: 'button', 'aria-label': t('lsystem.remove_parameter', { n: i + 1 }), onclick: () => (form.parameters.splice(i, 1), draw(), push()) }, '✕')),
+              ),
+            ),
+          ),
+        ),
+        h('div', { class: 'button-row' }, h('button', { type: 'button', onclick: () => (form.parameters.push({ name: '', value: '' }), draw()) }, t('lsystem.add_parameter'))),
+        problem,
+        h('div', { class: 'form-row' }, h('label', { for: slider.id }, t('lsystem.depth')), h('div', { class: 'form-input' }, slider, label)),
+        h('div', { class: 'button-row' }, h('button', { type: 'button', class: 'primary', onclick: exportSvg }, t('lsystem.export')), h('button', { type: 'button', onclick: () => ((form = JSON.parse(JSON.stringify(LSYSTEM_EXAMPLE))), draw(), push()) }, t('lsystem.example'))),
+        h('h3', {}, t('lsystem.drawing')),
+        info,
+        picture,
+        h('h3', {}, t('lsystem.expansion')),
+        expansion,
+      );
+      render();
+    }
+
+    draw();
+    const off = tab.on('doc', (e) => {
+      if (rebuilding) return;
+      if (e.cause === 'edit' || e.cause === 'undo' || e.cause === 'redo' || e.cause === 'replace' || e.cause === 'host') {
+        form = lsystemForm(tab.doc);
+        draw();
+      }
+    });
+    return { destroy: off, focus: () => body.querySelector('input')?.focus(), exportSvg };
+  },
+});
+
+registerAction({
+  id: 'file.new.lsystem',
+  menu: 'file',
+  label: 'file.new_lsystem',
+  order: 5.2,
+  async run(tab) {
+    try {
+      const { document } = await tab.api({ op: 'normalize', document: { type: 'lsystem', axiom: LSYSTEM_EXAMPLE.axiom, rules: LSYSTEM_EXAMPLE.rules.map((r) => `${r.lhs} -> ${r.rhs}`), parameters: Object.fromEntries(LSYSTEM_EXAMPLE.parameters.map((p) => [p.name, p.value])) } });
+      tab.app.newTab(document);
+    } catch (error) {
+      tab.notify(error.message, 'error');
+    }
+  },
+});
+registerAction({
+  id: 'file.export_svg.lsystem',
+  menu: 'file',
+  label: 'lsystem.export',
+  order: 13,
+  appliesTo: ['lsystem'],
+  run: (tab) => tab.app.showPanel(tab, 'lsystem-editor', 'exportSvg'),
+});
+
+// ---- richtext.js
+// The pumping lemma texts of JFLAP carry a little HTML (<i>, <sup>, <sub>, <br>, numeric entities).
+// They are shown through this tiny reader: only those tags survive, everything else is plain text,
+// so engine output can never inject markup.
+
+
+const NAMED = { lt: '<', gt: '>', amp: '&', quot: '"', apos: "'", nbsp: '\u00a0' };
+
+function decodeEntities(text) {
+  return text.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, body) => {
+    if (body[0] === '#') {
+      const code = body[1] === 'x' || body[1] === 'X' ? parseInt(body.slice(2), 16) : parseInt(body.slice(1), 10);
+      return Number.isFinite(code) && code > 0 && code < 0x110000 ? String.fromCodePoint(code) : match;
+    }
+    return NAMED[body.toLowerCase()] ?? match;
+  });
+}
+
+/** `[{text, italic?, bold?, sup?, sub?} | {br: true}]` for a string with the tags above. */
+function richTokens(source) {
+  if (typeof source !== 'string' || source === '') return [];
+  const tokens = [];
+  const open = { i: 0, b: 0, sup: 0, sub: 0 };
+  const names = { i: 'italic', b: 'bold', sup: 'sup', sub: 'sub' };
+  const push = (text) => {
+    if (!text) return;
+    const token = { text: decodeEntities(text) };
+    for (const [tag, count] of Object.entries(open)) if (count > 0) token[names[tag]] = true;
+    const last = tokens[tokens.length - 1];
+    const sameStyle = last && !last.br && Object.keys(token).length === Object.keys(last).length && Object.keys(token).every((k) => k === 'text' || last[k] === token[k]);
+    if (sameStyle) last.text += token.text;
+    else tokens.push(token);
+  };
+  let rest = source;
+  while (rest) {
+    const at = rest.indexOf('<');
+    if (at < 0) {
+      push(rest);
+      break;
+    }
+    push(rest.slice(0, at));
+    const end = rest.indexOf('>', at);
+    if (end < 0) {
+      push(rest.slice(at));
+      break;
+    }
+    const tag = /^<\s*(\/?)\s*([a-z0-9]+)/i.exec(rest.slice(at, end + 1));
+    rest = rest.slice(end + 1);
+    if (!tag) continue;
+    const name = tag[2].toLowerCase();
+    if (name === 'br') tokens.push({ br: true });
+    else if (name in open) open[name] = Math.max(0, open[name] + (tag[1] ? -1 : 1));
+    else if (name === 'script' || name === 'style') {
+      // drop the tag only: its text is harmless once it is plain text
+    }
+  }
+  return tokens;
+}
+
+/** DOM nodes for `richTokens`. */
+function richNodes(source) {
+  return richTokens(source).map((token) => {
+    if (token.br) return h('br');
+    let node = token.text;
+    if (token.sub) node = h('sub', {}, node);
+    if (token.sup) node = h('sup', {}, node);
+    if (token.italic) node = h('i', {}, node);
+    if (token.bold) node = h('b', {}, node);
+    return node;
+  });
+}
+
+/** A span holding the rich text. */
+function richSpan(source, props = {}) {
+  return h('span', props, richNodes(source));
+}
+
+// ---- pumping-model.js
+// Pure side of the pumping lemma panel: the view model of an engine answer (boxes in JFLAP order, who must
+// move, result, cases) and the helpers of the decomposition boxes.
+
+/** Which box each thing the user can be asked for lives in. */
+const BOX_OF = { m: 1, w: 2, decomposition: 3, i: 4 };
+const INPUT_OF = { 1: 'number', 2: 'text', 3: 'decomposition', 4: 'number', 5: null };
+
+/** `pumping_new` / `pumping_move` answer -> what the panel draws. `kind` is 'regular' or 'context_free'. */
+function pumpingView(response, kind) {
+  const view = response.view;
+  const result = response.result
+    ? { userWins: response.result.user_wins, inLanguage: response.result.in_language, pumped: response.result.pumped, message: response.result.message, takeaway: response.result.takeaway }
+    : null;
+  const finished = (result !== null && result.userWins === true) || Boolean(response.conclusion);
+  const waitingFor = BOX_OF[view.awaiting];
+  const cases = view.cases
+    ? {
+        total: view.cases.total,
+        rows: view.cases.rows,
+        selected: view.cases.selected,
+        message: view.cases.message,
+        listEnabled: view.cases.list_enabled,
+        addReplaceEnabled: view.cases.add_replace_enabled,
+        temporary: view.cases.temp_decomposition,
+      }
+    : null;
+  return {
+    title: view.title,
+    languageHtml: view.html_title,
+    objective: view.objective,
+    prompt: view.prompt,
+    notice: view.notice,
+    mode: view.mode,
+    awaiting: view.awaiting,
+    m: response.lemma ? response.lemma.m : -1,
+    parts: kind === 'context_free' ? 4 : 2,
+    boxes: view.boxes.map((box) => ({
+      number: box.number,
+      visible: box.visible,
+      caption: box.caption,
+      content: box.content,
+      message: box.message,
+      editable: !finished && box.number === waitingFor && box.visible,
+      input: INPUT_OF[box.number],
+    })),
+    attempts: view.attempts,
+    reply: response.reply ? { accepted: response.reply.accepted, message: response.reply.message } : null,
+    result,
+    conclusion: response.conclusion || null,
+    finished,
+    cases,
+  };
+}
+
+/** Lengths of the pieces cut to fit `w`: each at least 0 and never past the end; `n` pieces when none are given. */
+function clampLengths(w, lengths, n = lengths.length || 2) {
+  let left = [...w].length;
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const wanted = Number.isFinite(lengths[i]) ? Math.trunc(lengths[i]) : 0;
+    const length = Math.max(0, Math.min(left, wanted));
+    out.push(length);
+    left -= length;
+  }
+  return out;
+}
+
+/** `[x, y, z]` or `[u, v, x, y, z]` for the lengths of the pieces before the last one. */
+function decompositionParts(w, lengths) {
+  const chars = [...w];
+  const cut = clampLengths(w, lengths);
+  const parts = [];
+  let at = 0;
+  for (const length of cut) {
+    parts.push(chars.slice(at, at + length).join(''));
+    at += length;
+  }
+  parts.push(chars.slice(at).join(''));
+  return parts;
+}
+
+/** Cut points (where each piece ends) -> lengths; points out of order give an empty piece. */
+function lengthsFromIndices(indices) {
+  let previous = 0;
+  return indices.map((index) => {
+    const length = Math.max(0, index - previous);
+    previous = Math.max(previous, index);
+    return length;
+  });
+}
+
+/** The languages of one lemma ('regular' or 'context_free') from the `pumping_languages` answer. */
+function pumpingLanguages(catalogue, kind) {
+  return catalogue.languages.filter((language) => language.kind === kind);
+}
+
+/** Cut points (where each piece ends) of the lengths; the inverse of `lengthsFromIndices`. */
+function indicesFromLengths(lengths) {
+  let total = 0;
+  return lengths.map((length) => (total += length));
+}
+
+/** Which catalogue entry the game on the table is: the longest title contained in the game's title. */
+function currentLanguage(title, languages) {
+  let best = null;
+  for (const language of languages) {
+    if (title.includes(language.title) && (!best || language.title.length > best.title.length)) best = language;
+  }
+  return best;
+}
+
+// ---- pumping-panel.js
+// Pumping lemma environment: the game of JFLAP in its box order (m, w, decomposition, i, result), for the regular
+// and the context-free lemma, with the cases panel of the context-free "you go first" game. The engine plays
+// the computer (`pumping_new` / `pumping_move`); the tab's document is the game state, so undo steps back a move.
+
+
+registerStrings({
+  en: {
+    'panel.pumping': 'Pumping lemma',
+    'file.new_pumping_regular': 'New pumping lemma (regular)',
+    'file.new_pumping_cf': 'New pumping lemma (context-free)',
+    'pumping.setup': 'Game',
+    'pumping.language': 'Language',
+    'pumping.mode': 'Who goes first',
+    'pumping.mode.computer_first': 'The computer goes first (you try to prevent a valid partition)',
+    'pumping.mode.human_first': 'You go first (you try to find a partition that can be pumped)',
+    'pumping.new_game': 'New game',
+    'pumping.clear_all': 'Clear all',
+    'pumping.objective': 'Objective',
+    'pumping.box': 'Box {n}',
+    'pumping.enter': 'Enter',
+    'pumping.m': 'm',
+    'pumping.w': 'w',
+    'pumping.w_hint': 'The string w must have at least m symbols and be in the language.',
+    'pumping.i': 'i',
+    'pumping.decompose': 'Decompose',
+    'pumping.decomposition_of': 'Decomposition of w',
+    'pumping.length_of': 'Length of {part}',
+    'pumping.end_of': 'Where {part} ends (index in w)',
+    'pumping.pumped': 'Pumped string',
+    'pumping.attempts': 'Attempts',
+    'pumping.win_user': 'You win.',
+    'pumping.win_computer': 'The computer wins this round.',
+    'pumping.conclusion.not_regular': 'Conclusion: the language is not regular.',
+    'pumping.conclusion.not_context_free': 'Conclusion: the language is not context-free.',
+    'pumping.explanation': 'Explanation of the language (shows the answer)',
+    'pumping.cases': 'Cases',
+    'pumping.cases_total': '{n} cases to cover.',
+    'pumping.cases_none': 'No cases yet.',
+    'pumping.case_add': 'Add case',
+    'pumping.case_replace': 'Replace case',
+    'pumping.case_show': 'Show case',
+    'pumping.case_delete': 'Delete case',
+    'pumping.case_list': 'List all cases',
+    'pumping.case_clear': 'Clear cases',
+    'pumping.case_done': 'Done',
+    'pumping.case_select': 'Select a case first.',
+    'pumping.reply_rejected': 'Not accepted: {message}',
+  },
+  es: {
+    'panel.pumping': 'Lema de bombeo',
+    'file.new_pumping_regular': 'Nuevo lema de bombeo (regular)',
+    'file.new_pumping_cf': 'Nuevo lema de bombeo (libre de contexto)',
+    'pumping.setup': 'Juego',
+    'pumping.language': 'Lenguaje',
+    'pumping.mode': 'Quién empieza',
+    'pumping.mode.computer_first': 'Empieza la computadora (vos tratás de impedir una partición válida)',
+    'pumping.mode.human_first': 'Empezás vos (tratás de encontrar una partición que se pueda bombear)',
+    'pumping.new_game': 'Juego nuevo',
+    'pumping.clear_all': 'Borrar todo',
+    'pumping.objective': 'Objetivo',
+    'pumping.box': 'Caja {n}',
+    'pumping.enter': 'Enter',
+    'pumping.m': 'm',
+    'pumping.w': 'w',
+    'pumping.w_hint': 'La cadena w debe tener al menos m símbolos y estar en el lenguaje.',
+    'pumping.i': 'i',
+    'pumping.decompose': 'Descomponer',
+    'pumping.decomposition_of': 'Descomposición de w',
+    'pumping.length_of': 'Largo de {part}',
+    'pumping.end_of': 'Dónde termina {part} (índice en w)',
+    'pumping.pumped': 'Cadena bombeada',
+    'pumping.attempts': 'Intentos',
+    'pumping.win_user': 'Ganaste.',
+    'pumping.win_computer': 'Gana la computadora esta ronda.',
+    'pumping.conclusion.not_regular': 'Conclusión: el lenguaje no es regular.',
+    'pumping.conclusion.not_context_free': 'Conclusión: el lenguaje no es libre de contexto.',
+    'pumping.explanation': 'Explicación del lenguaje (muestra la respuesta)',
+    'pumping.cases': 'Casos',
+    'pumping.cases_total': 'Hay {n} casos por cubrir.',
+    'pumping.cases_none': 'Todavía no hay casos.',
+    'pumping.case_add': 'Agregar caso',
+    'pumping.case_replace': 'Reemplazar caso',
+    'pumping.case_show': 'Mostrar caso',
+    'pumping.case_delete': 'Borrar caso',
+    'pumping.case_list': 'Listar todos los casos',
+    'pumping.case_clear': 'Borrar los casos',
+    'pumping.case_done': 'Listo',
+    'pumping.case_select': 'Elegí primero un caso.',
+    'pumping.reply_rejected': 'No se aceptó: {message}',
+  },
+});
+
+const KINDS = { regular_pumping_lemma: 'regular', context_free_pumping_lemma: 'context_free' };
+const PART_NAMES = { 2: ['x', 'y', 'z'], 4: ['u', 'v', 'x', 'y', 'z'] };
+let catalogue = null;
+
+/** The 26 predefined languages of JFLAP, asked once. */
+async function languagesOf(tab) {
+  if (!catalogue) catalogue = tab.api({ op: 'pumping_languages' }).catch((error) => ((catalogue = null), Promise.reject(error)));
+  return catalogue;
+}
+
+const freshSeed = () => 1 + Math.floor(Math.random() * 1_000_000_000);
+
+registerPanel({
+  id: 'pumping-game',
+  title: 'panel.pumping',
+  appliesTo: ['regular_pumping_lemma', 'context_free_pumping_lemma'],
+  order: 10,
+  mount(root, tab) {
+    const kind = KINDS[tab.type];
+    const body = h('div', { class: 'panel-body pumping-panel' });
+    root.append(body);
+    let response = null; // the last engine answer (view, result, ...)
+    let languages = [];
+    let lengths = [];
+    let chosenLanguage = null;
+    let chosenMode = null;
+
+    /** Plays a move; only an accepted one becomes the document (so undo steps back through the game). */
+    async function play(move) {
+      await guarded(tab, async () => {
+        const r = await tab.api({ op: 'pumping_move', game: tab.doc, move });
+        response = r;
+        if (r.reply && r.reply.accepted) {
+          await tab.commit(r.document);
+        } else draw();
+      });
+    }
+
+    /** The view of the document as it is (a rejected, harmless move returns it without changing anything). */
+    async function refresh() {
+      await guarded(tab, async () => {
+        response = await tab.api({ op: 'pumping_move', game: tab.doc, move: { move: 'show_case', row: 9999 } });
+        response.reply = null;
+        draw();
+      });
+    }
+
+    async function newGame() {
+      await guarded(tab, async () => {
+        const language = chosenLanguage ?? (currentLanguage(response.view.title, languages) || languages[0]).index;
+        const r = await tab.api({ op: 'pumping_new', kind, language, mode: chosenMode || response.view.mode, seed: freshSeed() });
+        response = r;
+        lengths = [];
+        await tab.commit(r.document);
+      });
+    }
+
+    function numberBox(box, move, min = 0) {
+      const input = h('input', { type: 'number', min, class: 'narrow', id: `pbox-${tab.id}-${box.number}`, 'aria-label': t('pumping.box', { n: box.number }) });
+      const send = () => {
+        const value = Number.parseInt(input.value, 10);
+        if (Number.isFinite(value)) play(move(value));
+      };
+      input.addEventListener('keydown', (e) => e.key === 'Enter' && (e.preventDefault(), send()));
+      return [input, h('button', { type: 'button', onclick: send }, t('pumping.enter'))];
+    }
+
+    function decompositionBox(view, box) {
+      const w = view.boxes[1].content;
+      const names = PART_NAMES[view.parts];
+      lengths = clampLengths(w, lengths.length === view.parts ? lengths : Array(view.parts).fill(0), view.parts);
+      const preview = h('p', { class: 'mono decomposition', 'aria-live': 'polite' });
+      const rows = h('div', { class: 'decomposition-inputs' });
+      const refreshPreview = () => {
+        const parts = decompositionParts(w, lengths);
+        clear(preview).append(...parts.map((part, i) => h('span', { class: `part part-${names[i] || 'z'}`, title: names[i] || 'z' }, h('small', {}, names[i] || 'z'), part === '' ? 'λ' : part)));
+      };
+      const sliders = [];
+      const numbers = [];
+      const sync = () => {
+        lengths.forEach((length, i) => {
+          const room = [...w].length - lengths.slice(0, i).reduce((a, b) => a + b, 0);
+          sliders[i].max = String(room);
+          sliders[i].value = String(length);
+          numbers[i].max = String([...w].length);
+          numbers[i].value = String(indicesFromLengths(lengths)[i]);
+        });
+        refreshPreview();
+      };
+      names.slice(0, view.parts).forEach((name, i) => {
+        const slider = h('input', { type: 'range', min: 0, max: [...w].length, value: 0, 'aria-label': t('pumping.length_of', { part: name }), oninput: (e) => {
+          lengths[i] = Number(e.target.value);
+          lengths = clampLengths(w, lengths, view.parts);
+          sync();
+        } });
+        const number = h('input', { type: 'number', min: 0, class: 'narrow', 'aria-label': t('pumping.end_of', { part: name }), onchange: (e) => {
+          const cuts = indicesFromLengths(lengths);
+          cuts[i] = Number(e.target.value) || 0;
+          lengths = clampLengths(w, lengthsFromIndices(cuts), view.parts);
+          sync();
+        } });
+        sliders.push(slider);
+        numbers.push(number);
+        rows.append(h('div', { class: 'form-row' }, h('label', {}, `${name}`), slider, number));
+      });
+      sync();
+      return [preview, rows, h('button', { type: 'button', class: 'primary', onclick: () => play({ move: 'choose_decomposition', lengths: [...lengths] }) }, t('pumping.decompose'))];
+    }
+
+    function boxView(view, box) {
+      const parts = [h('h4', {}, `${box.number}. `, richSpan(box.caption))];
+      if (!box.visible) return null;
+      if (box.editable) {
+        if (box.input === 'number') parts.push(h('div', { class: 'button-row' }, numberBox(box, box.number === 1 ? (m) => ({ move: 'choose_m', m }) : (i) => ({ move: 'choose_i', i }))));
+        else if (box.input === 'text') {
+          const input = h('input', { type: 'text', class: 'mono wide', id: `pbox-${tab.id}-2`, spellcheck: 'false', autocomplete: 'off', 'aria-label': t('pumping.box', { n: 2 }) });
+          const send = () => play({ move: 'choose_w', w: input.value.trim() });
+          input.addEventListener('keydown', (e) => e.key === 'Enter' && (e.preventDefault(), send()));
+          parts.push(h('div', { class: 'button-row' }, input, h('button', { type: 'button', onclick: send }, t('pumping.enter'))), h('small', {}, t('pumping.w_hint')));
+        } else if (box.input === 'decomposition') parts.push(...decompositionBox(view, box));
+      } else if (box.number === 5) {
+        if (view.result) parts.push(h('p', { class: 'result-line', role: 'status' }, richSpan(view.result.message)));
+        else if (box.content) parts.push(h('p', {}, richSpan(box.content)));
+      } else if (box.content !== '') parts.push(h('p', { class: 'mono big-form' }, box.number === 3 ? richSpan(box.content) : box.content));
+      if (box.message) parts.push(h('p', { class: 'form-error', role: 'alert' }, richSpan(box.message)));
+      return h('section', { class: `pumping-box${box.editable ? ' active' : ''}`, 'aria-label': t('pumping.box', { n: box.number }) }, parts);
+    }
+
+    function casesView(view) {
+      const cases = view.cases;
+      let selected = cases.selected;
+      const radios = cases.rows.map((row, i) => h('label', { class: 'case-row' }, h('input', { type: 'radio', name: `case-${tab.id}`, checked: i === selected, onchange: () => (selected = i) }), ' ', row));
+      const needRow = (move) => () => (selected === null || selected === undefined ? tab.notify(t('pumping.case_select'), 'error') : play({ move, row: selected }));
+      return h(
+        'section',
+        { class: 'pumping-cases', 'aria-label': t('pumping.cases') },
+        h('h3', {}, t('pumping.cases')),
+        h('p', { class: 'muted' }, t('pumping.cases_total', { n: cases.total })),
+        cases.rows.length ? h('div', { role: 'radiogroup', 'aria-label': t('pumping.cases') }, radios) : h('p', { class: 'muted' }, t('pumping.cases_none')),
+        cases.message ? h('p', { role: 'status' }, cases.message) : null,
+        h(
+          'div',
+          { class: 'button-row' },
+          h('button', { type: 'button', disabled: !cases.addReplaceEnabled, onclick: () => play({ move: 'add_case' }) }, t('pumping.case_add')),
+          h('button', { type: 'button', disabled: !cases.addReplaceEnabled, onclick: needRow('replace_case') }, t('pumping.case_replace')),
+          h('button', { type: 'button', onclick: needRow('show_case') }, t('pumping.case_show')),
+          h('button', { type: 'button', onclick: needRow('delete_case') }, t('pumping.case_delete')),
+          h('button', { type: 'button', disabled: !cases.listEnabled, onclick: () => play({ move: 'list_cases' }) }, t('pumping.case_list')),
+          h('button', { type: 'button', onclick: () => play({ move: 'clear_cases' }) }, t('pumping.case_clear')),
+          h('button', { type: 'button', onclick: () => play({ move: 'cases_done' }) }, t('pumping.case_done')),
+        ),
+      );
+    }
+
+    function draw() {
+      clear(body);
+      if (!response) return;
+      const view = pumpingView(response, kind);
+      const here = currentLanguage(view.title, languages);
+      const languageSelect = h('select', { id: `plang-${tab.id}`, onchange: (e) => (chosenLanguage = Number(e.target.value)) }, languages.map((l) => h('option', { value: l.index, selected: here ? l.index === here.index : false }, l.title)));
+      const modeSelect = h('select', { id: `pmode-${tab.id}`, onchange: (e) => (chosenMode = e.target.value) }, ['computer_first', 'human_first'].map((mode) => h('option', { value: mode, selected: mode === view.mode }, t(`pumping.mode.${mode}`))));
+      chosenLanguage = here ? here.index : null;
+      chosenMode = view.mode;
+      body.append(
+        h('h3', {}, richSpan(view.languageHtml)),
+        h('div', { class: 'form-row' }, h('label', { for: languageSelect.id }, t('pumping.language')), languageSelect),
+        h('div', { class: 'form-row' }, h('label', { for: modeSelect.id }, t('pumping.mode')), modeSelect),
+        h('div', { class: 'button-row' }, h('button', { type: 'button', class: 'primary', onclick: newGame }, t('pumping.new_game')), h('button', { type: 'button', onclick: () => play({ move: 'clear_all' }) }, t('pumping.clear_all'))),
+        h('p', { class: 'objective' }, h('strong', {}, `${t('pumping.objective')}: `), view.objective),
+      );
+      if (view.reply && !view.reply.accepted) body.append(h('p', { class: 'form-error', role: 'alert' }, t('pumping.reply_rejected', { message: view.reply.message })));
+      for (const box of view.boxes) {
+        const node = boxView(view, box);
+        if (node) body.append(node);
+      }
+      if (view.result && view.result.pumped !== '') body.append(h('p', { class: 'mono' }, `${t('pumping.pumped')}: ${view.result.pumped}`));
+      if (view.result) {
+        body.append(h('p', { class: `outcome ${view.result.userWins ? 'outcome-accepted' : 'outcome-rejected'}`, role: 'status' }, view.result.userWins ? t('pumping.win_user') : t('pumping.win_computer')));
+        if (view.result.takeaway) body.append(h('p', {}, richSpan(view.result.takeaway)));
+      }
+      if (view.conclusion) body.append(h('p', { class: 'conclusion', role: 'status' }, t(`pumping.conclusion.${view.conclusion}`)));
+      if (view.attempts.length) body.append(h('h3', {}, t('pumping.attempts')), h('ol', { class: 'mono attempts' }, view.attempts.map((a) => h('li', {}, richSpan(a)))));
+      if (view.cases) body.append(casesView(view));
+      if (here) body.append(h('details', { class: 'pumping-explanation' }, h('summary', {}, t('pumping.explanation')), h('p', {}, richSpan(here.explanation))));
+    }
+
+    (async () => {
+      try {
+        languages = pumpingLanguages(await languagesOf(tab), kind);
+      } catch (error) {
+        tab.notify(error.message, 'error');
+      }
+      await refresh();
+    })();
+    const off = tab.on('doc', (e) => {
+      if (e.cause === 'undo' || e.cause === 'redo' || e.cause === 'replace' || e.cause === 'host') refresh();
+      else if (e.cause === 'edit' && response) draw();
+    });
+    return { destroy: off, focus: () => body.querySelector('input, select')?.focus() };
+  },
+});
+
+async function newPumping(tab, kind) {
+  await guarded(tab, async () => {
+    const r = await tab.api({ op: 'pumping_new', kind, language: 0, mode: 'computer_first', seed: freshSeed() });
+    tab.app.newTab(r.document);
+  });
+}
+
+registerAction({ id: 'file.new.pumping_regular', menu: 'file', label: 'file.new_pumping_regular', order: 5.3, run: (tab) => newPumping(tab, 'regular') });
+registerAction({ id: 'file.new.pumping_cf', menu: 'file', label: 'file.new_pumping_cf', order: 5.4, run: (tab) => newPumping(tab, 'context_free') });
 
 // ---- tab.js
 // A tab (a JFLAP window): one document with its undo history, view flags and overlays.

@@ -2,10 +2,12 @@
 // elimination, ...). Each step is shown readably and the states it mentions are highlighted: ids of the
 // automaton that was converted on the canvas of its tab, ids of the result on this tab's canvas.
 
-import { h, clear } from './dom.js';
+import { h, clear, put } from './dom.js';
 import { t } from './i18n.js';
 import { registerPanel } from './registry.js';
 import { stateList } from './doc.js';
+import { Replay, replayBar, replayKeys } from './replay.js';
+import { conversionDetail } from './replay-views.js';
 
 /** Keys of a step whose numbers are state ids (directly, in arrays, or in objects with these keys). */
 const ID_KEYS = new Set(['state', 'states', 'from', 'to', 'group', 'groups', 'into', 'pairs', 'edges', 'closure', 'members', 'sources', 'nfa_states', 'new_states', 'added', 'transition']);
@@ -56,6 +58,7 @@ const show = (value) => {
   if (value === null || value === undefined) return '—';
   if (typeof value === 'string') return value === '' ? 'λ' : value;
   if (Array.isArray(value) && value.every((v) => typeof v !== 'object' || v === null)) return `{${value.map(show).join(', ')}}`;
+  if (typeof value === 'object' && 'from' in value && 'to' in value && 'label' in value) return `${show(value.from)} —${show(value.label)}→ ${show(value.to)}`;
   if (typeof value === 'object') return JSON.stringify(value);
   return String(value);
 };
@@ -92,8 +95,9 @@ registerPanel({
   mount(root, tab) {
     const body = h('div', { class: 'panel-body' });
     root.append(body);
-    let index = 0;
-    let timer = null;
+    const replay = new Replay(tab.steps ? tab.steps.steps.length : 0);
+    let bar = null;
+    let drawing = 0;
 
     function source() {
       const s = tab.steps && tab.steps.source;
@@ -106,7 +110,7 @@ registerPanel({
     };
 
     function highlight() {
-      const ids = collectStateIds(tab.steps.steps[index]);
+      const ids = collectStateIds(tab.steps.steps[replay.index]);
       const from = source();
       const known = (target) => new Set(target && target.isAutomaton ? stateList(target.doc).map((x) => x.id) : []);
       if (from) {
@@ -125,34 +129,9 @@ registerPanel({
       tab.setOverlay('steps', null);
     }
 
-    function go(to) {
-      index = Math.max(0, Math.min(tab.steps.steps.length - 1, to));
-      draw();
-    }
-
-    function stop() {
-      if (timer) clearInterval(timer);
-      timer = null;
-    }
-
-    function play() {
-      if (timer) {
-        stop();
-        draw();
-        return;
-      }
-      timer = setInterval(() => {
-        if (index >= tab.steps.steps.length - 1) {
-          stop();
-          draw();
-          return;
-        }
-        go(index + 1);
-      }, 900);
-      draw();
-    }
-
     function draw() {
+      if (bar) bar.stop();
+      const mine = ++drawing;
       clear(body);
       if (!tab.steps || !tab.steps.steps.length) {
         body.append(h('p', { class: 'muted' }, t('steps.none')));
@@ -161,37 +140,48 @@ registerPanel({
       }
       const all = tab.steps.steps;
       const from = source();
-      body.append(
+      bar = replayBar(replay, draw, { key: `steps-${tab.id}` });
+      const detail = h('div', { class: 'replay-extra' });
+      const region = h(
+        'div',
+        { class: 'replay-region', 'aria-label': t('panel.steps') },
+        bar.node,
+        stepView(resolveStep(all[replay.index], nameIn(from), nameIn(tab))),
+        detail,
+        h('p', { class: 'muted' }, t('replay.keys')),
+      );
+      put(
+        body,
         h('p', { class: 'muted' }, tab.steps.title || ''),
         from ? h('p', { class: 'muted' }, t('steps.source', { title: from.title })) : null,
-        h(
-          'div',
-          { class: 'button-row' },
-          h('button', { type: 'button', onclick: () => go(index - 1), disabled: index === 0 }, t('steps.previous')),
-          h('span', { role: 'status', 'aria-live': 'polite' }, t('steps.position', { n: index + 1, total: all.length })),
-          h('button', { type: 'button', onclick: () => go(index + 1), disabled: index >= all.length - 1 }, t('steps.next')),
-          h('button', { type: 'button', onclick: play }, timer ? t('steps.pause') : t('steps.play')),
-        ),
-        stepView(resolveStep(all[index], nameIn(from), nameIn(tab))),
+        region,
         h(
           'ol',
           { class: 'step-list' },
           all.map((st, i) =>
-            h('li', { class: i === index ? 'current' : '' }, h('button', { type: 'button', class: 'link', 'aria-current': i === index ? 'step' : null, onclick: () => go(i) }, stepTitle(st))),
+            h('li', { class: i === replay.index ? 'current' : '' }, h('button', { type: 'button', class: 'link', 'aria-current': i === replay.index ? 'step' : null, onclick: () => (replay.goTo(i), draw()) }, stepTitle(st))),
           ),
         ),
       );
+      replayKeys(region, bar.act);
       highlight();
+      conversionDetail(tab, tab.steps, replay.index)
+        .then((node) => {
+          if (node && mine === drawing) detail.append(node);
+        })
+        .catch(() => {
+          /* the generic step view above already says everything the steps carry */
+        });
     }
 
     draw();
     const off = tab.on('steps', () => {
-      index = 0;
+      replay.reset(tab.steps ? tab.steps.steps.length : 0);
       draw();
     });
     return {
       destroy() {
-        stop();
+        if (bar) bar.stop();
         clearHighlight();
         off();
       },

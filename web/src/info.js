@@ -1,5 +1,5 @@
-// "Document" panel: the document of any type as readable JSON, with copy. It is the fallback view for the
-// types that have no dedicated panel yet (grammar, regex, L-system, pumping lemma: T12b adds those).
+// "Document" panel: the document of any type as readable JSON, to read or copy. The grammar, regex, L-system
+// and pumping lemma environments have their own panels; this one is the last tab of every type.
 
 import { h } from './dom.js';
 import { t } from './i18n.js';
