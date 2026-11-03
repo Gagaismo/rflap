@@ -824,3 +824,284 @@ button.lambda {
     }
   }
 }
+
+/* ---------------------------------------------------------------- T12b: grammar, regex, design, L-system, pumping */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.with-lambda {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  max-width: 100%;
+}
+
+input.wide {
+  width: 100%;
+}
+
+.production-table input.narrow {
+  width: 9ch;
+}
+
+.production-table td:nth-child(4) input {
+  width: 22ch;
+}
+
+.row-buttons {
+  white-space: nowrap;
+}
+
+.replay-region {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin: 6px 0;
+}
+
+.replay-region:focus-visible {
+  outline: 2px solid var(--focus);
+}
+
+.step-sentence {
+  font-weight: 600;
+}
+
+.production-list {
+  list-style: none;
+  padding: 0;
+  columns: 2 14em;
+}
+
+.production-list li {
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.production-list .prod-added {
+  background: color-mix(in srgb, var(--ok) 16%, transparent);
+  font-weight: 700;
+}
+
+.production-list .prod-focus {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  font-weight: 700;
+}
+
+.prod-note {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.removed del {
+  color: var(--danger);
+}
+
+table.configs td.conflict,
+table.configs tr.failed-row td {
+  background: color-mix(in srgb, var(--danger) 18%, transparent);
+  color: var(--danger);
+  font-weight: 700;
+}
+
+table.configs tr.selected-row td {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.status-ok,
+.status-bad {
+  margin: 6px 0;
+}
+
+.status-bad {
+  color: var(--danger);
+}
+
+.status-ok .badge,
+.status-bad .badge {
+  margin-right: 4px;
+}
+
+.action-accept {
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.action-reject {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.tree-scroll {
+  overflow: auto;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--canvas-bg);
+}
+
+svg.parse-tree .tree-edge {
+  stroke: var(--canvas-ink);
+  stroke-width: 1.2;
+}
+
+svg.parse-tree .tree-node rect {
+  fill: var(--surface-2);
+  stroke: var(--canvas-ink);
+}
+
+svg.parse-tree .tree-node.leaf rect {
+  fill: var(--canvas-bg);
+  stroke: var(--accent);
+}
+
+svg.parse-tree .tree-node.open rect {
+  stroke-dasharray: 4 3;
+  stroke: var(--danger);
+}
+
+svg.parse-tree .tree-node.hot rect {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+svg.parse-tree text {
+  fill: var(--canvas-ink);
+  font-family: var(--mono);
+  font-size: 14px;
+}
+
+svg.parse-tree .tree-note {
+  font-size: 11px;
+  fill: var(--muted);
+}
+
+.big-form {
+  font-size: 1.25em;
+  overflow-wrap: anywhere;
+}
+
+ul.choices {
+  list-style: none;
+  padding: 0;
+}
+
+ul.choices li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 4px 0;
+}
+
+ul.compact-list,
+ul.groups {
+  padding-left: 18px;
+  margin: 4px 0;
+}
+
+ul.compact-list li.current,
+ul.groups li.current {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+img.engine-svg {
+  max-width: 100%;
+  background: var(--canvas-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+[data-theme='dark'] img.engine-svg {
+  background: #fff;
+}
+
+.marker mark {
+  background: color-mix(in srgb, var(--danger) 35%, transparent);
+  color: inherit;
+  text-decoration: underline wavy var(--danger);
+}
+
+.design-panel details {
+  margin: 8px 0;
+}
+
+.design-panel textarea {
+  width: 100%;
+}
+
+pre.description {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.lsystem-picture {
+  overflow: auto;
+  max-height: 70vh;
+}
+
+pre.expansion {
+  max-height: 8em;
+}
+
+.pumping-box {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 10px 8px;
+  margin: 8px 0;
+}
+
+.pumping-box.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.pumping-box h4 {
+  margin: 4px 0;
+}
+
+.decomposition .part {
+  display: inline-block;
+  padding: 2px 6px;
+  margin: 0 2px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.decomposition .part small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.decomposition .part-v,
+.decomposition .part-y {
+  background: color-mix(in srgb, var(--warn) 22%, transparent);
+}
+
+.decomposition-inputs .form-row {
+  display: grid;
+  grid-template-columns: 2em 1fr 6em;
+  align-items: center;
+  gap: 6px;
+}
+
+.case-row {
+  display: block;
+  margin: 2px 0;
+}
+
+.conclusion {
+  font-weight: 700;
+}

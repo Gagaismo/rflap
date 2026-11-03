@@ -147,12 +147,13 @@ const sim = (tab, method) => tab.app.showPanel(tab, 'simulate', method);
 registerAction({ id: 'input.step_closure', menu: 'input', label: 'input.step_closure', order: 0, appliesTo: ['fa', 'pda'], run: (tab) => { simSettings(tab).mode = 'closure'; return sim(tab, 'step'); } });
 registerAction({ id: 'input.step_state', menu: 'input', label: 'input.step_state', order: 1, appliesTo: ['fa', 'pda'], run: (tab) => { simSettings(tab).mode = 'step_by_state'; return sim(tab, 'step'); } });
 registerAction({ id: 'input.step', menu: 'input', label: 'input.step', order: 2, appliesTo: ['turing', 'mealy', 'moore'], run: (tab) => sim(tab, 'step') });
-registerAction({ id: 'input.run', menu: 'input', label: 'input.run', order: 3, run: (tab) => sim(tab, 'run') });
+registerAction({ id: 'input.run', menu: 'input', label: 'input.run', order: 3, appliesTo: GRAPH_TYPES, run: (tab) => sim(tab, 'run') });
 registerAction({
   id: 'input.multiple',
   menu: 'input',
   label: 'input.multiple',
   order: 4,
+  appliesTo: GRAPH_TYPES,
   run: (tab) => tab.app.showPanel(tab, 'multiple'),
 });
 
@@ -185,7 +186,8 @@ export async function convertToTab(tab, to, titleKey) {
   return guarded(tab, async () => {
     const r = await tab.api({ op: 'convert', document: machineDocument(tab.doc, tab.path), to });
     const title = `${tab.title} → ${t(titleKey)}`;
-    const steps = r.steps && r.steps.length ? { title: t(titleKey), steps: r.steps, source: tab } : null;
+    // `to`, `tree` and `sourceDoc` let the step viewer draw the richer views (subset table, tree, graphs)
+    const steps = Array.isArray(r.steps) && r.steps.length ? { title: t(titleKey), steps: r.steps, source: tab, to, tree: r.tree || null, sourceDoc: tab.isAutomaton ? machineDocument(tab.doc, tab.path) : null } : null;
     const result = tab.openTab(r.document, { title, steps });
     if (steps) tab.app.showPanel(result, 'steps');
     return result;
@@ -208,7 +210,6 @@ const conversions = [
   ['fa', 'convert.fa', ['grammar'], 12],
   ['pda_ll', 'convert.pda_ll', ['grammar'], 13],
   ['pda_lr', 'convert.pda_lr', ['grammar'], 14],
-  ['cnf', 'convert.cnf', ['grammar'], 15],
 ];
 for (const [to, label, types, order] of conversions) {
   registerAction({ id: `convert.${to}.${types.join('-')}`, menu: 'convert', label, order, appliesTo: types, run: (tab) => convertToTab(tab, to, label) });

@@ -35,8 +35,15 @@ bundled JS and the wasm as base64; the build fails if it would reference any ext
 | `app.js` | shell: menu bar, tabs, workspaces, files, host integration |
 | `editor.js` | the canvas (engine SVG made interactive through `data-state-id`, `data-transition-index`, ...) |
 | `labels.js`, `dialogs.js`, `dom.js` | label forms per type, modals/menus/toasts, DOM helpers |
-| `sim.js`, `structure.js`, `analysis.js`, `steps.js`, `assistant.js`, `info.js` | built-in panels |
+| `sim.js`, `structure.js`, `analysis.js`, `steps.js`, `assistant.js`, `info.js` | built-in panels (`steps.js` is the conversion replay, see "Step replay") |
 | `actions.js` | File / Edit / Input / Test / Convert / Layout / View / Help menu actions |
+| `grammar-editor.js`, `grammar-transform.js`, `grammar-tables.js`, `grammar-parse.js`, `grammar-model.js` | grammar environment: production table + type test, transformations replay, FIRST/FOLLOW/LL(1)/SLR(1) tables, parsers, user parse; `grammar-model.js` is the pure part |
+| `regex-panel.js` | regular expression environment: editor with validation, conversions, equivalence |
+| `design-panel.js`, `design-model.js` | design from a language (S4): form, report, pure form -> request mapping |
+| `lsystem-panel.js`, `lsystem-model.js` | L-system environment |
+| `pumping-panel.js`, `pumping-model.js` | pumping lemma game (regular and context-free) |
+| `replay.js`, `replay-model.js`, `replay-views.js` | step replay: the state machine and control bar, the pure frames of each conversion, the richer views |
+| `tree.js`, `richtext.js`, `widgets.js` | parse tree layout and SVG, the HTML subset of the pumping texts, shared DOM pieces |
 
 The JS files are plain ES modules (so node can import them in tests). `xtask` concatenates them in dependency
 order and strips `import`/`export`, which needs a restricted syntax: `import { a, b } from './x.js';` (the names
@@ -74,7 +81,7 @@ Handshake order: `ui/initialize` (appInfo, appCapabilities, protocolVersion `202
 `ui/notifications/initialized`. If the host never answers (a plain iframe) the page behaves as standalone.
 Downloads and the clipboard are usually blocked in host iframes: Save/Export/Copy fall back to a dialog with the text.
 
-## Panel registry (for T12b)
+## Panel registry
 
 ```js
 import { registerPanel, registerAction } from './registry.js';
@@ -144,8 +151,43 @@ Canvas focused: `1 2 3 4` tools, `Del` delete, `F2`/`Enter` rename or edit, arro
 `Ctrl+A`, `Ctrl+W`, `Ctrl+= / − / 0`. The "Structure" panel offers everything the mouse does as plain tables and
 forms (keyboard and screen readers).
 
-## Not covered here (T12b)
+## Environments (T12b)
 
-Panels for grammars, regular expressions, step-by-step conversion replay with richer views, parsing (brute force,
-LL, SLR, CYK, user parse), design from a language, L-systems and the pumping lemma. Those documents already open
-(from `.jff` or from the assistant) in the "Document" panel and can be converted from the Convert menu.
+Every JFLAP 7.1 environment opens in a tab with its own panels (the panel ids are in parentheses); the File menu
+has a "New ..." entry for each, and `.jff` files, links and the assistant open them directly.
+
+| document | panels | what they do |
+|---|---|---|
+| `grammar` | Grammar (`grammar-editor`) | production table (add, remove, reorder, λ button), start variable, paste `S -> aSb \| λ` text, live type test (`grammar_type`) |
+| | Transform (`grammar-transform`) | remove λ / unit / useless productions and Chomsky normal form, replayed step by step in JFLAP's order (λ, unit, useless, then CNF); open the result in a tab or replace the grammar |
+| | Tables (`grammar-tables`) | FIRST/FOLLOW, LL(1) table, SLR(1) items, ACTION and GOTO from `parse_tables`; conflicts are highlighted and listed |
+| | Parse (`grammar-parse`) | brute force, LL(1) and SLR(1) traces (step through them), CYK triangle, parse tree as SVG and the derivation, one row per input for several strings |
+| | User parse (`grammar-user`) | pick the production and the occurrence to expand (`user_parse`), undo, tree of the partial derivation |
+| `regex` | Expression (`regex-editor`) | editor with live validation (the error position is marked), convert to NFA / DFA / minimal DFA, compare with another tab (`equivalent`) |
+| `lsystem` | L-system (`lsystem-editor`) | axiom, rules and parameters, depth slider, drawing from `lsystem_render`, SVG export |
+| `regular_pumping_lemma`, `context_free_pumping_lemma` | Pumping lemma (`pumping-game`) | language chooser (the 26 of `pumping_languages`), who goes first, the boxes in JFLAP order, decomposition sliders, result and explanation, cases panel of the context-free "you go first" game; the tab's document is the game state, so undo steps back a move |
+| any | Design (`design`) | alphabet, constraint / regular expression / regular grammar / template, accept and reject examples, `design`; states with their meaning, regex, verification report (failed examples in red), open as a tab. File > New automaton from a language... shows it |
+
+The grammar conversions to a regular grammar -> FA and to a PDA (LL, LR) are in the Convert menu and open a new tab.
+
+### Step replay
+
+`convertToTab` (actions.js) hands the step viewer `{title, steps, source, to, tree, sourceDoc}`. The "Steps" panel
+steps through them with `Replay` (replay.js: next / previous / first / do all / play, boundaries answer whether
+they moved). Keys inside the panel: `n` or `→` next, `p` or `←` previous, `Home`, `End` or `a` do all, `Space` play.
+`replay-model.js` turns the steps into one frame per step (pure, tested against recorded engine answers) and
+`replay-views.js` draws them:
+
+* NFA -> DFA: the DFA states built so far with the NFA states they stand for (the states of the step are also
+  highlighted on both tabs, as before).
+* Minimization: the partition after each split and the distinguishability tree growing split by split.
+* FA -> RE: the generalized transition graph after each step (the engine's `render` draws it), with its labels.
+* RE -> NFA: the graph after each de-expressionify step, the new states highlighted.
+
+Anything else keeps the generic step view.
+
+## Tests
+
+`web/test/*.test.js` runs with `node --test`. The model tests use small recorded answers of the real engine
+(`web/test/fixtures/*.json`, produced by `node web/test/fixtures/record.mjs`, which loads the wasm of
+`dist/rflap.html` through `web/test/engine.js`); a few tests also call the engine live, so build first.

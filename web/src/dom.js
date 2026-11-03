@@ -41,6 +41,12 @@ function append(node, children) {
   }
 }
 
+/** `node.append(...)` that skips `null` / `false` (native `append(null)` writes the text "null") and flattens arrays. */
+export function put(node, ...children) {
+  append(node, children);
+  return node;
+}
+
 export function clear(node) {
   while (node.firstChild) node.removeChild(node.firstChild);
   return node;

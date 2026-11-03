@@ -1,0 +1,1987 @@
+{
+ "messy-remove_lambda": {
+  "input": {
+   "productions": [
+    {
+     "lhs": "S",
+     "rhs": "aSb"
+    },
+    {
+     "lhs": "S",
+     "rhs": "A"
+    },
+    {
+     "lhs": "S",
+     "rhs": ""
+    },
+    {
+     "lhs": "A",
+     "rhs": "a"
+    },
+    {
+     "lhs": "A",
+     "rhs": "B"
+    },
+    {
+     "lhs": "C",
+     "rhs": "c"
+    }
+   ],
+   "start": "S",
+   "type": "grammar"
+  },
+  "result": {
+   "document": {
+    "productions": [
+     {
+      "lhs": "S",
+      "rhs": "aSb"
+     },
+     {
+      "lhs": "S",
+      "rhs": "ab"
+     },
+     {
+      "lhs": "S",
+      "rhs": "A"
+     },
+     {
+      "lhs": "A",
+      "rhs": "a"
+     },
+     {
+      "lhs": "A",
+      "rhs": "B"
+     },
+     {
+      "lhs": "C",
+      "rhs": "c"
+     }
+    ],
+    "start": "S",
+    "type": "grammar"
+   },
+   "lambda_set": [
+    "S"
+   ],
+   "start_derives_lambda": true,
+   "steps": [
+    {
+     "DerivesLambda": {
+      "production": {
+       "lhs": "S",
+       "rhs": ""
+      },
+      "variable": "S"
+     }
+    },
+    {
+     "RemoveLambda": {
+      "production": {
+       "lhs": "S",
+       "rhs": ""
+      }
+     }
+    },
+    {
+     "Expand": {
+      "added": [
+       {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       {
+        "lhs": "S",
+        "rhs": "ab"
+       }
+      ],
+      "production": {
+       "lhs": "S",
+       "rhs": "aSb"
+      }
+     }
+    },
+    {
+     "Expand": {
+      "added": [
+       {
+        "lhs": "S",
+        "rhs": "A"
+       }
+      ],
+      "production": {
+       "lhs": "S",
+       "rhs": "A"
+      }
+     }
+    },
+    {
+     "Expand": {
+      "added": [
+       {
+        "lhs": "A",
+        "rhs": "a"
+       }
+      ],
+      "production": {
+       "lhs": "A",
+       "rhs": "a"
+      }
+     }
+    },
+    {
+     "Expand": {
+      "added": [
+       {
+        "lhs": "A",
+        "rhs": "B"
+       }
+      ],
+      "production": {
+       "lhs": "A",
+       "rhs": "B"
+      }
+     }
+    },
+    {
+     "Expand": {
+      "added": [
+       {
+        "lhs": "C",
+        "rhs": "c"
+       }
+      ],
+      "production": {
+       "lhs": "C",
+       "rhs": "c"
+      }
+     }
+    }
+   ],
+   "to": "remove_lambda"
+  }
+ },
+ "messy-remove_unit": {
+  "input": {
+   "productions": [
+    {
+     "lhs": "S",
+     "rhs": "aSb"
+    },
+    {
+     "lhs": "S",
+     "rhs": "A"
+    },
+    {
+     "lhs": "S",
+     "rhs": ""
+    },
+    {
+     "lhs": "A",
+     "rhs": "a"
+    },
+    {
+     "lhs": "A",
+     "rhs": "B"
+    },
+    {
+     "lhs": "C",
+     "rhs": "c"
+    }
+   ],
+   "start": "S",
+   "type": "grammar"
+  },
+  "result": {
+   "document": {
+    "productions": [
+     {
+      "lhs": "S",
+      "rhs": "aSb"
+     },
+     {
+      "lhs": "S",
+      "rhs": ""
+     },
+     {
+      "lhs": "A",
+      "rhs": "a"
+     },
+     {
+      "lhs": "C",
+      "rhs": "c"
+     },
+     {
+      "lhs": "S",
+      "rhs": "a"
+     }
+    ],
+    "start": "S",
+    "type": "grammar"
+   },
+   "edges": [
+    [
+     "S",
+     "A"
+    ],
+    [
+     "A",
+     "B"
+    ]
+   ],
+   "steps": [
+    {
+     "Edge": {
+      "from": "S",
+      "production": {
+       "lhs": "S",
+       "rhs": "A"
+      },
+      "to": "A"
+     }
+    },
+    {
+     "Edge": {
+      "from": "A",
+      "production": {
+       "lhs": "A",
+       "rhs": "B"
+      },
+      "to": "B"
+     }
+    },
+    {
+     "Reach": {
+      "reachable": [
+       "B"
+      ],
+      "variable": "A"
+     }
+    },
+    {
+     "Reach": {
+      "reachable": [
+       "A",
+       "B"
+      ],
+      "variable": "S"
+     }
+    },
+    {
+     "RemoveUnit": {
+      "production": {
+       "lhs": "S",
+       "rhs": "A"
+      }
+     }
+    },
+    {
+     "RemoveUnit": {
+      "production": {
+       "lhs": "A",
+       "rhs": "B"
+      }
+     }
+    },
+    {
+     "Add": {
+      "production": {
+       "lhs": "S",
+       "rhs": "a"
+      },
+      "via": "A"
+     }
+    }
+   ],
+   "to": "remove_unit",
+   "unit_pairs": [
+    [
+     "A",
+     "B"
+    ],
+    [
+     "S",
+     "A"
+    ],
+    [
+     "S",
+     "B"
+    ]
+   ]
+  }
+ },
+ "messy-remove_useless": {
+  "input": {
+   "productions": [
+    {
+     "lhs": "S",
+     "rhs": "aSb"
+    },
+    {
+     "lhs": "S",
+     "rhs": "A"
+    },
+    {
+     "lhs": "S",
+     "rhs": ""
+    },
+    {
+     "lhs": "A",
+     "rhs": "a"
+    },
+    {
+     "lhs": "A",
+     "rhs": "B"
+    },
+    {
+     "lhs": "C",
+     "rhs": "c"
+    }
+   ],
+   "start": "S",
+   "type": "grammar"
+  },
+  "result": {
+   "derives_terminals": [
+    "A",
+    "C",
+    "S"
+   ],
+   "document": {
+    "productions": [
+     {
+      "lhs": "S",
+      "rhs": "aSb"
+     },
+     {
+      "lhs": "S",
+      "rhs": "A"
+     },
+     {
+      "lhs": "S",
+      "rhs": ""
+     },
+     {
+      "lhs": "A",
+      "rhs": "a"
+     }
+    ],
+    "start": "S",
+    "type": "grammar"
+   },
+   "reachable": [
+    "A",
+    "S"
+   ],
+   "start_useless": false,
+   "steps": [
+    {
+     "DerivesTerminals": {
+      "production": {
+       "lhs": "A",
+       "rhs": "a"
+      },
+      "variable": "A"
+     }
+    },
+    {
+     "DerivesTerminals": {
+      "production": {
+       "lhs": "S",
+       "rhs": "A"
+      },
+      "variable": "S"
+     }
+    },
+    {
+     "DerivesTerminals": {
+      "production": {
+       "lhs": "C",
+       "rhs": "c"
+      },
+      "variable": "C"
+     }
+    },
+    {
+     "RemoveNonDeriving": {
+      "production": {
+       "lhs": "A",
+       "rhs": "B"
+      }
+     }
+    },
+    {
+     "Reachable": {
+      "from": null,
+      "variable": "S"
+     }
+    },
+    {
+     "Reachable": {
+      "from": "S",
+      "variable": "A"
+     }
+    },
+    {
+     "RemoveUnreachable": {
+      "production": {
+       "lhs": "C",
+       "rhs": "c"
+      }
+     }
+    }
+   ],
+   "to": "remove_useless"
+  }
+ },
+ "messy-cnf": {
+  "input": {
+   "productions": [
+    {
+     "lhs": "S",
+     "rhs": "aSb"
+    },
+    {
+     "lhs": "S",
+     "rhs": "A"
+    },
+    {
+     "lhs": "S",
+     "rhs": ""
+    },
+    {
+     "lhs": "A",
+     "rhs": "a"
+    },
+    {
+     "lhs": "A",
+     "rhs": "B"
+    },
+    {
+     "lhs": "C",
+     "rhs": "c"
+    }
+   ],
+   "start": "S",
+   "type": "grammar"
+  },
+  "result": {
+   "document": {
+    "productions": [
+     {
+      "lhs": "S",
+      "rhs": "AC"
+     },
+     {
+      "lhs": "C",
+      "rhs": "SB"
+     },
+     {
+      "lhs": "S",
+      "rhs": "AB"
+     },
+     {
+      "lhs": "A",
+      "rhs": "a"
+     },
+     {
+      "lhs": "B",
+      "rhs": "b"
+     },
+     {
+      "lhs": "S",
+      "rhs": "a"
+     }
+    ],
+    "start": "S",
+    "type": "grammar"
+   },
+   "steps": {
+    "cnf": {
+     "grammar": {
+      "productions": [
+       {
+        "lhs": "S",
+        "rhs": "AC"
+       },
+       {
+        "lhs": "C",
+        "rhs": "SB"
+       },
+       {
+        "lhs": "S",
+        "rhs": "AB"
+       },
+       {
+        "lhs": "A",
+        "rhs": "a"
+       },
+       {
+        "lhs": "B",
+        "rhs": "b"
+       },
+       {
+        "lhs": "S",
+        "rhs": "a"
+       }
+      ],
+      "start": "S"
+     },
+     "input": {
+      "productions": [
+       {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       {
+        "lhs": "S",
+        "rhs": "ab"
+       },
+       {
+        "lhs": "S",
+        "rhs": "a"
+       }
+      ],
+      "start": "S"
+     },
+     "intermediate": [
+      {
+       "lhs": "S",
+       "rhs": "B(a)D(1)"
+      },
+      {
+       "lhs": "D(1)",
+       "rhs": "SB(b)"
+      },
+      {
+       "lhs": "S",
+       "rhs": "B(a)B(b)"
+      },
+      {
+       "lhs": "B(a)",
+       "rhs": "a"
+      },
+      {
+       "lhs": "B(b)",
+       "rhs": "b"
+      },
+      {
+       "lhs": "S",
+       "rhs": "a"
+      }
+     ],
+     "renames": [
+      [
+       "B(a)",
+       "A"
+      ],
+      [
+       "B(b)",
+       "B"
+      ],
+      [
+       "D(1)",
+       "C"
+      ]
+     ],
+     "steps": [
+      {
+       "kind": "Terminals",
+       "production": {
+        "lhs": "S",
+        "rhs": "ab"
+       },
+       "replacement": [
+        {
+         "lhs": "S",
+         "rhs": "B(a)B(b)"
+        },
+        {
+         "lhs": "B(a)",
+         "rhs": "a"
+        },
+        {
+         "lhs": "B(b)",
+         "rhs": "b"
+        }
+       ],
+       "round": 1
+      },
+      {
+       "kind": "Terminals",
+       "production": {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       "replacement": [
+        {
+         "lhs": "S",
+         "rhs": "B(a)SB(b)"
+        }
+       ],
+       "round": 1
+      },
+      {
+       "kind": "Split",
+       "production": {
+        "lhs": "S",
+        "rhs": "B(a)SB(b)"
+       },
+       "replacement": [
+        {
+         "lhs": "S",
+         "rhs": "B(a)D(1)"
+        },
+        {
+         "lhs": "D(1)",
+         "rhs": "SB(b)"
+        }
+       ],
+       "round": 2
+      }
+     ]
+    },
+    "lambda": {
+     "grammar": {
+      "productions": [
+       {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       {
+        "lhs": "S",
+        "rhs": "ab"
+       },
+       {
+        "lhs": "S",
+        "rhs": "A"
+       },
+       {
+        "lhs": "A",
+        "rhs": "a"
+       },
+       {
+        "lhs": "A",
+        "rhs": "B"
+       },
+       {
+        "lhs": "C",
+        "rhs": "c"
+       }
+      ],
+      "start": "S"
+     },
+     "lambda_set": [
+      "S"
+     ],
+     "start_derives_lambda": true,
+     "steps": [
+      {
+       "DerivesLambda": {
+        "production": {
+         "lhs": "S",
+         "rhs": ""
+        },
+        "variable": "S"
+       }
+      },
+      {
+       "RemoveLambda": {
+        "production": {
+         "lhs": "S",
+         "rhs": ""
+        }
+       }
+      },
+      {
+       "Expand": {
+        "added": [
+         {
+          "lhs": "S",
+          "rhs": "aSb"
+         },
+         {
+          "lhs": "S",
+          "rhs": "ab"
+         }
+        ],
+        "production": {
+         "lhs": "S",
+         "rhs": "aSb"
+        }
+       }
+      },
+      {
+       "Expand": {
+        "added": [
+         {
+          "lhs": "S",
+          "rhs": "A"
+         }
+        ],
+        "production": {
+         "lhs": "S",
+         "rhs": "A"
+        }
+       }
+      },
+      {
+       "Expand": {
+        "added": [
+         {
+          "lhs": "A",
+          "rhs": "a"
+         }
+        ],
+        "production": {
+         "lhs": "A",
+         "rhs": "a"
+        }
+       }
+      },
+      {
+       "Expand": {
+        "added": [
+         {
+          "lhs": "A",
+          "rhs": "B"
+         }
+        ],
+        "production": {
+         "lhs": "A",
+         "rhs": "B"
+        }
+       }
+      },
+      {
+       "Expand": {
+        "added": [
+         {
+          "lhs": "C",
+          "rhs": "c"
+         }
+        ],
+        "production": {
+         "lhs": "C",
+         "rhs": "c"
+        }
+       }
+      }
+     ]
+    },
+    "unit": {
+     "edges": [
+      [
+       "S",
+       "A"
+      ],
+      [
+       "A",
+       "B"
+      ]
+     ],
+     "grammar": {
+      "productions": [
+       {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       {
+        "lhs": "S",
+        "rhs": "ab"
+       },
+       {
+        "lhs": "A",
+        "rhs": "a"
+       },
+       {
+        "lhs": "C",
+        "rhs": "c"
+       },
+       {
+        "lhs": "S",
+        "rhs": "a"
+       }
+      ],
+      "start": "S"
+     },
+     "steps": [
+      {
+       "Edge": {
+        "from": "S",
+        "production": {
+         "lhs": "S",
+         "rhs": "A"
+        },
+        "to": "A"
+       }
+      },
+      {
+       "Edge": {
+        "from": "A",
+        "production": {
+         "lhs": "A",
+         "rhs": "B"
+        },
+        "to": "B"
+       }
+      },
+      {
+       "Reach": {
+        "reachable": [
+         "B"
+        ],
+        "variable": "A"
+       }
+      },
+      {
+       "Reach": {
+        "reachable": [
+         "A",
+         "B"
+        ],
+        "variable": "S"
+       }
+      },
+      {
+       "RemoveUnit": {
+        "production": {
+         "lhs": "S",
+         "rhs": "A"
+        }
+       }
+      },
+      {
+       "RemoveUnit": {
+        "production": {
+         "lhs": "A",
+         "rhs": "B"
+        }
+       }
+      },
+      {
+       "Add": {
+        "production": {
+         "lhs": "S",
+         "rhs": "a"
+        },
+        "via": "A"
+       }
+      }
+     ],
+     "unit_pairs": [
+      [
+       "A",
+       "B"
+      ],
+      [
+       "S",
+       "A"
+      ],
+      [
+       "S",
+       "B"
+      ]
+     ]
+    },
+    "useless": {
+     "derives_terminals": [
+      "A",
+      "C",
+      "S"
+     ],
+     "grammar": {
+      "productions": [
+       {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       {
+        "lhs": "S",
+        "rhs": "ab"
+       },
+       {
+        "lhs": "S",
+        "rhs": "a"
+       }
+      ],
+      "start": "S"
+     },
+     "reachable": [
+      "S"
+     ],
+     "start_useless": false,
+     "steps": [
+      {
+       "DerivesTerminals": {
+        "production": {
+         "lhs": "A",
+         "rhs": "a"
+        },
+        "variable": "A"
+       }
+      },
+      {
+       "DerivesTerminals": {
+        "production": {
+         "lhs": "S",
+         "rhs": "ab"
+        },
+        "variable": "S"
+       }
+      },
+      {
+       "DerivesTerminals": {
+        "production": {
+         "lhs": "C",
+         "rhs": "c"
+        },
+        "variable": "C"
+       }
+      },
+      {
+       "Reachable": {
+        "from": null,
+        "variable": "S"
+       }
+      },
+      {
+       "RemoveUnreachable": {
+        "production": {
+         "lhs": "A",
+         "rhs": "a"
+        }
+       }
+      },
+      {
+       "RemoveUnreachable": {
+        "production": {
+         "lhs": "C",
+         "rhs": "c"
+        }
+       }
+      }
+     ]
+    }
+   },
+   "to": "cnf"
+  }
+ },
+ "nullable-remove_lambda": {
+  "input": {
+   "productions": [
+    {
+     "lhs": "S",
+     "rhs": "ABA"
+    },
+    {
+     "lhs": "S",
+     "rhs": "b"
+    },
+    {
+     "lhs": "A",
+     "rhs": "a"
+    },
+    {
+     "lhs": "A",
+     "rhs": ""
+    },
+    {
+     "lhs": "B",
+     "rhs": "bB"
+    },
+    {
+     "lhs": "B",
+     "rhs": ""
+    }
+   ],
+   "start": "S",
+   "type": "grammar"
+  },
+  "result": {
+   "document": {
+    "productions": [
+     {
+      "lhs": "S",
+      "rhs": "A"
+     },
+     {
+      "lhs": "S",
+      "rhs": "AA"
+     },
+     {
+      "lhs": "S",
+      "rhs": "AB"
+     },
+     {
+      "lhs": "S",
+      "rhs": "ABA"
+     },
+     {
+      "lhs": "S",
+      "rhs": "B"
+     },
+     {
+      "lhs": "S",
+      "rhs": "BA"
+     },
+     {
+      "lhs": "S",
+      "rhs": "b"
+     },
+     {
+      "lhs": "A",
+      "rhs": "a"
+     },
+     {
+      "lhs": "B",
+      "rhs": "b"
+     },
+     {
+      "lhs": "B",
+      "rhs": "bB"
+     }
+    ],
+    "start": "S",
+    "type": "grammar"
+   },
+   "lambda_set": [
+    "A",
+    "B",
+    "S"
+   ],
+   "start_derives_lambda": true,
+   "steps": [
+    {
+     "DerivesLambda": {
+      "production": {
+       "lhs": "A",
+       "rhs": ""
+      },
+      "variable": "A"
+     }
+    },
+    {
+     "DerivesLambda": {
+      "production": {
+       "lhs": "B",
+       "rhs": ""
+      },
+      "variable": "B"
+     }
+    },
+    {
+     "DerivesLambda": {
+      "production": {
+       "lhs": "S",
+       "rhs": "ABA"
+      },
+      "variable": "S"
+     }
+    },
+    {
+     "RemoveLambda": {
+      "production": {
+       "lhs": "A",
+       "rhs": ""
+      }
+     }
+    },
+    {
+     "RemoveLambda": {
+      "production": {
+       "lhs": "B",
+       "rhs": ""
+      }
+     }
+    },
+    {
+     "Expand": {
+      "added": [
+       {
+        "lhs": "S",
+        "rhs": "A"
+       },
+       {
+        "lhs": "S",
+        "rhs": "AA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "AB"
+       },
+       {
+        "lhs": "S",
+        "rhs": "ABA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "B"
+       },
+       {
+        "lhs": "S",
+        "rhs": "BA"
+       }
+      ],
+      "production": {
+       "lhs": "S",
+       "rhs": "ABA"
+      }
+     }
+    },
+    {
+     "Expand": {
+      "added": [
+       {
+        "lhs": "S",
+        "rhs": "b"
+       }
+      ],
+      "production": {
+       "lhs": "S",
+       "rhs": "b"
+      }
+     }
+    },
+    {
+     "Expand": {
+      "added": [
+       {
+        "lhs": "A",
+        "rhs": "a"
+       }
+      ],
+      "production": {
+       "lhs": "A",
+       "rhs": "a"
+      }
+     }
+    },
+    {
+     "Expand": {
+      "added": [
+       {
+        "lhs": "B",
+        "rhs": "b"
+       },
+       {
+        "lhs": "B",
+        "rhs": "bB"
+       }
+      ],
+      "production": {
+       "lhs": "B",
+       "rhs": "bB"
+      }
+     }
+    }
+   ],
+   "to": "remove_lambda"
+  }
+ },
+ "nullable-remove_unit": {
+  "input": {
+   "productions": [
+    {
+     "lhs": "S",
+     "rhs": "ABA"
+    },
+    {
+     "lhs": "S",
+     "rhs": "b"
+    },
+    {
+     "lhs": "A",
+     "rhs": "a"
+    },
+    {
+     "lhs": "A",
+     "rhs": ""
+    },
+    {
+     "lhs": "B",
+     "rhs": "bB"
+    },
+    {
+     "lhs": "B",
+     "rhs": ""
+    }
+   ],
+   "start": "S",
+   "type": "grammar"
+  },
+  "result": {
+   "document": {
+    "productions": [
+     {
+      "lhs": "S",
+      "rhs": "ABA"
+     },
+     {
+      "lhs": "S",
+      "rhs": "b"
+     },
+     {
+      "lhs": "A",
+      "rhs": "a"
+     },
+     {
+      "lhs": "A",
+      "rhs": ""
+     },
+     {
+      "lhs": "B",
+      "rhs": "bB"
+     },
+     {
+      "lhs": "B",
+      "rhs": ""
+     }
+    ],
+    "start": "S",
+    "type": "grammar"
+   },
+   "edges": [],
+   "steps": [],
+   "to": "remove_unit",
+   "unit_pairs": []
+  }
+ },
+ "nullable-remove_useless": {
+  "input": {
+   "productions": [
+    {
+     "lhs": "S",
+     "rhs": "ABA"
+    },
+    {
+     "lhs": "S",
+     "rhs": "b"
+    },
+    {
+     "lhs": "A",
+     "rhs": "a"
+    },
+    {
+     "lhs": "A",
+     "rhs": ""
+    },
+    {
+     "lhs": "B",
+     "rhs": "bB"
+    },
+    {
+     "lhs": "B",
+     "rhs": ""
+    }
+   ],
+   "start": "S",
+   "type": "grammar"
+  },
+  "result": {
+   "derives_terminals": [
+    "A",
+    "B",
+    "S"
+   ],
+   "document": {
+    "productions": [
+     {
+      "lhs": "S",
+      "rhs": "ABA"
+     },
+     {
+      "lhs": "S",
+      "rhs": "b"
+     },
+     {
+      "lhs": "A",
+      "rhs": "a"
+     },
+     {
+      "lhs": "A",
+      "rhs": ""
+     },
+     {
+      "lhs": "B",
+      "rhs": "bB"
+     },
+     {
+      "lhs": "B",
+      "rhs": ""
+     }
+    ],
+    "start": "S",
+    "type": "grammar"
+   },
+   "reachable": [
+    "A",
+    "B",
+    "S"
+   ],
+   "start_useless": false,
+   "steps": [
+    {
+     "DerivesTerminals": {
+      "production": {
+       "lhs": "A",
+       "rhs": "a"
+      },
+      "variable": "A"
+     }
+    },
+    {
+     "DerivesTerminals": {
+      "production": {
+       "lhs": "B",
+       "rhs": ""
+      },
+      "variable": "B"
+     }
+    },
+    {
+     "DerivesTerminals": {
+      "production": {
+       "lhs": "S",
+       "rhs": "ABA"
+      },
+      "variable": "S"
+     }
+    },
+    {
+     "Reachable": {
+      "from": null,
+      "variable": "S"
+     }
+    },
+    {
+     "Reachable": {
+      "from": "S",
+      "variable": "A"
+     }
+    },
+    {
+     "Reachable": {
+      "from": "S",
+      "variable": "B"
+     }
+    }
+   ],
+   "to": "remove_useless"
+  }
+ },
+ "nullable-cnf": {
+  "input": {
+   "productions": [
+    {
+     "lhs": "S",
+     "rhs": "ABA"
+    },
+    {
+     "lhs": "S",
+     "rhs": "b"
+    },
+    {
+     "lhs": "A",
+     "rhs": "a"
+    },
+    {
+     "lhs": "A",
+     "rhs": ""
+    },
+    {
+     "lhs": "B",
+     "rhs": "bB"
+    },
+    {
+     "lhs": "B",
+     "rhs": ""
+    }
+   ],
+   "start": "S",
+   "type": "grammar"
+  },
+  "result": {
+   "document": {
+    "productions": [
+     {
+      "lhs": "S",
+      "rhs": "AA"
+     },
+     {
+      "lhs": "S",
+      "rhs": "AB"
+     },
+     {
+      "lhs": "S",
+      "rhs": "AD"
+     },
+     {
+      "lhs": "D",
+      "rhs": "BA"
+     },
+     {
+      "lhs": "S",
+      "rhs": "BA"
+     },
+     {
+      "lhs": "S",
+      "rhs": "b"
+     },
+     {
+      "lhs": "A",
+      "rhs": "a"
+     },
+     {
+      "lhs": "B",
+      "rhs": "b"
+     },
+     {
+      "lhs": "B",
+      "rhs": "CB"
+     },
+     {
+      "lhs": "S",
+      "rhs": "a"
+     },
+     {
+      "lhs": "S",
+      "rhs": "CB"
+     },
+     {
+      "lhs": "C",
+      "rhs": "b"
+     }
+    ],
+    "start": "S",
+    "type": "grammar"
+   },
+   "steps": {
+    "cnf": {
+     "grammar": {
+      "productions": [
+       {
+        "lhs": "S",
+        "rhs": "AA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "AB"
+       },
+       {
+        "lhs": "S",
+        "rhs": "AD"
+       },
+       {
+        "lhs": "D",
+        "rhs": "BA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "BA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "b"
+       },
+       {
+        "lhs": "A",
+        "rhs": "a"
+       },
+       {
+        "lhs": "B",
+        "rhs": "b"
+       },
+       {
+        "lhs": "B",
+        "rhs": "CB"
+       },
+       {
+        "lhs": "S",
+        "rhs": "a"
+       },
+       {
+        "lhs": "S",
+        "rhs": "CB"
+       },
+       {
+        "lhs": "C",
+        "rhs": "b"
+       }
+      ],
+      "start": "S"
+     },
+     "input": {
+      "productions": [
+       {
+        "lhs": "S",
+        "rhs": "AA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "AB"
+       },
+       {
+        "lhs": "S",
+        "rhs": "ABA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "BA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "b"
+       },
+       {
+        "lhs": "A",
+        "rhs": "a"
+       },
+       {
+        "lhs": "B",
+        "rhs": "b"
+       },
+       {
+        "lhs": "B",
+        "rhs": "bB"
+       },
+       {
+        "lhs": "S",
+        "rhs": "a"
+       },
+       {
+        "lhs": "S",
+        "rhs": "bB"
+       }
+      ],
+      "start": "S"
+     },
+     "intermediate": [
+      {
+       "lhs": "S",
+       "rhs": "AA"
+      },
+      {
+       "lhs": "S",
+       "rhs": "AB"
+      },
+      {
+       "lhs": "S",
+       "rhs": "AD(1)"
+      },
+      {
+       "lhs": "D(1)",
+       "rhs": "BA"
+      },
+      {
+       "lhs": "S",
+       "rhs": "BA"
+      },
+      {
+       "lhs": "S",
+       "rhs": "b"
+      },
+      {
+       "lhs": "A",
+       "rhs": "a"
+      },
+      {
+       "lhs": "B",
+       "rhs": "b"
+      },
+      {
+       "lhs": "B",
+       "rhs": "B(b)B"
+      },
+      {
+       "lhs": "S",
+       "rhs": "a"
+      },
+      {
+       "lhs": "S",
+       "rhs": "B(b)B"
+      },
+      {
+       "lhs": "B(b)",
+       "rhs": "b"
+      }
+     ],
+     "renames": [
+      [
+       "B(b)",
+       "C"
+      ],
+      [
+       "D(1)",
+       "D"
+      ]
+     ],
+     "steps": [
+      {
+       "kind": "Terminals",
+       "production": {
+        "lhs": "S",
+        "rhs": "bB"
+       },
+       "replacement": [
+        {
+         "lhs": "S",
+         "rhs": "B(b)B"
+        },
+        {
+         "lhs": "B(b)",
+         "rhs": "b"
+        }
+       ],
+       "round": 1
+      },
+      {
+       "kind": "Terminals",
+       "production": {
+        "lhs": "B",
+        "rhs": "bB"
+       },
+       "replacement": [
+        {
+         "lhs": "B",
+         "rhs": "B(b)B"
+        }
+       ],
+       "round": 1
+      },
+      {
+       "kind": "Split",
+       "production": {
+        "lhs": "S",
+        "rhs": "ABA"
+       },
+       "replacement": [
+        {
+         "lhs": "S",
+         "rhs": "AD(1)"
+        },
+        {
+         "lhs": "D(1)",
+         "rhs": "BA"
+        }
+       ],
+       "round": 1
+      }
+     ]
+    },
+    "lambda": {
+     "grammar": {
+      "productions": [
+       {
+        "lhs": "S",
+        "rhs": "A"
+       },
+       {
+        "lhs": "S",
+        "rhs": "AA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "AB"
+       },
+       {
+        "lhs": "S",
+        "rhs": "ABA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "B"
+       },
+       {
+        "lhs": "S",
+        "rhs": "BA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "b"
+       },
+       {
+        "lhs": "A",
+        "rhs": "a"
+       },
+       {
+        "lhs": "B",
+        "rhs": "b"
+       },
+       {
+        "lhs": "B",
+        "rhs": "bB"
+       }
+      ],
+      "start": "S"
+     },
+     "lambda_set": [
+      "A",
+      "B",
+      "S"
+     ],
+     "start_derives_lambda": true,
+     "steps": [
+      {
+       "DerivesLambda": {
+        "production": {
+         "lhs": "A",
+         "rhs": ""
+        },
+        "variable": "A"
+       }
+      },
+      {
+       "DerivesLambda": {
+        "production": {
+         "lhs": "B",
+         "rhs": ""
+        },
+        "variable": "B"
+       }
+      },
+      {
+       "DerivesLambda": {
+        "production": {
+         "lhs": "S",
+         "rhs": "ABA"
+        },
+        "variable": "S"
+       }
+      },
+      {
+       "RemoveLambda": {
+        "production": {
+         "lhs": "A",
+         "rhs": ""
+        }
+       }
+      },
+      {
+       "RemoveLambda": {
+        "production": {
+         "lhs": "B",
+         "rhs": ""
+        }
+       }
+      },
+      {
+       "Expand": {
+        "added": [
+         {
+          "lhs": "S",
+          "rhs": "A"
+         },
+         {
+          "lhs": "S",
+          "rhs": "AA"
+         },
+         {
+          "lhs": "S",
+          "rhs": "AB"
+         },
+         {
+          "lhs": "S",
+          "rhs": "ABA"
+         },
+         {
+          "lhs": "S",
+          "rhs": "B"
+         },
+         {
+          "lhs": "S",
+          "rhs": "BA"
+         }
+        ],
+        "production": {
+         "lhs": "S",
+         "rhs": "ABA"
+        }
+       }
+      },
+      {
+       "Expand": {
+        "added": [
+         {
+          "lhs": "S",
+          "rhs": "b"
+         }
+        ],
+        "production": {
+         "lhs": "S",
+         "rhs": "b"
+        }
+       }
+      },
+      {
+       "Expand": {
+        "added": [
+         {
+          "lhs": "A",
+          "rhs": "a"
+         }
+        ],
+        "production": {
+         "lhs": "A",
+         "rhs": "a"
+        }
+       }
+      },
+      {
+       "Expand": {
+        "added": [
+         {
+          "lhs": "B",
+          "rhs": "b"
+         },
+         {
+          "lhs": "B",
+          "rhs": "bB"
+         }
+        ],
+        "production": {
+         "lhs": "B",
+         "rhs": "bB"
+        }
+       }
+      }
+     ]
+    },
+    "unit": {
+     "edges": [
+      [
+       "S",
+       "A"
+      ],
+      [
+       "S",
+       "B"
+      ]
+     ],
+     "grammar": {
+      "productions": [
+       {
+        "lhs": "S",
+        "rhs": "AA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "AB"
+       },
+       {
+        "lhs": "S",
+        "rhs": "ABA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "BA"
+       },
+       {
+        "lhs": "S",
+        "rhs": "b"
+       },
+       {
+        "lhs": "A",
+        "rhs": "a"
+       },
+       {
+        "lhs": "B",
+        "rhs": "b"
+       },
+       {
+        "lhs": "B",
+        "rhs": "bB"
+       },
+       {
+        "lhs": "S",
+        "rhs": "a"
+       },
+       {
+        "lhs": "S",
+        "rhs": "bB"
+       }
+      ],
+      "start": "S"
+     },
+     "steps": [
+      {
+       "Edge": {
+        "from": "S",
+        "production": {
+         "lhs": "S",
+         "rhs": "A"
+        },
+        "to": "A"
+       }
+      },
+      {
+       "Edge": {
+        "from": "S",
+        "production": {
+         "lhs": "S",
+         "rhs": "B"
+        },
+        "to": "B"
+       }
+      },
+      {
+       "Reach": {
+        "reachable": [
+         "A",
+         "B"
+        ],
+        "variable": "S"
+       }
+      },
+      {
+       "RemoveUnit": {
+        "production": {
+         "lhs": "S",
+         "rhs": "A"
+        }
+       }
+      },
+      {
+       "RemoveUnit": {
+        "production": {
+         "lhs": "S",
+         "rhs": "B"
+        }
+       }
+      },
+      {
+       "Add": {
+        "production": {
+         "lhs": "S",
+         "rhs": "a"
+        },
+        "via": "A"
+       }
+      },
+      {
+       "Add": {
+        "production": {
+         "lhs": "S",
+         "rhs": "bB"
+        },
+        "via": "B"
+       }
+      }
+     ],
+     "unit_pairs": [
+      [
+       "S",
+       "A"
+      ],
+      [
+       "S",
+       "B"
+      ]
+     ]
+    },
+    "useless": null
+   },
+   "to": "cnf"
+  }
+ }
+}

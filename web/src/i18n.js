@@ -292,7 +292,7 @@ export const dictionaries = {
     'assistant.verification': 'Design verification',
     'host.from_assistant': 'From the assistant',
 
-    'document.hint': 'Document of type {type}. A dedicated editor for this type is not available yet.',
+    'document.hint': 'The document of type {type} as JSON (what is saved with Save as .json).',
 
     'chat.send': 'Send to chat',
     'chat.send_hint': 'Tell the assistant about the current automaton',
@@ -594,7 +594,7 @@ export const dictionaries = {
     'assistant.verification': 'Verificación del diseño',
     'host.from_assistant': 'Del asistente',
 
-    'document.hint': 'Documento de tipo {type}. Todavía no hay un editor propio para este tipo.',
+    'document.hint': 'El documento de tipo {type} como JSON (lo que guarda Guardar como .json).',
 
     'chat.send': 'Enviar al chat',
     'chat.send_hint': 'Contale al asistente cómo quedó el autómata',
