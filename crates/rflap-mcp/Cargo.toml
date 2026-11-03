@@ -1,0 +1,20 @@
+[package]
+name = "rflap-mcp"
+description = "MCP server (stdio and Streamable HTTP) that exposes Rflap to AI chats and agents, with an MCP Apps widget"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[lib]
+name = "rflap_mcp"
+
+[[bin]]
+name = "rflap-mcp"
+path = "src/main.rs"
+
+[dependencies]
+rflap-api = { path = "../rflap-api" }
+serde_json.workspace = true
+tiny_http = "0.12"
