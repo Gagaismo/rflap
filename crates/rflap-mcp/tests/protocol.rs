@@ -428,6 +428,7 @@ fn jff_round_trip_and_files() {
     let server = Server::new(Config {
         viewer_url: None,
         allow_files: false,
+        ..Config::default()
     });
     let answer = server
         .handle_message(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
@@ -528,6 +529,7 @@ fn visual_results_carry_a_viewer_link_when_configured() {
     let server = Server::new(Config {
         viewer_url: Some("http://127.0.0.1:9/".into()),
         allow_files: true,
+        ..Config::default()
     });
     let answer = server
         .handle_message(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",

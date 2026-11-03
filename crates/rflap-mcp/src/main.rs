@@ -25,6 +25,8 @@ OPTIONS:
     --no-files             stdio: disable the path arguments of rflap_open_jff / rflap_save_jff
     --allow-files          --http: enable those path arguments (off by default over HTTP,
                            because a tunnel makes a localhost server reachable from outside)
+    --quiet                Do not log each tool call to stderr (by default one line per call:
+                           tool, ok/error, time, arguments and the first line of the answer)
     --tools-markdown       Print the tool reference (docs/mcp-tools.md) and exit
     -h, --help             Show this help
     -V, --version          Show the version
@@ -37,6 +39,7 @@ struct Args {
     viewer_port: Option<u16>,
     no_files: bool,
     allow_files: bool,
+    quiet: bool,
 }
 
 fn parse_args() -> Result<Option<Args>, String> {
@@ -47,6 +50,7 @@ fn parse_args() -> Result<Option<Args>, String> {
         viewer_port: None,
         no_files: false,
         allow_files: false,
+        quiet: false,
     };
     let mut host_given = false;
     let mut rest = std::env::args().skip(1).peekable();
@@ -88,6 +92,7 @@ fn parse_args() -> Result<Option<Args>, String> {
             }
             "--no-files" => args.no_files = true,
             "--allow-files" => args.allow_files = true,
+            "--quiet" => args.quiet = true,
             other => return Err(format!("unknown option `{other}`; see --help")),
         }
     }
@@ -136,6 +141,7 @@ fn main() -> ExitCode {
         } else {
             !args.no_files
         },
+        log_calls: !args.quiet,
         ..Config::default()
     };
     if let Some(port) = args.viewer_port {

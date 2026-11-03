@@ -1,6 +1,8 @@
 //! The MCP protocol over JSON-RPC 2.0: a pure function from a message to its answer, so every
 //! transport (stdio, HTTP) and every test drives the same code.
 
+use std::time::Instant;
+
 use serde_json::{Value, json};
 
 use crate::{EDITOR_HTML, EDITOR_URI, MIME_APP, SUPPORTED_VERSIONS, instructions, schemas, tools};
@@ -20,6 +22,8 @@ pub struct Config {
     pub viewer_url: Option<String>,
     /// Whether `rflap_open_jff` / `rflap_save_jff` may touch the file system (a local server).
     pub allow_files: bool,
+    /// Whether every `tools/call` writes one line to stderr ([`crate::call_log_line`]).
+    pub log_calls: bool,
 }
 
 impl Default for Config {
@@ -27,6 +31,7 @@ impl Default for Config {
         Config {
             viewer_url: None,
             allow_files: true,
+            log_calls: false,
         }
     }
 }
@@ -146,7 +151,15 @@ impl Server {
         let arguments = params.get("arguments").cloned().unwrap_or(Value::Null);
         // An unknown tool is a tool result (`isError`), like any other failure of a call: the
         // model sees the message and the list of tools and can correct itself.
-        Ok(tools::run(&self.config, name, &arguments).to_json())
+        let started = Instant::now();
+        let output = tools::run(&self.config, name, &arguments).to_json();
+        if self.config.log_calls {
+            eprintln!(
+                "{}",
+                crate::call_log_line(name, &arguments, &output, started.elapsed())
+            );
+        }
+        Ok(output)
     }
 }
 

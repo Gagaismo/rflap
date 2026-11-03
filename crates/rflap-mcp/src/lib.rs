@@ -25,6 +25,7 @@ mod content;
 mod docs;
 mod http;
 mod instructions;
+mod log;
 mod schemas;
 mod server;
 mod stdio;
@@ -33,6 +34,7 @@ mod viewer;
 
 pub use docs::tools_markdown;
 pub use http::{HttpOptions, HttpServer, serve_http};
+pub use log::call_log_line;
 pub use server::{Config, Server, handle_line, handle_message};
 pub use stdio::{serve, serve_stdio};
 pub use viewer::{base64url, link as viewer_link, spawn as spawn_viewer};
