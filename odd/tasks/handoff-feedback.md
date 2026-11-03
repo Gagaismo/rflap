@@ -23,9 +23,9 @@ Rama `feat/handoff-feedback`. Decisiones del humano: implementar directo con ODD
 
 ## Tasks
 
-- [ ] T1 — core+api: layout por defecto con inicial a la izquierda (S4), alias `<` `>` en ALL (S8), Σ_E/Σ_A en el análisis de turing (S11), `title`/`name` aceptados en el compacto (S2), etiquetas (e,s,m) probadas (S7). Ruta: worker en worktree `t1`. Commit: —
+- [ ] T1 — core+api: layout por defecto con inicial a la izquierda (S4), alias `<` `>` en ALL (S8), Σ_E/Σ_A en el análisis de turing (S11), `title`/`name` aceptados en el compacto (S2), etiquetas (e,s,m) probadas (S7). Ruta: worker en worktree `t1`. Commit: 60b1653 (feat/handoff-t1); fmt, clippy y `cargo test -p rflap-core -p rflap-api -p rflap-mcp -p rflap-cli` verdes. Desvíos: la op `layout` sin `algorithm` sigue en `circle`; `analyze` de multi-cinta/bloques no informa Σ_E/Σ_A; el alias también reescribe `<` dentro de patrones como `!<`.
 - [ ] T2 — mcp: título en texto y structured (S2), model all en simulate/step/show y avisos (S6), capabilities inválida (S10), descripciones (S12, S4 doc), regresiones S1.1/S1.2/S9, notación de salida (S7), docs S1.3. Ruta: worker en worktree `t2`. Commit: —
-- [ ] T3 — web: título en pestaña y sobre el diagrama (S2, S3), pestaña Asistente legible (S5). Ruta: worker en worktree `t3`. Commit: —
+- [x] T3 — web: título en pestaña y sobre el diagrama (S2, S3), pestaña Asistente legible (S5). Ruta: worker en worktree `t3`. Commit: 507f563 (feat/handoff-t3); node 172/174, los 2 fallos son `web/dist` sin rebuild (se resuelve en T4).
 - [ ] T4 — integrar t1-t3, rebuild del widget (`cargo run -p xtask -- build-web`), suite completa, verificación por S#. Ruta: inline. Commit: —
 
 ## Log
