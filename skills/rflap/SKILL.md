@@ -177,7 +177,8 @@ lee ⟩: debe escribir ⟩ y moverse a la izquierda (I).` Student-facing referen
 | Is the student's automaton right? | `rflap_equivalent` against a regex or a reference automaton; it returns a counterexample |
 | Trace a run | `rflap_simulate` (whole trace, or `inputs` for a table), `rflap_step` (one step at a time) |
 | Open or save a JFLAP file | `rflap_open_jff`, `rflap_save_jff` |
-| Turing machine / ALL exercise in the course notation | `rflap_mt_catedra` (see the section above) |
+| Turing machine / ALL exercise in the course notation | `rflap_mt_catedra` (see the section above); `rflap_simulate`, `rflap_step` and `rflap_show` also run a machine as an ALL with `model: "all"` (or when its labels use ⟨ ⟩) and take `notation: "catedra" \| "jflap"` |
+| Name the drawing, place the states | the compact document takes `title` (alias `name`), `layout` (default `layered`: initial state at the left) and `points` (`rflap_capabilities` with `section: "layout"`) |
 | Turing machine run with its final tape | `rflap_simulate` (`tape_outputs` is the final content of each tape, blanks trimmed; `acceptance`: `final_state`, `halting`, `both`) |
 | Anything without a dedicated tool (layout, user-controlled parsing, ...) | `rflap_call` with `{"request": {"op": ...}}`; the answer is `{"ok": ..., "result" or "error"}` |
 

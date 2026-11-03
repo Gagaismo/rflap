@@ -91,7 +91,7 @@ fn document(description: &str) -> Value {
     json!({
            "type": "object",
            "description": format!(
-    "{description} A JSON object with a \"type\": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {{\"type\":\"fa\",\"initial\":\"q0\",\"finals\":[\"q1\"], \"transitions\":[[\"q0\",\"a\",\"q1\"]]}}, {{\"type\":\"grammar\",\"text\":\"S -> aSb | λ\"}}, {{\"type\":\"regex\",\"expression\":\"(a+b)*abb\"}}; the full form other tools return works too. Other types: rflap_capabilities."
+    "{description} A JSON object with a \"type\": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {{\"type\":\"fa\",\"initial\":\"q0\",\"finals\":[\"q1\"], \"transitions\":[[\"q0\",\"a\",\"q1\"]]}}, {{\"type\":\"grammar\",\"text\":\"S -> aSb | λ\"}}, {{\"type\":\"regex\",\"expression\":\"(a+b)*abb\"}}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({{\"q0\": [x, y]}}, fixed coordinates). Other types: rflap_capabilities."
     ),
            "properties": {"type": {"type": "string"}},
            "required": ["type"],
@@ -108,6 +108,22 @@ fn grammar(description: &str) -> Value {
         ),
         "anyOf": [{"type": "string"}, {"type": "object"}],
     })
+}
+
+/// `model` of the tools that run or show a Turing machine.
+fn model_arg() -> Value {
+    choice(
+        "Turing machines only. all = run it as an ALL (linear bounded automaton): the tape is ⟨w⟩ with the delimiters placed automatically and the head on the first symbol. mt = a Turing machine on a blank-delimited tape. Default: all when a transition mentions ⟨ or ⟩, otherwise mt.",
+        &["mt", "all"],
+    )
+}
+
+/// `notation` of the tools that show a Turing machine.
+fn notation_arg() -> Value {
+    choice(
+        "Turing machines only: catedra (default) writes the labels (e,s,m) with Δ and I/N/D, jflap writes e;s,m with □ and L/S/R, in the table and the drawing.",
+        &["catedra", "jflap"],
+    )
 }
 
 fn schema(properties: Vec<(&str, Value)>, required: &[&str]) -> Value {
@@ -255,11 +271,24 @@ fn show() -> ToolDef {
         description: "Shows any Rflap document (automaton, grammar, regex, L-system…) in the \
             interactive widget and returns its analysis (deterministic?, unreachable states…), \
             a transition table and an explanation. Use it to display something you wrote by \
-            hand. Example: {\"document\":{\"type\":\"fa\",\"initial\":\"q0\",\"finals\":[\"q1\"],\
-            \"transitions\":[[\"q0\",\"a\",\"q1\"],[\"q1\",\"b\",\"q0\"]]}}."
+            hand. Optional fields of a compact document: `title` (alias `name`; shown as the \
+            first line and the header of the widget), `layout` (algorithm for the state \
+            positions: layered = default, initial state at the left and the rest in columns by \
+            distance; circle, gem, random, spiral, tree, tree-degree, two-circle) and `points` \
+            ({\"q0\": [x, y]}, fixed coordinates that win over `layout`). For a Turing machine, \
+            `notation` catedra (default, the labels (e,s,m)) or jflap. For an ALL (linear \
+            bounded automaton) or exercises in the notation of the course (UTN FRT), use \
+            rflap_mt_catedra (or model: \"all\"). Example: \
+            {\"document\":{\"type\":\"fa\",\"initial\":\"q0\",\"finals\":[\"q1\"],\
+            \"transitions\":[[\"q0\",\"a\",\"q1\"],[\"q1\",\"b\",\"q0\"]],\
+            \"title\":\"Mi AFD\"}}."
             .to_string(),
         input: schema(
-            vec![("document", document("The document to show."))],
+            vec![
+                ("document", document("The document to show.")),
+                ("model", model_arg()),
+                ("notation", notation_arg()),
+            ],
             &["document"],
         ),
         output: Some(output(json!({
@@ -267,6 +296,9 @@ fn show() -> ToolDef {
             "analysis": {"type": "object"},
             "svg": {"type": "string"},
             "explanation": {"type": "string"},
+            "title": {"type": "string"},
+            "notation": {"type": "string"},
+            "model": {"type": "string"},
         }))),
         visual: true,
         read_only: true,
@@ -283,7 +315,11 @@ fn simulate() -> ToolDef {
             input (`input`) or on many (`inputs`, a batch table). Returns accepted / rejected / \
             undecided and the trace of configurations. Options: mode step_by_state|closure \
             (λ handling), acceptance final_state|empty_stack (PDA) or final_state|halting|both \
-            (Turing), `tapes` for one string per tape of a multi-tape machine. Example: \
+            (Turing), `tapes` for one string per tape of a multi-tape machine. For a Turing machine, \
+            `model: \"all\"` (or labels with ⟨ ⟩) runs it as an ALL on the tape ⟨w⟩ and \
+            `notation` catedra|jflap picks the labels. For an ALL (linear bounded automaton) or \
+            exercises in the notation of the course (UTN FRT), use rflap_mt_catedra (or model: \
+            \"all\"). Example: \
             {\"document\":{\"type\":\"fa\",\"initial\":\"q0\",\"finals\":[\"q1\"],\
             \"transitions\":[[\"q0\",\"a\",\"q1\"]]},\"input\":\"a\"}."
             .to_string(),
@@ -313,6 +349,14 @@ fn simulate() -> ToolDef {
                     "max_configs",
                     integer("Configurations explored before answering undecided (default 10000)."),
                 ),
+                ("model", model_arg()),
+                ("notation", notation_arg()),
+                (
+                    "max_steps",
+                    integer(
+                        "ALL only: steps before a run is reported as not halting (default 1000, at most 100000).",
+                    ),
+                ),
             ],
             &["document"],
         ),
@@ -322,6 +366,9 @@ fn simulate() -> ToolDef {
             "trace": {"type": "array"},
             "results": {"type": "array"},
             "document": {"type": "object"},
+            "title": {"type": "string"},
+            "notation": {"type": "string"},
+            "model": {"type": "string"},
         }))),
         visual: true,
         read_only: true,
@@ -337,7 +384,11 @@ fn step() -> ToolDef {
         description: "Runs an input for exactly `steps` steps (stateless: it replays from the \
             start) and returns the live configurations (`frontier`), those already accepted or \
             rejected, and whether the run finished. Call it with steps 1, 2, 3… to walk a \
-            student through a run; the widget highlights the current states. Example: \
+            student through a run; the widget highlights the current states. With `model: \"all\"` \
+            (or labels with ⟨ ⟩) a Turing machine runs as an ALL and the reply is the first \
+            `steps` configurations on the tape ⟨w⟩. For an ALL (linear bounded automaton) or \
+            exercises in the notation of the course (UTN FRT), use rflap_mt_catedra (or model: \
+            \"all\"). Example: \
             {\"document\":{...},\"input\":\"aab\",\"steps\":2}."
             .to_string(),
         input: schema(
@@ -361,6 +412,7 @@ fn step() -> ToolDef {
                     "max_configs",
                     integer("Frontier size at which the run stops as truncated (default 10000)."),
                 ),
+                ("model", model_arg()),
             ],
             &["document", "input"],
         ),
@@ -368,7 +420,10 @@ fn step() -> ToolDef {
             "steps_done": {"type": "integer"},
             "finished": {"type": "boolean"},
             "frontier": {"type": "array"},
+            "configurations": {"type": "array"},
             "document": {"type": "object"},
+            "title": {"type": "string"},
+            "model": {"type": "string"},
         }))),
         visual: true,
         read_only: true,
@@ -780,14 +835,15 @@ fn capabilities() -> ToolDef {
         description:
             "The full description of the Rflap API: every operation with an example, every \
             document type with its compact syntax, every conversion. Read it once when you need \
-            the exact syntax of a PDA, Turing machine, L-system… `section` narrows the reply."
+            the exact syntax of a PDA, Turing machine, L-system… `section` narrows the reply; `layout` \
+            lists the layout algorithms and the compact `layout`, `points` and `title` fields."
                 .to_string(),
         input: schema(
             vec![(
                 "section",
                 choice(
                     "Which part (default overview).",
-                    &["overview", "operations", "document_types", "convert", "all"],
+                    &["overview", "operations", "document_types", "convert", "layout", "all"],
                 ),
             )],
             &[],
@@ -829,8 +885,8 @@ fn mt_catedra() -> ToolDef {
     ToolDef {
         name: "rflap_mt_catedra",
         title: "Turing machine / ALL in the course notation",
-        description: "A one-tape Turing machine (MT) or linear bounded automaton (ALL) in the \
-            notation of the course \"Sintaxis y Semántica de los Lenguajes\" (UTN FRT). `action`: \
+        description: "ALL (autómata linealmente acotado, linear bounded automaton) or one-tape Turing \
+            machine (MT) in the notation of the course \"Sintaxis y Semántica de los Lenguajes\" (UTN FRT). `action`: \
             \"definition\" = the formal definition MT = ⟨Q, Σ_E, Σ_A, q0, F, f⟩ with its sets; \
             \"table\" = the transition table (Estado Actual | Símbolo Entrada | Estado Nuevo | \
             Símbolo Salida | Movimiento Cabezal); \"run\" = the configuration sequences \

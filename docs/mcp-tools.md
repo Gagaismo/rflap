@@ -27,49 +27,55 @@ Builds, minimizes and VERIFIES an automaton for a language you have already reas
 
 **Show a document** · shows the widget
 
-Shows any Rflap document (automaton, grammar, regex, L-system…) in the interactive widget and returns its analysis (deterministic?, unreachable states…), a transition table and an explanation. Use it to display something you wrote by hand. Example: {"document":{"type":"fa","initial":"q0","finals":["q1"],"transitions":[["q0","a","q1"],["q1","b","q0"]]}}.
+Shows any Rflap document (automaton, grammar, regex, L-system…) in the interactive widget and returns its analysis (deterministic?, unreachable states…), a transition table and an explanation. Use it to display something you wrote by hand. Optional fields of a compact document: `title` (alias `name`; shown as the first line and the header of the widget), `layout` (algorithm for the state positions: layered = default, initial state at the left and the rest in columns by distance; circle, gem, random, spiral, tree, tree-degree, two-circle) and `points` ({"q0": [x, y]}, fixed coordinates that win over `layout`). For a Turing machine, `notation` catedra (default, the labels (e,s,m)) or jflap. For an ALL (linear bounded automaton) or exercises in the notation of the course (UTN FRT), use rflap_mt_catedra (or model: "all"). Example: {"document":{"type":"fa","initial":"q0","finals":["q1"],"transitions":[["q0","a","q1"],["q1","b","q0"]],"title":"Mi AFD"}}.
 
 | argument | type | required | description |
 |---|---|---|---|
-| `document` | object | yes | The document to show. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `document` | object | yes | The document to show. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
+| `model` | `mt` \| `all` | no | Turing machines only. all = run it as an ALL (linear bounded automaton): the tape is ⟨w⟩ with the delimiters placed automatically and the head on the first symbol. mt = a Turing machine on a blank-delimited tape. Default: all when a transition mentions ⟨ or ⟩, otherwise mt. |
+| `notation` | `catedra` \| `jflap` | no | Turing machines only: catedra (default) writes the labels (e,s,m) with Δ and I/N/D, jflap writes e;s,m with □ and L/S/R, in the table and the drawing. |
 
-`structuredContent` keys: `analysis`, `document`, `explanation`, `svg`.
+`structuredContent` keys: `analysis`, `document`, `explanation`, `model`, `notation`, `svg`, `title`.
 
 ## `rflap_simulate`
 
 **Simulate a machine on inputs** · shows the widget
 
-Runs a finite automaton, PDA, Turing machine, Mealy or Moore machine on one input (`input`) or on many (`inputs`, a batch table). Returns accepted / rejected / undecided and the trace of configurations. Options: mode step_by_state|closure (λ handling), acceptance final_state|empty_stack (PDA) or final_state|halting|both (Turing), `tapes` for one string per tape of a multi-tape machine. Example: {"document":{"type":"fa","initial":"q0","finals":["q1"],"transitions":[["q0","a","q1"]]},"input":"a"}.
+Runs a finite automaton, PDA, Turing machine, Mealy or Moore machine on one input (`input`) or on many (`inputs`, a batch table). Returns accepted / rejected / undecided and the trace of configurations. Options: mode step_by_state|closure (λ handling), acceptance final_state|empty_stack (PDA) or final_state|halting|both (Turing), `tapes` for one string per tape of a multi-tape machine. For a Turing machine, `model: "all"` (or labels with ⟨ ⟩) runs it as an ALL on the tape ⟨w⟩ and `notation` catedra|jflap picks the labels. For an ALL (linear bounded automaton) or exercises in the notation of the course (UTN FRT), use rflap_mt_catedra (or model: "all"). Example: {"document":{"type":"fa","initial":"q0","finals":["q1"],"transitions":[["q0","a","q1"]]},"input":"a"}.
 
 | argument | type | required | description |
 |---|---|---|---|
 | `acceptance` | `final_state` \| `empty_stack` \| `halting` \| `both` | no | When a run accepts (PDA, Turing). |
-| `document` | object | yes | The machine to run. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `document` | object | yes | The machine to run. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `input` | string | no | One input string ("" is the empty string). |
 | `inputs` | array of string or array of string | no | Many inputs at once (a batch run); each a string, or an array with one string per tape. |
 | `max_configs` | integer | no | Configurations explored before answering undecided (default 10000). |
+| `max_steps` | integer | no | ALL only: steps before a run is reported as not halting (default 1000, at most 100000). |
 | `mode` | `step_by_state` \| `closure` | no | How λ transitions are stepped. |
+| `model` | `mt` \| `all` | no | Turing machines only. all = run it as an ALL (linear bounded automaton): the tape is ⟨w⟩ with the delimiters placed automatically and the head on the first symbol. mt = a Turing machine on a blank-delimited tape. Default: all when a transition mentions ⟨ or ⟩, otherwise mt. |
+| `notation` | `catedra` \| `jflap` | no | Turing machines only: catedra (default) writes the labels (e,s,m) with Δ and I/N/D, jflap writes e;s,m with □ and L/S/R, in the table and the drawing. |
 | `tapes` | array of string | no | One input per tape of a multi-tape Turing machine (single run). |
 
-`structuredContent` keys: `accepted`, `document`, `outcome`, `results`, `trace`.
+`structuredContent` keys: `accepted`, `document`, `model`, `notation`, `outcome`, `results`, `title`, `trace`.
 
 ## `rflap_step`
 
 **Step through a run** · shows the widget
 
-Runs an input for exactly `steps` steps (stateless: it replays from the start) and returns the live configurations (`frontier`), those already accepted or rejected, and whether the run finished. Call it with steps 1, 2, 3… to walk a student through a run; the widget highlights the current states. Example: {"document":{...},"input":"aab","steps":2}.
+Runs an input for exactly `steps` steps (stateless: it replays from the start) and returns the live configurations (`frontier`), those already accepted or rejected, and whether the run finished. Call it with steps 1, 2, 3… to walk a student through a run; the widget highlights the current states. With `model: "all"` (or labels with ⟨ ⟩) a Turing machine runs as an ALL and the reply is the first `steps` configurations on the tape ⟨w⟩. For an ALL (linear bounded automaton) or exercises in the notation of the course (UTN FRT), use rflap_mt_catedra (or model: "all"). Example: {"document":{...},"input":"aab","steps":2}.
 
 | argument | type | required | description |
 |---|---|---|---|
 | `acceptance` | `final_state` \| `empty_stack` \| `halting` \| `both` | no | When a run accepts (PDA, Turing). |
-| `document` | object | yes | The machine to run. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `document` | object | yes | The machine to run. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `input` | string | yes | The input string. |
 | `max_configs` | integer | no | Frontier size at which the run stops as truncated (default 10000). |
 | `mode` | `step_by_state` \| `closure` | no | How λ transitions are stepped. |
+| `model` | `mt` \| `all` | no | Turing machines only. all = run it as an ALL (linear bounded automaton): the tape is ⟨w⟩ with the delimiters placed automatically and the head on the first symbol. mt = a Turing machine on a blank-delimited tape. Default: all when a transition mentions ⟨ or ⟩, otherwise mt. |
 | `steps` | integer | no | Steps to take from the start (default 1). |
 | `tapes` | array of string | no | One input per tape of a multi-tape Turing machine. |
 
-`structuredContent` keys: `document`, `finished`, `frontier`, `steps_done`.
+`structuredContent` keys: `configurations`, `document`, `finished`, `frontier`, `model`, `steps_done`, `title`.
 
 ## `rflap_convert`
 
@@ -79,7 +85,7 @@ Converts a document. Targets (`to`): dfa, minimal_dfa (from fa, regex or regular
 
 | argument | type | required | description |
 |---|---|---|---|
-| `document` | object | yes | The document to convert. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `document` | object | yes | The document to convert. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `to` | `dfa` \| `minimal_dfa` \| `regex` \| `nfa` \| `regular_grammar` \| `fa` \| `pda_ll` \| `pda_lr` \| `cfg` \| `pda_jflap_form` \| `unrestricted_grammar` \| `remove_lambda` \| `remove_unit` \| `remove_useless` \| `cnf` \| `complete` \| `split_labels` \| `remove_useless_states` | yes | The target. |
 
 `structuredContent` keys: `document`, `steps`, `to`.
@@ -92,8 +98,8 @@ Whether two finite automata, regular expressions or right-linear grammars accept
 
 | argument | type | required | description |
 |---|---|---|---|
-| `a` | object | yes | The first language. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
-| `b` | object | yes | The second language. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `a` | object | yes | The first language. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
+| `b` | object | yes | The second language. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 
 `structuredContent` keys: `equivalent`.
 
@@ -105,8 +111,8 @@ Puts two machines of the same type side by side in one document (JFLAP's "Combin
 
 | argument | type | required | description |
 |---|---|---|---|
-| `a` | object | yes | The first machine. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
-| `b` | object | yes | The second machine. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `a` | object | yes | The first machine. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
+| `b` | object | yes | The second machine. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 
 `structuredContent` keys: `document`.
 
@@ -118,7 +124,7 @@ Structure of an automaton: kind (dfa, nfa, dpda, npda, turing, mealy, moore), al
 
 | argument | type | required | description |
 |---|---|---|---|
-| `document` | object | yes | The machine to analyze. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `document` | object | yes | The machine to analyze. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 
 `structuredContent` keys: `alphabet`, `deterministic`, `kind`.
 
@@ -173,7 +179,7 @@ Draws a document as svg (machines and L-systems), markdown (transition table), d
 |---|---|---|---|
 | `dark` | boolean | no | Dark theme. |
 | `depth` | integer | no | Rewrite level when drawing an L-system (default 3). |
-| `document` | object | yes | The document to draw. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `document` | object | yes | The document to draw. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `format` | `svg` \| `markdown` \| `dot` \| `text` | no | Output format (default svg). |
 | `highlight_states` | array of string | no | State names to highlight. |
 | `highlight_transitions` | array of integer | no | Transition indices to highlight. |
@@ -203,7 +209,7 @@ Writes a document as .jff text that JFLAP 7.1 opens. Returns the XML; with `path
 
 | argument | type | required | description |
 |---|---|---|---|
-| `document` | object | yes | The document to save. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `document` | object | yes | The document to save. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `overwrite` | boolean | no | Allow replacing an existing file. |
 | `path` | string | no | Where to write the file; must end in .jff (local servers only). |
 
@@ -218,7 +224,7 @@ Expands an L-system `depth` levels (max 12) and draws it with the turtle. Exampl
 | argument | type | required | description |
 |---|---|---|---|
 | `depth` | integer | no | Rewrite level (default 3, at most 12). |
-| `document` | object | yes | An lsystem document. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `document` | object | yes | An lsystem document. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `include_svg` | boolean | no | Put the SVG text in the reply as well (default false). |
 | `options` | object | no | Drawing options: seed, ... (see rflap_capabilities). |
 
@@ -233,7 +239,7 @@ JFLAP's pumping lemma games. action `languages` lists the 26 predefined language
 | argument | type | required | description |
 |---|---|---|---|
 | `action` | `languages` \| `new` \| `move` | yes | What to do. |
-| `game` | object | no | The game document returned by `new` or `move` (move). A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `game` | object | no | The game document returned by `new` or `move` (move). A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `kind` | `regular` \| `context_free` | no | Which lemma (new). |
 | `language` | integer or string | no | Index or title from `languages` (new). |
 | `mode` | `human_first` \| `computer_first` | no | Who moves first (new). |
@@ -244,11 +250,11 @@ JFLAP's pumping lemma games. action `languages` lists the 26 predefined language
 
 **What Rflap can do**
 
-The full description of the Rflap API: every operation with an example, every document type with its compact syntax, every conversion. Read it once when you need the exact syntax of a PDA, Turing machine, L-system… `section` narrows the reply.
+The full description of the Rflap API: every operation with an example, every document type with its compact syntax, every conversion. Read it once when you need the exact syntax of a PDA, Turing machine, L-system… `section` narrows the reply; `layout` lists the layout algorithms and the compact `layout`, `points` and `title` fields.
 
 | argument | type | required | description |
 |---|---|---|---|
-| `section` | `overview` \| `operations` \| `document_types` \| `convert` \| `all` | no | Which part (default overview). |
+| `section` | `overview` \| `operations` \| `document_types` \| `convert` \| `layout` \| `all` | no | Which part (default overview). |
 
 ## `rflap_call`
 
@@ -264,12 +270,12 @@ Escape hatch: sends one raw Rflap API request {"op": ..., ...} (see rflap_capabi
 
 **Turing machine / ALL in the course notation** · shows the widget
 
-A one-tape Turing machine (MT) or linear bounded automaton (ALL) in the notation of the course "Sintaxis y Semántica de los Lenguajes" (UTN FRT). `action`: "definition" = the formal definition MT = ⟨Q, Σ_E, Σ_A, q0, F, f⟩ with its sets; "table" = the transition table (Estado Actual | Símbolo Entrada | Estado Nuevo | Símbolo Salida | Movimiento Cabezal); "run" = the configuration sequences (Δ1abaΔ ├─ ΔΔ2baΔ … final/acepta or bloqueo/rechazo) for `inputs`; "all_check" = whether the machine obeys the rules of an ALL (reads ⟨ moving D, reads ⟩ moving I, never reads or writes Δ, the head never leaves ⟨…⟩) and lists every violation. Write the machine as a compact turing document with cátedra labels (e,s,m): move I left, N stay, D right, Δ the blank, several labels on one edge joined with " / "; final states halt. Example: {"document":{"type":"turing","initial":"1","finals":["8"],"transitions":[["1","(a,Δ,D)","2"],["2","(a,a,D) / (b,b,D)","2"],["2","(Δ,Δ,D)","8"]]},"action":"run","inputs":["aa"]}.
+ALL (autómata linealmente acotado, linear bounded automaton) or one-tape Turing machine (MT) in the notation of the course "Sintaxis y Semántica de los Lenguajes" (UTN FRT). `action`: "definition" = the formal definition MT = ⟨Q, Σ_E, Σ_A, q0, F, f⟩ with its sets; "table" = the transition table (Estado Actual | Símbolo Entrada | Estado Nuevo | Símbolo Salida | Movimiento Cabezal); "run" = the configuration sequences (Δ1abaΔ ├─ ΔΔ2baΔ … final/acepta or bloqueo/rechazo) for `inputs`; "all_check" = whether the machine obeys the rules of an ALL (reads ⟨ moving D, reads ⟩ moving I, never reads or writes Δ, the head never leaves ⟨…⟩) and lists every violation. Write the machine as a compact turing document with cátedra labels (e,s,m): move I left, N stay, D right, Δ the blank, several labels on one edge joined with " / "; final states halt. Example: {"document":{"type":"turing","initial":"1","finals":["8"],"transitions":[["1","(a,Δ,D)","2"],["2","(a,a,D) / (b,b,D)","2"],["2","(Δ,Δ,D)","8"]]},"action":"run","inputs":["aa"]}.
 
 | argument | type | required | description |
 |---|---|---|---|
 | `action` | `definition` \| `table` \| `run` \| `all_check` | yes | definition, table, run (needs `inputs`) or all_check (static check, plus a dynamic one on `inputs`). |
-| `document` | object | yes | The one-tape Turing machine or ALL. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `document` | object | yes | The one-tape Turing machine or ALL. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `input_alphabet` | string or array of string | no | Declares Σ_E, such as "ab" or ["a","b"]; if missing it is inferred. |
 | `inputs` | array of string | no | Words to run ("" is the empty word). Needed by `run`; optional for `all_check`. |
 | `max_steps` | integer | no | Steps before a run is reported as not halting (default 1000, at most 100000). |
@@ -285,8 +291,8 @@ Composition of two one-tape Turing machines as in the course (CLASE 41): MT3 = �
 
 | argument | type | required | description |
 |---|---|---|---|
-| `a` | object | yes | The first machine, MT1. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
-| `b` | object | yes | The second machine, MT2, run after MT1 halts in a final state. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
+| `a` | object | yes | The first machine, MT1. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
+| `b` | object | yes | The second machine, MT2, run after MT1 halts in a final state. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 
 `structuredContent` keys: `definition`, `document`.
 

@@ -217,7 +217,14 @@ pub fn analysis(result: &Value) -> String {
         result["states"].as_array().map_or(0, Vec::len),
         result["transitions"]
     );
-    let _ = write!(out, "\n- alphabet: {}", names(&result["alphabet"]));
+    if kind == "turing" {
+        let _ = write!(out, "\n- alphabet Σ_E: {}", names(&result["alphabet"]));
+        if !result["tape_alphabet"].is_null() {
+            let _ = write!(out, "\n- Σ_A: {}", names(&result["tape_alphabet"]));
+        }
+    } else {
+        let _ = write!(out, "\n- alphabet: {}", names(&result["alphabet"]));
+    }
     let _ = write!(out, "\n- initial: {}", compact(&result["initial"]));
     let _ = write!(out, "\n- final states: {}", names(&result["finals"]));
     if let Some(deterministic) = result["deterministic"].as_bool() {
@@ -698,7 +705,7 @@ pub fn capabilities(caps: &Value, section: &str) -> String {
             .collect();
         let _ = write!(out, "Document types: {}.\n\n", types.join(", "));
         out.push_str(
-            "Ask for section `operations`, `document_types` or `convert` for the details.\n",
+            "Ask for section `operations`, `document_types`, `convert` or `layout` for the details.\n",
         );
     }
     if section == "operations" || all {
@@ -740,5 +747,38 @@ pub fn capabilities(caps: &Value, section: &str) -> String {
         }
         out.push('\n');
     }
+    if section == "layout" || all {
+        let algorithms: Vec<&str> = caps["layouts"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter_map(Value::as_str)
+            .collect();
+        let _ = write!(
+            out,
+            "\n## Layout\n\nA compact document places its states with these optional fields:\n\n\
+             - `layout`: the algorithm for the states without a point. Default `layered` (the \
+             initial state at the left, the rest in columns by distance from it). Algorithms: {}, \
+             layered.\n\
+             - `points`: fixed coordinates that win over the algorithm, \
+             `{{\"q0\": [x, y], \"q1\": [x, y]}}`.\n\
+             - `title` (alias `name`): shown as the first line of the result and as the header \
+             of the widget.\n\n\
+             Example: `{{\"type\":\"fa\",\"initial\":\"q0\",\"finals\":[\"q1\"],\
+             \"transitions\":[[\"q0\",\"a\",\"q1\"]],\"layout\":\"tree\",\
+             \"points\":{{\"q1\":[300,80]}},\"title\":\"My automaton\"}}`.\n",
+            algorithms.join(", ")
+        );
+    }
     out
 }
+
+/// The sections `rflap_capabilities` accepts.
+pub const CAPABILITY_SECTIONS: [&str; 6] = [
+    "overview",
+    "operations",
+    "document_types",
+    "convert",
+    "layout",
+    "all",
+];
