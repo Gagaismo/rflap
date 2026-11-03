@@ -229,7 +229,7 @@ fn type_entry(kind: &str) -> Value {
     let (summary, compact, example) = match kind {
         "fa" => (
             "Finite automaton.",
-            "{\"type\":\"fa\", \"initial\":\"q0\", \"finals\":[\"q2\"], \"transitions\":[[from, label, to], ...]}. A label is the string read; \"\" or \"λ\" is the empty string; [0-9] reads a character range. States are created by name in order of first use; add \"states\":[...] to declare them (then an unknown name is an error); \"points\":{\"q0\":[x,y]} fixes coordinates and \"layout\" picks the algorithm for the rest.",
+            "{\"type\":\"fa\", \"initial\":\"q0\", \"finals\":[\"q2\"], \"transitions\":[[from, label, to], ...]}. A label is the string read; \"\" or \"λ\" is the empty string; [0-9] reads a character range. States are created by name in order of first use; add \"states\":[...] to declare them (then an unknown name is an error); \"points\":{\"q0\":[x,y]} fixes coordinates and \"layout\" picks the algorithm for the rest: layered (default: initial state on the left, columns by BFS distance), circle, gem, random, spiral, tree, tree-degree or two-circle. Every compact type accepts an optional \"title\" (alias \"name\") that the operations ignore.",
             json!({"type": "fa", "initial": "q0", "finals": ["q2"],
                    "transitions": [["q0", "a", "q1"], ["q1", "", "q2"]]}),
         ),

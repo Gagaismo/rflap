@@ -5,7 +5,10 @@ use std::collections::BTreeMap;
 use serde::Serialize;
 
 use super::definition::transition_text;
-use super::{CatedraError, DELTA, LEFT_DELIMITER, Model, RIGHT_DELIMITER, check_supported, show};
+use super::{
+    CatedraError, DELTA, LEFT_DELIMITER, Model, RIGHT_DELIMITER, check_supported, show,
+    with_delimiter_aliases,
+};
 use crate::automaton::StateId;
 use crate::turing::{BLANK, Direction, ReadSymbol, TuringMachine, label_matches};
 
@@ -130,7 +133,8 @@ fn check_input(input: &str, model: Model) -> Result<Vec<char>, CatedraError> {
 /// shows, in each configuration, the cells from one before the word to one after it plus every
 /// cell the head has visited. The `All` model puts `⟨w⟩` on the tape, starts on the first symbol
 /// (on `⟩` for λ), shows the whole tape and stops with a violation when the head leaves `⟨…⟩`
-/// or a delimiter is overwritten.
+/// or a delimiter is overwritten; there `<` and `>` count as `⟨` and `⟩` when the machine uses
+/// neither.
 pub fn run(
     machine: &TuringMachine,
     input: &str,
@@ -138,6 +142,13 @@ pub fn run(
     max_steps: usize,
 ) -> Result<RunReport, CatedraError> {
     check_supported(machine)?;
+    let aliased;
+    let machine = if model == Model::All {
+        aliased = with_delimiter_aliases(machine);
+        &aliased
+    } else {
+        machine
+    };
     let initial = machine
         .automaton()
         .initial()
@@ -301,13 +312,15 @@ fn static_violation(machine: &TuringMachine, index: usize, kind: &str, rule: &st
 /// Checks that a machine follows the rules of an ALL. Statically, every transition that reads
 /// `⟨` writes `⟨` and moves right (D), every one that reads `⟩` writes `⟩` and moves left (I),
 /// `Δ` is neither read nor written and `⟨`/`⟩` are written only over themselves. Dynamically,
-/// each input is run as an ALL and the head must never leave `⟨…⟩`.
+/// each input is run as an ALL and the head must never leave `⟨…⟩`. A machine without `⟨` or `⟩`
+/// is read with `<` and `>` as the delimiters.
 pub fn all_check(
     machine: &TuringMachine,
     inputs: &[String],
     max_steps: usize,
 ) -> Result<AllReport, CatedraError> {
     check_supported(machine)?;
+    let machine = &with_delimiter_aliases(machine);
     let mut violations = Vec::new();
     for (i, t) in machine.automaton().transitions().iter().enumerate() {
         let a = &t.label.actions()[0];

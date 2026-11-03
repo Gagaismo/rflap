@@ -16,6 +16,7 @@ use std::fmt;
 use serde::{Deserialize, Serialize};
 
 use super::{BLANK, Direction, TapeAction, TmError, TmLabel, TuringMachine};
+use crate::automaton::Transition;
 
 pub use compose::{Multipista, compose, multipista};
 pub use definition::{Definition, Issue, Table, definition, transition_table};
@@ -77,6 +78,43 @@ impl Model {
         });
         if uses { Model::All } else { Model::Mt }
     }
+}
+
+/// The machine with `<` and `>` read as the delimiters `⟨` and `⟩` of an ALL, in every read and
+/// write symbol. Only when the machine uses no `⟨` or `⟩` yet; otherwise it is returned as is,
+/// and `<` and `>` stay ordinary tape symbols.
+pub fn with_delimiter_aliases(machine: &TuringMachine) -> TuringMachine {
+    if Model::detect(machine) == Model::All {
+        return machine.clone();
+    }
+    let alias = |c: char| match c {
+        '<' => LEFT_DELIMITER,
+        '>' => RIGHT_DELIMITER,
+        c => c,
+    };
+    let mut aliased = machine.clone();
+    let transitions = machine.automaton().transitions().to_vec();
+    let a = aliased.automaton_mut();
+    for t in &transitions {
+        a.remove_transition(t);
+    }
+    for t in transitions {
+        let actions = t
+            .label
+            .actions()
+            .iter()
+            .map(|x| TapeAction {
+                read: x.read().chars().map(alias).collect(),
+                write: alias(x.write()),
+                direction: x.direction(),
+            })
+            .collect();
+        a.add_transition(Transition {
+            label: TmLabel { actions },
+            ..t
+        });
+    }
+    aliased
 }
 
 /// Why a cátedra operation could not be done.
