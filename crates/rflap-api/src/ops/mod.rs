@@ -27,6 +27,7 @@ pub fn dispatch(request: Request) -> Result<Response, ApiError> {
         Request::Capabilities => capabilities::capabilities(),
         Request::OpenJff(r) => jff::open(&r.xml)?,
         Request::SaveJff(r) => jff::save(&r.document)?,
+        Request::JflapCheck(r) => jff::jflap_check(&r.document),
         Request::Normalize(r) => json!({"document": r.document}),
         Request::Simulate(r) => sim::simulate(r)?,
         Request::Step(r) => sim::step(r)?,

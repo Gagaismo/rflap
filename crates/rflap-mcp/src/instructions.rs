@@ -45,6 +45,17 @@ with model \"all\" (or when its labels use ⟨ ⟩) and rflap_show / rflap_simul
 \"catedra\" (default) or \"jflap\"; give each machine a title (alias name) so the answers and the widgets \
 tell them apart.
 
+Compatibility with classic JFLAP 7.1 is an internal rule: every automaton you design, show or save \
+must open in classic JFLAP 7.1 with the same states, initial state, finals, labels and symbols, and \
+FA, PDA, Mealy, Moore and Turing machines must run there with the same verdicts. Avoid Rflap-only \
+constructions (more than 5 tapes, a range label [x-y] into a state with a λ exit, anything the \
+reply flags) unless the student asks for them. The tools check it: a \"⚠️ JFLAP 7.1\" line in a reply \
+is a construction JFLAP cannot represent or runs differently (change the design; rflap_save_jff \
+still saves it, unchanged, and warns), and a \"ℹ️ JFLAP 7.1\" line is a note to pass on \
+(structuredContent.jflap has both). An ALL opens the same in JFLAP but JFLAP has no ALL model: say \
+how to run it there (add an initial state with (⟨,⟨,D) to the old one and type the word as ⟨w⟩) and \
+that the cátedra semantics (tape ⟨w⟩, shrinking tape) only hold in Rflap.
+
 Write documents in the compact form, e.g. {\"type\":\"fa\",\"initial\":\"q0\",\"finals\":[\"q2\"],\
 \"transitions\":[[\"q0\",\"a\",\"q1\"],[\"q1\",\"b\",\"q2\"]]}; \"\" or λ is the empty string. A grammar \
 is plain text, one production per line (\"S -> aSb | λ\"), uppercase letters are variables. Call \

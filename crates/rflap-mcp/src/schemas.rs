@@ -190,8 +190,10 @@ fn design_automaton() -> ToolDef {
             your examples and against a brute-force cross-check. Give the alphabet, exactly ONE \
             of constraint_text / constraint / regex / grammar / template, and accept/reject \
             examples (include the empty string and boundary cases). If the verification reports \
-            a failing example, your spec or example is wrong: fix it and call again. \
-            constraint_text syntax: starts_with(\"ab\"), ends_with(\"ab\"), contains(\"aa\"), \
+            a failing example, your spec or example is wrong: fix it and call again. The \
+            result must be JFLAP 7.1 compatible (the .jff opens and runs the same in classic \
+            JFLAP); a \"⚠️ JFLAP 7.1\" line in the reply names a construction JFLAP cannot \
+            represent: fix the design. constraint_text syntax: starts_with(\"ab\"), ends_with(\"ab\"), contains(\"aa\"), \
             length >= 3, length % 2 == 0, count(a) % 2 == 0, count(a,b) >= 2 (a or b), \
             count(a) == count(b) (NOT regular), regex(\"(a+b)*\"), combined with and / or / \
             xor / not and parentheses. Regex syntax is JFLAP's: + union, \
@@ -278,7 +280,10 @@ fn show() -> ToolDef {
         description: "Shows any Rflap document (automaton, grammar, regex, L-system…) in the \
             interactive widget and returns its analysis (deterministic?, unreachable states…), \
             a transition table and an explanation. Use it to display something you wrote by \
-            hand. Optional fields of a compact document: `title` (alias `name`; shown as the \
+            hand. Every automaton must be JFLAP 7.1 compatible: the reply adds \"⚠️ JFLAP 7.1\" \
+            lines for what classic JFLAP cannot open or runs differently, and \"ℹ️ JFLAP 7.1\" \
+            notes (an ALL carries how to run it in JFLAP); relay them to the student. \
+            Optional fields of a compact document: `title` (alias `name`; shown as the \
             first line and the header of the widget), `layout` (algorithm for the state \
             positions: layered = default, initial state at the left and the rest in columns by \
             distance; circle, gem, random, spiral, tree, tree-degree, two-circle) and `points` \
@@ -753,7 +758,11 @@ fn save_jff() -> ToolDef {
         title: "Save as a JFLAP file",
         description: "Writes a document as .jff text that JFLAP 7.1 opens. Returns the XML; with \
             `path` (a .jff file on the machine where this server runs, local use only) it also \
-            writes the file, refusing to overwrite unless `overwrite` is true."
+            writes the file, refusing to overwrite unless `overwrite` is true. The document is \
+            checked first: the reply adds \"⚠️ JFLAP 7.1\" lines for what classic JFLAP cannot \
+            open or runs differently (it still saves it, unchanged) and \"ℹ️ JFLAP 7.1\" notes \
+            (an ALL says how to run it in JFLAP); a design should be JFLAP 7.1 compatible, so \
+            fix the warnings unless the student asked for the Rflap-only construction."
             .to_string(),
         input: schema(
             vec![

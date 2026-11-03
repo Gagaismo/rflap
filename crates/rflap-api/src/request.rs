@@ -12,10 +12,11 @@ use crate::document::Document;
 use crate::error::{ApiError, code};
 
 /// Every operation, in the order `capabilities` lists them.
-pub const OPS: [&str; 29] = [
+pub const OPS: [&str; 30] = [
     "capabilities",
     "open_jff",
     "save_jff",
+    "jflap_check",
     "normalize",
     "simulate",
     "step",
@@ -52,6 +53,7 @@ pub enum Request {
     Capabilities,
     OpenJff(OpenJff),
     SaveJff(OneDocument),
+    JflapCheck(OneDocument),
     Normalize(OneDocument),
     Simulate(Simulate),
     Step(Step),
@@ -87,6 +89,7 @@ impl Request {
             Request::Capabilities => "capabilities",
             Request::OpenJff(_) => "open_jff",
             Request::SaveJff(_) => "save_jff",
+            Request::JflapCheck(_) => "jflap_check",
             Request::Normalize(_) => "normalize",
             Request::Simulate(_) => "simulate",
             Request::Step(_) => "step",

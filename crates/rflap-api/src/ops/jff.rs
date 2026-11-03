@@ -1,6 +1,7 @@
-//! `open_jff` and `save_jff`.
+//! `open_jff`, `save_jff` and `jflap_check`.
 
 use rflap_core::jff::{self, JffError, Structure};
+use rflap_core::jflap::{self, JflapCheck};
 use rflap_core::lsystem;
 use rflap_core::pumping::{self, Game};
 use serde_json::{Value, json};
@@ -52,4 +53,15 @@ pub fn save(document: &Document) -> Result<Value, ApiError> {
         }
     };
     Ok(json!({"xml": xml, "type": document.type_name()}))
+}
+
+/// What classic JFLAP 7.1 cannot represent or runs differently in a document (`jflap_check`).
+pub fn jflap_check(document: &Document) -> Value {
+    let check = match document {
+        Document::Fa(a) => jflap::check_fa(a),
+        Document::Pda(a) => jflap::check_pda(a),
+        Document::Turing(a) => jflap::check_turing(a),
+        _ => JflapCheck::clean(),
+    };
+    json!(check)
 }
