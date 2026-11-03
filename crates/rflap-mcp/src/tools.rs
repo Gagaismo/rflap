@@ -1,12 +1,10 @@
 //! `tools/call`: each tool adapts one or more `rflap_api` operations and writes the Markdown
 //! for chats without the widget. No algorithm lives here.
 
-use std::path::Path;
-
 use serde_json::{Map, Value, json};
 
 use crate::schemas::{self, ToolDef};
-use crate::{Config, catedra, content, viewer};
+use crate::{Config, catedra, content, paths, viewer};
 
 /// What a tool produced; becomes the `CallToolResult`.
 pub struct ToolOutput {
@@ -388,11 +386,22 @@ fn runs_as_all(args: &Map<String, Value>, document: &Value) -> Result<bool, Stri
     })
 }
 
+/// Passes the `allow_shrink` of the tool arguments on to an ALL request.
+fn with_shrink(args: &Map<String, Value>, mut request: Value) -> Value {
+    if let Some(value) = args.get("allow_shrink").filter(|v| v.is_boolean()) {
+        request["allow_shrink"] = value.clone();
+    }
+    request
+}
+
 /// The ALL rules the machine breaks, as a warning (empty when it obeys them).
-fn all_warnings(document: &Value) -> String {
-    api(json!({"op": "all_check", "document": document}))
-        .map(|check| catedra::warnings(&check))
-        .unwrap_or_default()
+fn all_warnings(args: &Map<String, Value>, document: &Value) -> String {
+    api(with_shrink(
+        args,
+        json!({"op": "all_check", "document": document}),
+    ))
+    .map(|check| catedra::warnings(&check))
+    .unwrap_or_default()
 }
 
 fn show(args: &Map<String, Value>) -> Outcome {
@@ -444,7 +453,10 @@ Transition table / productions:
     if all {
         let definition =
             api(json!({"op": "catedra_definition", "document": document, "model": "all"}))?;
-        let check = api(json!({"op": "all_check", "document": document}))?;
+        let check = api(with_shrink(
+            args,
+            json!({"op": "all_check", "document": document}),
+        ))?;
         text.push_str(&format!(
             "
 
@@ -495,8 +507,10 @@ fn all_run(
     inputs: Vec<Value>,
     max_steps: Option<Value>,
 ) -> Result<Value, String> {
-    let mut request = json!({"op": "catedra_run", "document": document, "model": "all",
-                             "inputs": inputs});
+    let mut request = with_shrink(
+        args,
+        json!({"op": "catedra_run", "document": document, "model": "all", "inputs": inputs}),
+    );
     if let Some(max_steps) = max_steps.or_else(|| args.get("max_steps").cloned()) {
         request["max_steps"] = max_steps;
     }
@@ -509,7 +523,7 @@ fn simulate(args: &Map<String, Value>) -> Outcome {
     let mut done = if runs_as_all(args, &document)? {
         let result = all_run(args, &document, all_words(args)?, None)?;
         let mut text = catedra::run(&result);
-        let warnings = all_warnings(&document);
+        let warnings = all_warnings(args, &document);
         if !warnings.is_empty() {
             text.push_str(&format!("\n\n{warnings}"));
         }
@@ -544,7 +558,10 @@ fn simulate_generic(
     notation: Option<&str>,
 ) -> Outcome {
     let mut request = op("simulate", args);
-    drop(&mut request, &["model", "notation", "max_steps"]);
+    drop(
+        &mut request,
+        &["model", "notation", "max_steps", "allow_shrink"],
+    );
     request["document"] = document.clone();
     if let Some(batch) = take(&mut request, "inputs") {
         drop(&mut request, &["input", "tapes"]);
@@ -598,7 +615,7 @@ fn step(args: &Map<String, Value>) -> Outcome {
         return step_all(args, document);
     }
     let mut request = op("step", args);
-    drop(&mut request, &["model"]);
+    drop(&mut request, &["model", "allow_shrink"]);
     request["document"] = document.clone();
     if let Some(tapes) = take(&mut request, "tapes") {
         request["inputs"] = tapes;
@@ -620,7 +637,7 @@ fn step_all(args: &Map<String, Value>, document: Value) -> Outcome {
     let input = args.get("input").cloned().unwrap_or_else(|| json!(""));
     let run = all_run(args, &document, vec![input], Some(json!(steps)))?;
     let mut text = catedra::step(&run, steps);
-    let warnings = all_warnings(&document);
+    let warnings = all_warnings(args, &document);
     if !warnings.is_empty() {
         text.push_str(&format!("\n\n{warnings}"));
     }
@@ -723,7 +740,9 @@ fn open_jff(config: &Config, args: &Map<String, Value>) -> Outcome {
         (Some(xml), None) => xml.to_string(),
         (None, Some(path)) => {
             files_allowed(config)?;
-            std::fs::read_to_string(path).map_err(|e| format!("could not read `{path}`: {e}"))?
+            let (real, _) = paths::resolve(path);
+            std::fs::read_to_string(&real)
+                .map_err(|e| format!("could not read `{}`: {e}", real.display()))?
         }
         _ => return Err("Give exactly one of `xml` or `path`.".into()),
     };
@@ -766,13 +785,14 @@ fn save_jff(config: &Config, args: &Map<String, Value>) -> Outcome {
         });
     };
     files_allowed(config)?;
-    let target = Path::new(path);
+    let (target, remark) = paths::resolve(path);
+    let shown = target.display().to_string();
     if target
         .extension()
         .and_then(|e| e.to_str())
         .is_none_or(|e| !e.eq_ignore_ascii_case("jff"))
     {
-        return Err(format!("`{path}` must end in .jff."));
+        return Err(format!("`{shown}` must end in .jff."));
     }
     let overwrite = args
         .get("overwrite")
@@ -780,13 +800,19 @@ fn save_jff(config: &Config, args: &Map<String, Value>) -> Outcome {
         .unwrap_or(false);
     if target.exists() && !overwrite {
         return Err(format!(
-            "`{path}` already exists; pass overwrite: true to replace it."
+            "`{shown}` already exists; pass overwrite: true to replace it."
         ));
     }
-    std::fs::write(target, xml).map_err(|e| format!("could not write `{path}`: {e}"))?;
+    std::fs::write(&target, xml).map_err(|e| format!("could not write `{shown}`: {e}"))?;
+    let mut text = format!("Saved `{shown}` ({} bytes); JFLAP 7.1 opens it.", xml.len());
+    if let Some(remark) = remark {
+        text.push_str(&format!("\n\nℹ️ {remark}"));
+    }
+    let mut structured = object(result);
+    structured.insert("path".into(), json!(shown));
     Ok(Done {
-        text: format!("Saved `{path}` ({} bytes); JFLAP 7.1 opens it.", xml.len()),
-        structured: result,
+        text,
+        structured: Value::Object(structured),
     })
 }
 
@@ -951,21 +977,21 @@ fn mt_catedra(args: &Map<String, Value>) -> Outcome {
         .and_then(Value::as_str)
         .unwrap_or_default();
     let mut request = json!({"document": document});
-    for key in ["model", "max_steps"] {
+    for key in ["model", "max_steps", "allow_shrink"] {
         if let Some(value) = args.get(key).filter(|v| !v.is_null()) {
             request[key] = value.clone();
         }
     }
     let (op, text) = match action {
         "definition" => {
-            drop(&mut request, &["max_steps"]);
+            drop(&mut request, &["max_steps", "allow_shrink"]);
             (
                 "catedra_definition",
                 catedra::definition as fn(&Value) -> String,
             )
         }
         "table" => {
-            drop(&mut request, &["model", "max_steps"]);
+            drop(&mut request, &["model", "max_steps", "allow_shrink"]);
             ("catedra_table", catedra::table as fn(&Value) -> String)
         }
         "run" => {

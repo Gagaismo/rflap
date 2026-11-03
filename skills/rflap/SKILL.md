@@ -118,6 +118,22 @@ Answer in Spanish with the course's terms.
    transitions); a missing transition is a *bloqueo*, which rejects; an MT may never halt
    (`no se detiene`), an ALL always accepts or rejects. Multitape uses JFLAP notation
    (`a;a,R|_;x,S`); `rflap_analyze` says whether it is multipista (all heads move together).
+6. **ALL details**:
+   - The tape may **shrink** (default): writing `⟨` over another symbol moving `D`, or `⟩` moving `I`
+     (the course's `(a,⟨,D)` / `(c,⟩,I)`), is valid and comes back as a note
+     (`ℹ️ q0 escribe ⟨ sobre a: la cinta se achica`), never a violation. The tape shows its real
+     cells (`⟨q0aab⟩ ├─ ⟨⟨q1ab⟩ ├─ …`). For a stricter definition (⟨ ⟩ only written over themselves)
+     pass `allow_shrink: false` (CLI `--no-shrink`); `rflap_mt_catedra`, `rflap_simulate`,
+     `rflap_step` and `rflap_show` take it. Still violations: `⟨` written moving `I`/`N`, `⟩`
+     written moving `D`/`N`, a delimiter read and not rewritten, the head crossing a delimiter.
+   - Reading `⟨`/`⟩` and writing it back with `N` into a **final** state is valid (final states
+     halt), with a note.
+   - An input that already has its delimiters (`⟨aba⟩` or `<aba>`) is run without them, with a note.
+   - Always write the delimiters as `⟨` `⟩`. A Turing machine without them whose labels use both
+     `<` and `>` is normalized to `⟨` `⟩` (documents, `.jff`, tables); with only one of them, it
+     stays an ordinary symbol.
+   - `rflap_save_jff` / `rflap_open_jff` `path` accepts `~`, `%USERPROFILE%` and falls back from
+     `~/Desktop` to `~/OneDrive/Desktop` (or `Escritorio`); the reply names the real path.
 
 ### Worked example 1: the palindrome MT (CLASE 39)
 

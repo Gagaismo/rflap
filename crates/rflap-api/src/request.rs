@@ -583,6 +583,10 @@ pub struct CatedraRun {
     /// Transitions applied before the run is reported as not halting (default 1000).
     #[serde(default)]
     pub max_steps: Option<usize>,
+    /// Writing `⟨` over another symbol moving right (or `⟩` moving left) is valid in an ALL
+    /// (default `true`); `false` restores the strict rule.
+    #[serde(default)]
+    pub allow_shrink: Option<bool>,
 }
 
 /// `all_check`.
@@ -595,6 +599,9 @@ pub struct AllCheck {
     pub inputs: Option<Vec<String>>,
     #[serde(default)]
     pub max_steps: Option<usize>,
+    /// See `catedra_run`.
+    #[serde(default)]
+    pub allow_shrink: Option<bool>,
 }
 
 /// `membership_tk`.

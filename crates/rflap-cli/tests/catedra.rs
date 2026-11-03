@@ -155,7 +155,7 @@ fn run_json_prints_the_raw_api_answer() {
     let out = rflap(&["catedra", "run", &f, "a", "--json"]);
     assert_eq!(
         out.stdout,
-        "{\"ok\":true,\"op\":\"catedra_run\",\"result\":{\"max_steps\":1000,\"model\":\"mt\",\"results\":[{\"accepted\":true,\"configurations\":[\"Δ1aΔ\",\"Δa2Δ\",\"Δa3Δ\"],\"input\":\"a\",\"model\":\"mt\",\"sequence\":\"Δ1aΔ ├─ Δa2Δ ├─ Δa3Δ final/acepta\",\"steps\":2,\"verdict\":\"accepted\"}]}}\n"
+        "{\"ok\":true,\"op\":\"catedra_run\",\"result\":{\"max_steps\":1000,\"model\":\"mt\",\"results\":[{\"accepted\":true,\"configurations\":[\"Δ1aΔ\",\"Δa2Δ\",\"Δa3Δ\"],\"input\":\"a\",\"model\":\"mt\",\"notes\":[],\"sequence\":\"Δ1aΔ ├─ Δa2Δ ├─ Δa3Δ final/acepta\",\"steps\":2,\"verdict\":\"accepted\"}]}}\n"
     );
     assert_eq!(out.code, 0);
 }
@@ -271,5 +271,79 @@ fn membership_refuses_contracting_grammars() {
     assert_eq!(
         out.stderr,
         "error: contracting_grammar: La gramática es compresora (la producción aA → a tiene |α| > |β|): la comprobación por los conjuntos Tk solo vale para gramáticas no compresoras.\n"
+    );
+}
+
+// ALL shrink (S1) and delimiters in the input (S4)
+
+const SHRINK: &str =
+    include_str!("../../rflap-api/tests/fixtures/catedra/ALL_2.1e_m_igual_2p_mas_1.jff");
+
+#[test]
+fn all_check_prints_the_shrink_notes_and_passes() {
+    let t = Temp::new();
+    let f = t.write("e.jff", SHRINK);
+    let out = rflap(&["catedra", "all-check", &f, "aab", "aabb"]);
+    assert_eq!(out.code, 0, "{}", out.stdout);
+    assert!(
+        out.stdout
+            .contains("ℹ️ q0 escribe ⟨ sobre a: la cinta se achica\n"),
+        "{}",
+        out.stdout
+    );
+    assert!(
+        out.stdout.starts_with(
+            "\"aab\": ⟨q0aab⟩ ├─ ⟨⟨q1ab⟩ ├─ ⟨⟨⟨q2b⟩ ├─ ⟨⟨⟨⟨q3⟩ ├─ ⟨⟨⟨qf⟨⟩ final/acepta\n"
+        ),
+        "{}",
+        out.stdout
+    );
+    assert!(
+        out.stdout
+            .ends_with("La máquina cumple las reglas de un ALL.\n"),
+        "{}",
+        out.stdout
+    );
+}
+
+#[test]
+fn all_check_no_shrink_restores_the_strict_rule() {
+    let t = Temp::new();
+    let f = t.write("e.jff", SHRINK);
+    let out = rflap(&["catedra", "all-check", &f, "aab", "--no-shrink"]);
+    assert_eq!(out.code, 1);
+    assert!(!out.stdout.contains("ℹ️"), "{}", out.stdout);
+    assert!(
+        out.stdout.contains(
+            "- La transición q0 --(a,⟨,D)--> q1 escribe ⟨ sobre a: ⟨ y ⟩ solo se escriben sobre sí mismos.\n"
+        ),
+        "{}",
+        out.stdout
+    );
+}
+
+#[test]
+fn run_prints_the_notes_after_the_sequence_and_honors_no_shrink() {
+    let t = Temp::new();
+    let f = t.write("e.jff", SHRINK);
+    let out = rflap(&["catedra", "run", &f, "<aab>"]);
+    assert_eq!(out.code, 0, "{}", out.stdout);
+    let lines: Vec<&str> = out.stdout.lines().collect();
+    assert!(
+        lines[0].starts_with("\"<aab>\": ⟨q0aab⟩ ├─"),
+        "{}",
+        out.stdout
+    );
+    assert_eq!(
+        lines[1],
+        "ℹ️ La entrada «<aab>» ya traía los delimitadores; se quitaron y se corre ⟨aab⟩."
+    );
+    assert!(lines.contains(&"ℹ️ q0 escribe ⟨ sobre a: la cinta se achica"));
+    let strict = rflap(&["catedra", "run", &f, "aab", "--no-shrink"]);
+    assert_eq!(strict.code, 1);
+    assert!(
+        strict.stdout.contains("violación del ALL"),
+        "{}",
+        strict.stdout
     );
 }

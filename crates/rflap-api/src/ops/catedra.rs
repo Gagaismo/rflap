@@ -5,8 +5,8 @@
 use rflap_core::grammar::{MembershipError, membership_tk_limited};
 use rflap_core::turing::TuringMachine;
 use rflap_core::turing::catedra::{
-    self, CatedraError, Model, RunReport, Verdict, all_check as core_all_check, compose,
-    definition, run as core_run, transition_table,
+    self, CatedraError, Model, RunReport, Verdict, all_check_with as core_all_check_with, compose,
+    definition, run_with as core_run_with, transition_table,
 };
 use serde_json::{Value, json};
 
@@ -106,9 +106,10 @@ pub fn run(r: CatedraRun) -> Result<Value, ApiError> {
             ));
         }
     };
+    let allow_shrink = r.allow_shrink.unwrap_or(true);
     let mut results = Vec::new();
     for input in &inputs {
-        let report = core_run(tm, input, model, steps).map_err(catedra_error)?;
+        let report = core_run_with(tm, input, model, steps, allow_shrink).map_err(catedra_error)?;
         results.push(run_value(&report));
     }
     Ok(json!({"model": model, "max_steps": steps, "results": results}))
@@ -118,9 +119,12 @@ pub fn all_check(r: AllCheck) -> Result<Value, ApiError> {
     let tm = machine("all_check", &r.document)?;
     let steps = max_steps(r.max_steps)?;
     let inputs = r.inputs.unwrap_or_default();
-    let report = core_all_check(tm, &inputs, steps).map_err(catedra_error)?;
+    let report = core_all_check_with(tm, &inputs, steps, r.allow_shrink.unwrap_or(true))
+        .map_err(catedra_error)?;
     let runs: Vec<Value> = report.runs.iter().map(run_value).collect();
-    Ok(json!({"ok": report.ok, "violations": report.violations, "runs": runs}))
+    Ok(
+        json!({"ok": report.ok, "notes": report.notes, "violations": report.violations, "runs": runs}),
+    )
 }
 
 pub fn compose_tm(r: Pair) -> Result<Value, ApiError> {
