@@ -254,6 +254,20 @@ h3 {
   border-bottom: 1px solid var(--border);
 }
 
+.diagram-title {
+  padding: 6px 12px;
+  background: var(--canvas-bg);
+  color: var(--canvas-ink);
+  border-bottom: 1px solid var(--border);
+  font-weight: bold;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.diagram-title[hidden] {
+  display: none;
+}
+
 .canvas-area {
   flex: 1;
   min-height: 0;

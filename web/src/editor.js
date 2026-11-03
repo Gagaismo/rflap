@@ -181,7 +181,7 @@ export class Canvas {
 
   /** How a Turing machine writes its labels: the choice of View > Notation (cátedra by default). */
   get notation() {
-    return (this.ctx.app && this.ctx.app.notation) || 'catedra';
+    return this.ctx.notation || 'catedra';
   }
 
   get tapes() {

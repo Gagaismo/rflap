@@ -6,6 +6,8 @@ import { h } from './dom.js';
 import { t } from './i18n.js';
 import { registerPanel } from './registry.js';
 import { configTable } from './sim.js';
+import { hasTable, markdownNodes } from './markdown.js';
+import { contentExtras } from './tool-result.js';
 
 const isPrimitive = (v) => v === null || typeof v !== 'object';
 
@@ -37,14 +39,14 @@ registerPanel({
   title: 'panel.assistant',
   appliesTo: ['*'],
   order: 5,
-  visible: (tab) => Boolean(tab && tab.extras && Object.keys(tab.extras).length),
+  visible: (tab) => Boolean(tab && tab.extras && Object.keys(contentExtras(tab.extras)).length),
   mount(root, tab) {
     const body = h('div', { class: 'panel-body' });
     root.append(body);
 
     function draw() {
       body.replaceChildren();
-      const extras = tab.extras || {};
+      const extras = contentExtras(tab.extras);
       if (extras.message) body.append(h('p', {}, extras.message));
       if (typeof extras.svg === 'string' && extras.svg.includes('<svg')) {
         // an <img> never runs scripts, whatever the SVG contains
@@ -60,7 +62,8 @@ registerPanel({
       if (extras.verification) body.append(h('h3', {}, t('assistant.verification')), valueView(extras.verification));
       for (const [key, value] of Object.entries(extras)) {
         if (['message', 'svg', 'simulation', 'analysis', 'verification', 'document', 'steps'].includes(key)) continue;
-        body.append(h('h3', {}, key.replace(/_/g, ' ')), valueView(value));
+        const markdown = typeof value === 'string' && (key === 'explanation' || hasTable(value));
+        body.append(h('h3', {}, key.replace(/_/g, ' ')), markdown ? h('div', { class: 'markdown' }, markdownNodes(value)) : valueView(value));
       }
     }
 

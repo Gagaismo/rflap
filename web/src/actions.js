@@ -266,7 +266,7 @@ registerAction({
 
 // ------------------------------------------------------------------------------------ Layout
 
-const layouts = ['circle', 'gem', 'random', 'spiral', 'tree', 'tree-degree', 'two-circle'];
+const layouts = ['layered', 'circle', 'gem', 'random', 'spiral', 'tree', 'tree-degree', 'two-circle'];
 layouts.forEach((algorithm, order) => {
   registerAction({
     id: `layout.${algorithm}`,

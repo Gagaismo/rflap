@@ -84,6 +84,7 @@ export const dictionaries = {
     'convert.are_equivalent': '{a} and {b} accept the same language.',
     'convert.not_equivalent': '{a} and {b} are not equivalent. Difference: {word}',
 
+    'layout.layered': 'Layered (initial on the left)',
     'layout.circle': 'Circle',
     'layout.gem': 'GEM',
     'layout.random': 'Random',
@@ -395,6 +396,7 @@ export const dictionaries = {
     'convert.are_equivalent': '{a} y {b} aceptan el mismo lenguaje.',
     'convert.not_equivalent': '{a} y {b} no son equivalentes. Diferencia: {word}',
 
+    'layout.layered': 'Por capas (inicial a la izquierda)',
     'layout.circle': 'Círculo',
     'layout.gem': 'GEM',
     'layout.random': 'Aleatoria',
