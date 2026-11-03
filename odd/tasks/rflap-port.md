@@ -36,11 +36,11 @@ Referencia: `reference/src/` (JFLAP descompilado con CFR 0.152, ignorado por git
 | T9 | S2.10 | Layouts y render SVG | inline | ce2277e |
 | T10 | S4 | Motor de diseño: lenguaje (ER, gramática o especificación declarativa) → autómata mínimo verificado con ejemplos | inline | 463afd1 |
 | T11 | S1, S2 | CLI `rflap` | inline | fb15bf8 |
-| T12 | S2, S3 | T12a: crate `rflap-wasm`, editor web de autómatas (todos los tipos), simulación, archivos, puentes de host (navegador, MCP Apps, ChatGPT), build a un único `web/dist/rflap.html`; T12b: paneles de gramática, ER, conversiones paso a paso, parse, diseño, L-system y lema de bombeo | inline | |
+| T12 | S2, S3 | T12a: crate `rflap-wasm`, editor web de autómatas (todos los tipos), simulación, archivos, puentes de host (navegador, MCP Apps, ChatGPT), build a un único `web/dist/rflap.html`; T12b: paneles de gramática, ER, conversiones paso a paso, parse, diseño, L-system y lema de bombeo | inline | 3009e0f, 8c48242, 3bab3d9 |
 | T13 | S3, S4 | Servidor MCP (stdio + HTTP) con herramientas y widget MCP Apps; guías para ChatGPT, Codex, Claude, Claude Code | inline | 9050777 |
 | T15 | S2.2, S2.3, S2.4, S2.6, S2.10 | Conversiones cruzadas: FA↔gramática regular, PDA→CFG, CFG→PDA (LL y LR), MT→gramática irrestricta; `.jff` de PDA, MT, Mealy, Moore, gramática, ER, L-system y lema de bombeo | inline | f40d2b1, 4218fe4 |
 | T16 | S2, S3, S4 | Crate `rflap-api`: `Document` JSON de todos los tipos (con .jff), operaciones (simular, convertir, analizar, layout, render, diseñar) como capa común para CLI, WASM y MCP | inline | ab85dd6 |
-| T14 | S1-S5 | Verificación diferencial contra JFLAP (arnés Java), docs finales, push | inline | |
+| T14 | S1-S5 | Verificación diferencial contra JFLAP (arnés Java), docs finales, push | inline | 8476e5a |
 
 ## Log
 
@@ -64,3 +64,9 @@ Referencia: `reference/src/` (JFLAP descompilado con CFR 0.152, ignorado por git
   - `rflap design --regex '(a+b)*abb'` da 4 estados y `run` sale con 1 ante un rechazo.
   - Seguimiento: se publicó la spec MCP 2026-07-28 (sin `initialize` ni sesiones). Los clientes vuelven a 2025-11-25, así que no bloquea.
   - T12a commiteado en `3009e0f`; T12b y T14 en paralelo.
+- **L11** (evidencia de cierre): T12b (paneles de gramática, ER, diseño, L-system, lema de bombeo y replay) y T14 integrados. T14 cerró los huecos: `tape_outputs` de MT, contrato `rflap_call` del widget con `visibility` app, enums en snake_case, `combine` y `remove_useless_states` para MT, y `pda_to_jflap_form` con `convert cfg` automático. Escribió `README.md`, `docs/differences-from-jflap.md` y `docs/testing.md`. Al integrar, el JS esperaba valores CamelCase: arreglado en `3bab3d9` (snake_case canónico; acepta ambos). Verificación final:
+  - 613 tests de Rust y 124 de JS en verde; clippy y fmt limpios.
+  - El bundle `web/dist/rflap.html` es reproducible (2,79 MiB, mismo SHA-1 al reconstruir).
+  - CI de GitHub `success` en `3bab3d9`.
+  - Los harnesses contra el JAR real (T5, T15a, T8, HarnessAll) siguen idénticos a JFLAP.
+  - Pendiente del humano: probar el widget en hosts reales (Claude Desktop/claude.ai, ChatGPT con túnel HTTPS) y decidir el merge a `master`.
