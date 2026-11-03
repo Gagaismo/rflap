@@ -12,6 +12,8 @@ import './grammar-editor.js';
 import './grammar-transform.js';
 import './grammar-tables.js';
 import './grammar-parse.js';
+import './grammar-membership.js';
+import './catedra-panels.js';
 import './regex-panel.js';
 import './design-panel.js';
 import './lsystem-panel.js';

@@ -347,3 +347,115 @@ fn dot_without_initial_state_has_no_start_arrow() {
         "digraph automaton {\n  rankdir=LR;\n  node [shape=circle];\n  s0 [label=\"q0\"];\n}\n"
     );
 }
+
+// ---------------------------------------------------------------------------------------------
+// labels in the notation of the course
+// ---------------------------------------------------------------------------------------------
+
+mod catedra_labels {
+    use rflap_core::render::{SvgOptions, to_dot_with, to_svg, to_svg_with, transition_table_with};
+    use rflap_core::turing::TuringMachine;
+    use rflap_core::turing::catedra::{Notation, format_label, parse_label};
+
+    use super::{at, even_as};
+
+    /// States 2 (initial) and 3 with `(a,a,D)` and `(b,b,D)` looping on 2 and `(Δ,Δ,I)` to 3.
+    fn palindrome_corner(tapes: usize) -> TuringMachine {
+        let mut m = TuringMachine::new(tapes);
+        let a = m.create_state(at(100.0, 100.0));
+        let b = m.create_state(at(250.0, 100.0));
+        m.state_mut(a).unwrap().name = "2".into();
+        m.state_mut(b).unwrap().name = "3".into();
+        m.set_initial(Some(a));
+        m.set_final(b, true);
+        let labels: &[&str] = if tapes == 1 {
+            &["(a,a,D)", "(b,b,D)"]
+        } else {
+            &["a;a,R|□;b,S", "b;b,R|a;□,L"]
+        };
+        for l in labels {
+            m.add_transition(a, a, parse_label(l).unwrap()).unwrap();
+        }
+        let last = if tapes == 1 {
+            "(Δ,Δ,I)"
+        } else {
+            "□;□,S|□;□,S"
+        };
+        m.add_transition(a, b, parse_label(last).unwrap()).unwrap();
+        m
+    }
+
+    fn catedra(l: &rflap_core::turing::TmLabel) -> String {
+        format_label(l, Notation::Catedra)
+    }
+
+    fn texts(svg: &str) -> Vec<String> {
+        svg.split("<text class=\"label\"")
+            .skip(1)
+            .map(|chunk| {
+                let start = chunk.find('>').unwrap() + 1;
+                chunk[start..chunk.find("</text>").unwrap()].to_string()
+            })
+            .collect()
+    }
+
+    #[test]
+    fn single_tape_labels_are_stacked_with_delta_and_idn() {
+        let svg = to_svg_with(
+            palindrome_corner(1).automaton(),
+            &SvgOptions::default(),
+            catedra,
+        );
+        assert_eq!(texts(&svg), ["(a,a,D)", "(b,b,D)", "(Δ,Δ,I)"]);
+    }
+
+    #[test]
+    fn single_tape_labels_can_be_joined_with_a_slash() {
+        let options = SvgOptions {
+            join_labels: true,
+            ..SvgOptions::default()
+        };
+        let svg = to_svg_with(palindrome_corner(1).automaton(), &options, catedra);
+        assert_eq!(texts(&svg), ["(a,a,D) / (b,b,D)", "(Δ,Δ,I)"]);
+        assert_eq!(svg.matches("data-transition-index=").count(), 3);
+    }
+
+    #[test]
+    fn multi_tape_labels_keep_the_jflap_form_with_delta() {
+        let svg = to_svg_with(
+            palindrome_corner(2).automaton(),
+            &SvgOptions::default(),
+            catedra,
+        );
+        assert_eq!(texts(&svg), ["a;a,R|Δ;b,S", "b;b,R|a;Δ,L", "Δ;Δ,S|Δ;Δ,S"]);
+    }
+
+    #[test]
+    fn default_to_svg_still_uses_the_jflap_description() {
+        let m = palindrome_corner(1);
+        let svg = to_svg(m.automaton(), &SvgOptions::default());
+        assert_eq!(texts(&svg), ["a ; a , R", "b ; b , R", "□ ; □ , L"]);
+    }
+
+    #[test]
+    fn a_finite_automaton_is_drawn_the_same_with_its_own_description() {
+        let fa = even_as();
+        let options = SvgOptions::default();
+        assert_eq!(
+            to_svg(&fa, &options),
+            to_svg_with(&fa, &options, rflap_core::automaton::Label::description)
+        );
+    }
+
+    #[test]
+    fn dot_and_markdown_take_the_formatter() {
+        let m = palindrome_corner(1);
+        let dot = to_dot_with(m.automaton(), catedra);
+        assert!(
+            dot.contains("s0 -> s0 [label=\"(a,a,D)\\n(b,b,D)\"];"),
+            "{dot}"
+        );
+        let md = transition_table_with(m.automaton(), catedra);
+        assert!(md.contains("| (Δ,Δ,I) |"), "{md}");
+    }
+}

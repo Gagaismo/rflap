@@ -7,6 +7,7 @@ import { Canvas } from './editor.js';
 import { panelsFor, actionsFor, allActions, appliesTo } from './registry.js';
 import { popupMenu, toast } from './dialogs.js';
 import { emptyDocument, normalizeDocument, compactOf, describe } from './doc.js';
+import { notationOf } from './tm-model.js';
 import { documentFromHash } from './share.js';
 
 const LANGUAGES = ['es', 'en'];
@@ -76,6 +77,7 @@ export class App {
     this.active = null;
     this.workspaces = new Map(); // tab -> { el, canvas, panels: Map(id -> {container, instance}), activePanel }
     this.languageChoice = languageOf(store.get('rflap.language'));
+    this.notation = notationOf(store.get('rflap.notation')); // how Turing machine labels are written
     this.hostContext = {};
     this.aiTab = null;
     this.viewerUrl = null;
@@ -101,6 +103,13 @@ export class App {
     this.applyLanguageChoice();
     if (this.mounted) this.rebuild();
     this.saveLanguageToHost();
+  }
+
+  /** Cátedra or JFLAP labels for Turing machines, remembered in localStorage like the language. */
+  setNotation(choice) {
+    this.notation = notationOf(choice);
+    store.set('rflap.notation', this.notation);
+    for (const tab of this.tabList) tab.emit('notation', this.notation);
   }
 
   applyLanguageChoice() {
@@ -188,8 +197,10 @@ export class App {
     return tab;
   }
 
-  newTab(doc) {
-    return this.openTab(doc);
+  newTab(doc, { model } = {}) {
+    const tab = this.openTab(doc);
+    if (model) tab.setModel(model);
+    return tab;
   }
 
   nextTitle(type) {
@@ -375,7 +386,7 @@ export class App {
         if (e && ['host', 'replace', 'open'].includes(e.cause)) ws.canvas.requestFit();
         redraw();
       };
-      ws.offs.push(tab.on('doc', loaded), tab.on('overlay', redraw));
+      ws.offs.push(tab.on('doc', loaded), tab.on('overlay', redraw), tab.on('notation', redraw));
       redraw();
     }
     this.refreshWorkspace(tab);

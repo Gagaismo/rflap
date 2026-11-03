@@ -78,7 +78,7 @@ export function openModal({ title, body, buttons = [], wide = false }) {
 
 /**
  * A form dialog. `fields`: `{name, label, value, type: 'text'|'select'|'number'|'textarea', options: [[value, label]],
- * lambda: true (adds a λ button), placeholder, hint}`. `validate(values)` may be async and throw an Error whose
+ * lambda: true (adds a λ button) or insert: 'Δ' (a button that inserts that symbol), placeholder, hint}`. `validate(values)` may be async and throw an Error whose
  * message is shown in the dialog (the dialog stays open). Resolves with the values or `null`.
  */
 export function formDialog({ title, fields, submitLabel, intro, validate }) {
@@ -95,8 +95,9 @@ export function formDialog({ title, fields, submitLabel, intro, validate }) {
       input = h('input', { id, type: f.type || 'text', value: f.value ?? '', placeholder: f.placeholder, min: f.min, max: f.max, autocomplete: 'off', spellcheck: 'false' });
     }
     inputs[f.name] = input;
-    const lambda = f.lambda
-      ? h('button', { type: 'button', class: 'lambda', title: t('dialog.insert_lambda'), 'aria-label': t('dialog.insert_lambda'), onclick: () => insert(input, 'λ') }, 'λ')
+    const symbol = f.insert || (f.lambda ? 'λ' : null);
+    const lambda = symbol
+      ? h('button', { type: 'button', class: 'lambda', title: t('dialog.insert_symbol', { symbol }), 'aria-label': t('dialog.insert_symbol', { symbol }), onclick: () => insert(input, symbol) }, symbol)
       : null;
     return h('div', { class: 'form-row' }, h('label', { for: id }, f.label), h('div', { class: 'form-input' }, input, lambda), f.hint ? h('small', {}, f.hint) : null);
   });

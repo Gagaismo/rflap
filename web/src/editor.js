@@ -179,6 +179,11 @@ export class Canvas {
     return this.ctx.doc.type;
   }
 
+  /** How a Turing machine writes its labels: the choice of View > Notation (cátedra by default). */
+  get notation() {
+    return (this.ctx.app && this.ctx.app.notation) || 'catedra';
+  }
+
   get tapes() {
     return realMachine(this.ctx.doc, this.path).tapes || 1;
   }
@@ -219,6 +224,7 @@ export class Canvas {
         format: 'svg',
         highlight_states: [...states].filter((s) => s !== undefined),
         highlight_transitions: [...transitions],
+        ...(this.type === 'turing' ? { notation: this.notation } : {}),
       });
       if (seq !== this.seq) return;
       this.show(result.content);
@@ -357,7 +363,7 @@ export class Canvas {
   }
 
   async createTransition(from, to) {
-    const label = await askLabel({ api: this.ctx.api, type: this.type, tapes: this.tapes, title: t('label.new_transition', { from: this.stateName(from), to: this.stateName(to) }) });
+    const label = await askLabel({ api: this.ctx.api, type: this.type, tapes: this.tapes, notation: this.notation, title: t('label.new_transition', { from: this.stateName(from), to: this.stateName(to) }) });
     if (!label) return;
     await this.edit((d, path) => addTransition(d, from, to, label, path), t('canvas.transition_added', { from: this.stateName(from), to: this.stateName(to) }));
   }
@@ -369,7 +375,8 @@ export class Canvas {
       api: this.ctx.api,
       type: this.type,
       tapes: this.tapes,
-      text: labelToText(this.type, transition.label),
+      notation: this.notation,
+      text: labelToText(this.type, transition.label, this.notation),
       title: t('label.edit_transition', { from: this.stateName(transition.from), to: this.stateName(transition.to) }),
     });
     if (label) await this.edit((d, path) => setTransitionLabel(d, index, label, path));

@@ -29,7 +29,7 @@ export const dictionaries = {
 
     'file.new_fa': 'New finite automaton',
     'file.new_pda': 'New pushdown automaton',
-    'file.new_tm': 'New Turing machine…',
+    'file.new_tm': 'Turing machine (MT)…',
     'file.new_mealy': 'New Mealy machine',
     'file.new_moore': 'New Moore machine',
     'file.tapes': 'Number of tapes',
@@ -184,6 +184,8 @@ export const dictionaries = {
     'label.right': 'Right',
     'label.stay': 'Stay',
     'label.tape': 'tape {n}',
+    'label.typed': 'Or type the whole label',
+    'label.typed_hint': 'For example {example}; when it is filled in, it replaces the fields above.',
     'label.tm_hint': 'Empty = blank. Also ~ (any symbol), !x (anything but x), a,b}v (remember in v).',
     'label.fa_hint': 'Empty = λ. A range reads like [0-9].',
 
@@ -191,6 +193,7 @@ export const dictionaries = {
     'dialog.cancel': 'Cancel',
     'dialog.close': 'Close',
     'dialog.insert_lambda': 'Insert λ',
+    'dialog.insert_symbol': 'Insert {symbol}',
 
     'panel.simulate': 'Simulate',
     'panel.multiple': 'Multiple run',
@@ -275,6 +278,9 @@ export const dictionaries = {
     'analysis.unreachable': 'Unreachable states',
     'analysis.useless': 'Useless states',
     'analysis.description': 'Text description',
+    'analysis.multipista': 'Multitrack (all heads move together)',
+    'analysis.multipista_not': 'No: the heads move differently in transitions {list}',
+    'analysis.catedra_warnings': 'Course notation',
 
     'steps.none': 'No steps to show. Use the Convert menu.',
     'steps.source': 'Converted from: {title}',
@@ -334,7 +340,7 @@ export const dictionaries = {
 
     'file.new_fa': 'Nuevo autómata finito',
     'file.new_pda': 'Nuevo autómata de pila',
-    'file.new_tm': 'Nueva máquina de Turing…',
+    'file.new_tm': 'Máquina de Turing (MT)…',
     'file.new_mealy': 'Nueva máquina de Mealy',
     'file.new_moore': 'Nueva máquina de Moore',
     'file.tapes': 'Cantidad de cintas',
@@ -489,6 +495,8 @@ export const dictionaries = {
     'label.right': 'Derecha',
     'label.stay': 'Se queda',
     'label.tape': 'cinta {n}',
+    'label.typed': 'O escribí la etiqueta completa',
+    'label.typed_hint': 'Por ejemplo {example}; si la completás, reemplaza a los campos de arriba.',
     'label.tm_hint': 'Vacío = blanco. También ~ (cualquier símbolo), !x (todo menos x), a,b}v (recordar en v).',
     'label.fa_hint': 'Vacío = λ. Un rango se escribe como [0-9].',
 
@@ -496,6 +504,7 @@ export const dictionaries = {
     'dialog.cancel': 'Cancelar',
     'dialog.close': 'Cerrar',
     'dialog.insert_lambda': 'Insertar λ',
+    'dialog.insert_symbol': 'Insertar {symbol}',
 
     'panel.simulate': 'Simular',
     'panel.multiple': 'Corrida múltiple',
@@ -580,6 +589,9 @@ export const dictionaries = {
     'analysis.unreachable': 'Estados inalcanzables',
     'analysis.useless': 'Estados inútiles',
     'analysis.description': 'Descripción en texto',
+    'analysis.multipista': 'Multipista (los cabezales se mueven juntos)',
+    'analysis.multipista_not': 'No: los cabezales se mueven distinto en las transiciones {list}',
+    'analysis.catedra_warnings': 'Notación de la cátedra',
 
     'steps.none': 'No hay pasos para mostrar. Usá el menú Convertir.',
     'steps.source': 'Convertido desde: {title}',

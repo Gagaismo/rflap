@@ -35,7 +35,9 @@ bundled JS and the wasm as base64; the build fails if it would reference any ext
 | `tab.js` | `Tab`: a document with undo history, flags, overlays; it is the `ctx` of panels and actions |
 | `app.js` | shell: menu bar, tabs, workspaces, files, host integration |
 | `editor.js` | the canvas (engine SVG made interactive through `data-state-id`, `data-transition-index`, ...) |
-| `labels.js`, `dialogs.js`, `dom.js` | label forms per type, modals/menus/toasts, DOM helpers |
+| `labels.js`, `dialogs.js`, `dom.js` | label forms per type (a Turing machine form has Δ buttons, the I / N / D or L / S / R selector and a field for a typed `(a,X,D)`), modals/menus/toasts, DOM helpers |
+| `tm-model.js`, `catedra-panels.js` | Turing machines and ALL in the notation of the course: `tm-model.js` is the pure part (label text and form parse/serialize, model inference, sequence view model, state of a configuration, definition rows, Tk rows); `catedra-panels.js` has the four panels, the menu entries and the notation switch |
+| `grammar-membership.js` | grammar panel "Pertenencia (Tk)" (`membership_tk`) |
 | `sim.js`, `structure.js`, `analysis.js`, `steps.js`, `assistant.js`, `info.js` | built-in panels (`steps.js` is the conversion replay, see "Step replay") |
 | `actions.js` | File / Edit / Input / Test / Convert / Layout / View / Help menu actions |
 | `grammar-editor.js`, `grammar-transform.js`, `grammar-tables.js`, `grammar-parse.js`, `grammar-model.js` | grammar environment: production table + type test, transformations replay, FIRST/FOLLOW/LL(1)/SLR(1) tables, parsers, user parse; `grammar-model.js` is the pure part |
@@ -130,7 +132,8 @@ the fallback panel "Document"; automata get the canvas plus the panels.
 | `await ctx.edit((clone, path) => { ... })` | applies a change to a clone and commits it (undo history, redraw); toasts and returns `false` if it throws |
 | `await ctx.commit(nextDoc)` / `ctx.replace(doc)` | commit a document you built (undoable) / replace without history |
 | `ctx.undo()`, `ctx.redo()`, `ctx.history` | undo/redo (50 levels) |
-| `ctx.on(event, fn) -> off` | events: `doc` (`{cause}`: `edit`, `undo`, `redo`, `replace`, `host`, `path`, `flags`), `selection`, `overlay`, `path`, `flags`, `steps`, `extras`, `theme`, `activate` |
+| `ctx.on(event, fn) -> off` | events: `doc` (`{cause}`: `edit`, `undo`, `redo`, `replace`, `host`, `path`, `flags`), `selection`, `overlay`, `path`, `flags`, `steps`, `extras`, `theme`, `activate`, `notation` (View > Notation changed), `model` (MT / ALL changed) |
+| `ctx.model`, `ctx.setModel(m)` | `'mt'` or `'all'`: what a Turing machine tab is run as. Inferred from ⟨ / ⟩ in the labels when a document arrives (`inferModel`), remembered per tab, set to `'all'` by File > New > ALL |
 | `ctx.setOverlay(source, {states: [ids], transitions: [indices]} \| null)` | highlight on the canvas; sources are independent (`'sim'`, `'steps'`, yours) |
 | `ctx.steps`, `ctx.setSteps({title, steps, source})` | conversion steps for the step viewer; `source` = the tab converted from (ids in the steps refer to it) |
 | `ctx.extras`, `ctx.setExtras(obj)` | what the assistant sent (panel "Assistant") |
@@ -165,6 +168,29 @@ forms (keyboard and screen readers).
 * **Language.** Always Spanish at start; `navigator.language` and the host locale are ignored. View > Language
   switches to English; the choice is kept in `localStorage` (`rflap.language`) and, in ChatGPT, in
   `widgetState.language`. Every string must exist in both dictionaries (`web/test/i18n.test.js`).
+
+* **Notation.** Turing machine labels are drawn by the engine (`render` with `notation`) as the course writes them,
+  `(e,s,m)` with `Δ` and `I` / `N` / `D` (several labels on one edge are stacked as JFLAP does; the engine's
+  `join_labels` joins them with ` / ` but the editor does not ask for it). Multi-tape machines keep the JFLAP form
+  with `Δ`. View > Notation switches to JFLAP (`a ; b , R`, `□`); the choice is kept in `localStorage`
+  (`rflap.notation`) and read by `app.notation`. The label form follows it (`I / N / D` or `L / S / R`) and accepts a
+  typed `(a,X,D)` in any notation. Other machine types are not affected.
+
+## Turing machines and ALL (the course notation)
+
+Every panel goes through `ctx.api`; they only show for `turing` documents. A machine of several tapes or with
+building blocks gets the engine's own message instead (the notation is for one tape).
+
+| panel | op | what it shows |
+|---|---|---|
+| Definición formal (`catedra-definition`) | `catedra_definition` | `MT = ⟨Q, Σ_E, Σ_A, q0, F, f⟩` (or `ALL`) with the sets, whether Σ_E was inferred, an editable Σ_E (stored as `input_alphabet` in the document), the issues (not deterministic, domain includes F, ...) with a button that highlights their transitions |
+| Tabla de transición (`catedra-table`) | `catedra_table` | the table of the course, copy as Markdown |
+| Secuencia de configuración (`catedra-run`) | `catedra_run` | input rows, model MT / ALL, the `├─` sequences with `final/acepta` in green, `bloqueo/rechazo` in red, `no se detiene` in amber and the ALL violation explained; ◀ ▶ (or a click on a configuration) walk the sequence and highlight the state on the canvas |
+| Verificación ALL (`catedra-all`) | `all_check` | static rules and, for the rows of the run panel, the dynamic ones; each violation highlights its transition. Test > Verificar ALL opens it and runs it |
+
+Convert > Componer con otra MT… (`compose_tm`) opens the composition in a new tab; the analysis panel reports
+whether a multi-tape machine is multitrack (multipista); grammars have the panel "Pertenencia (Tk)"
+(`membership_tk`: T0..Tk and the verdict, a message for contracting grammars).
 
 ## Environments (T12b)
 
@@ -203,6 +229,7 @@ Anything else keeps the generic step view.
 
 ## Tests
 
-`web/test/*.test.js` runs with `node --test`. The model tests use small recorded answers of the real engine
+`web/test/*.test.js` runs with `node --test`. `tm-model.test.js` covers the pure cátedra helpers with the recorded
+answers of the bibliography examples (`fixtures/catedra.json`: the palindrome MT, the ALL IGUAL, T0..T4 of "abbc"). The model tests use small recorded answers of the real engine
 (`web/test/fixtures/*.json`, produced by `node web/test/fixtures/record.mjs`, which loads the wasm of
 `dist/rflap.html` through `web/test/engine.js`); a few tests also call the engine live, so build first.

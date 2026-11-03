@@ -13,7 +13,7 @@ use geometry::{
     arrowhead, edge_geometries, initial_triangle, output_box, quad_point, state_label_box,
     text_width,
 };
-pub use text::{to_dot, transition_table};
+pub use text::{to_dot, to_dot_with, transition_table, transition_table_with};
 
 /// Options of `to_svg`.
 #[derive(Clone, Debug, PartialEq)]
@@ -35,6 +35,9 @@ pub struct SvgOptions {
     pub scale: f64,
     /// Accessible title.
     pub title: Option<String>,
+    /// Write the labels of parallel transitions on one line joined with ` / ` (as in
+    /// `(a,a,D) / (b,b,D)`) instead of stacking them one under the other, as JFLAP does.
+    pub join_labels: bool,
 }
 
 impl Default for SvgOptions {
@@ -48,6 +51,7 @@ impl Default for SvgOptions {
             padding: 20.0,
             scale: 1.0,
             title: None,
+            join_labels: false,
         }
     }
 }
@@ -117,6 +121,46 @@ pub fn drawing_bounds<L: Label>(
     edges: &[EdgeGeometry],
     options: &SvgOptions,
 ) -> Option<Rect> {
+    let labels = edge_labels(automaton, options, &|l: &L| l.description());
+    drawing_bounds_with(automaton, edges, options, &labels)
+}
+
+/// The texts drawn on the transitions, indexed like `Automaton::transitions()`; with
+/// `join_labels` the first transition of a pair of states carries all of them and the
+/// others carry an empty text.
+fn edge_labels<L: Label>(
+    automaton: &Automaton<L>,
+    options: &SvgOptions,
+    label: &dyn Fn(&L) -> String,
+) -> Vec<String> {
+    let transitions = automaton.transitions();
+    let mut out: Vec<String> = transitions.iter().map(|t| label(&t.label)).collect();
+    if options.join_labels {
+        let single = out.clone();
+        for (i, t) in transitions.iter().enumerate() {
+            let same = |j: &usize| transitions[*j].from == t.from && transitions[*j].to == t.to;
+            let group: Vec<usize> = (0..transitions.len()).filter(same).collect();
+            out[i] = if group[0] == i {
+                group
+                    .iter()
+                    .map(|&j| single[j].as_str())
+                    .collect::<Vec<_>>()
+                    .join(" / ")
+            } else {
+                String::new()
+            };
+        }
+    }
+    out
+}
+
+/// [`drawing_bounds`] with the transition texts given (see `to_svg_with`).
+fn drawing_bounds_with<L: Label>(
+    automaton: &Automaton<L>,
+    edges: &[EdgeGeometry],
+    options: &SvgOptions,
+    labels: &[String],
+) -> Option<Rect> {
     let mut bounds: Option<Rect> = None;
     let mut add = |r: Rect| bounds = Some(bounds.map_or(r, |b| b.union(r)));
     for s in automaton.states() {
@@ -141,11 +185,8 @@ pub fn drawing_bounds<L: Label>(
             add(output_box(c, out));
         }
     }
-    for (e, label) in edges.iter().zip(
-        edges
-            .iter()
-            .map(|e| automaton.transitions()[e.index].label.description()),
-    ) {
+    for e in edges {
+        let label = &labels[e.index];
         for t in [0.0, 0.25, 0.5, 0.75, 1.0] {
             let p = quad_point(e.start, e.control, e.end, t);
             add(Rect {
@@ -155,7 +196,7 @@ pub fn drawing_bounds<L: Label>(
                 height: 0.0,
             });
         }
-        let reach = text_width(&label) / 2.0 + ASCENT;
+        let reach = text_width(label) / 2.0 + ASCENT;
         add(Rect {
             x: e.label_anchor.x - reach,
             y: e.label_anchor.y - reach,
@@ -180,9 +221,20 @@ pub fn drawing_bounds<L: Label>(
 /// `<g class="transition" data-transition-index="…" data-from="…" data-to="…">`, so a web UI can
 /// attach interaction without re-parsing.
 pub fn to_svg<L: Label>(automaton: &Automaton<L>, options: &SvgOptions) -> String {
+    to_svg_with(automaton, options, |l: &L| l.description())
+}
+
+/// [`to_svg`] with the text of each transition given by `label` (for example the notation of
+/// the course for a Turing machine).
+pub fn to_svg_with<L: Label>(
+    automaton: &Automaton<L>,
+    options: &SvgOptions,
+    label: impl Fn(&L) -> String,
+) -> String {
+    let labels = edge_labels(automaton, options, &label);
     let theme = if options.dark_mode { &DARK } else { &LIGHT };
     let edges = edge_geometries(automaton);
-    let bounds = drawing_bounds(automaton, &edges, options).unwrap_or(Rect {
+    let bounds = drawing_bounds_with(automaton, &edges, options, &labels).unwrap_or(Rect {
         x: 0.0,
         y: 0.0,
         width: 0.0,
@@ -225,7 +277,7 @@ pub fn to_svg<L: Label>(automaton: &Automaton<L>, options: &SvgOptions) -> Strin
     }
     svg.push_str("<g class=\"transitions\" fill=\"none\">\n");
     for e in &edges {
-        draw_transition(&mut svg, automaton, e, options, theme);
+        draw_transition(&mut svg, e, &labels[e.index], options, theme);
     }
     svg.push_str("</g>\n<g class=\"states\">\n");
     for s in automaton.states() {
@@ -250,14 +302,13 @@ pub fn to_svg<L: Label>(automaton: &Automaton<L>, options: &SvgOptions) -> Strin
     svg
 }
 
-fn draw_transition<L: Label>(
+fn draw_transition(
     svg: &mut String,
-    automaton: &Automaton<L>,
     e: &EdgeGeometry,
+    label: &str,
     options: &SvgOptions,
     theme: &Theme,
 ) {
-    let label = automaton.transitions()[e.index].label.description();
     let highlighted = options.highlight_transitions.contains(&e.index);
     let class = if e.is_loop {
         "transition loop"
@@ -269,7 +320,7 @@ fn draw_transition<L: Label>(
         "<g class=\"{class}\" data-transition-index=\"{}\" data-from=\"{}\" data-to=\"{}\">",
         e.index, e.from, e.to
     );
-    let width = text_width(&label);
+    let width = text_width(label);
     let dy = if e.label_below { ASCENT } else { -3.0 };
     let label_transform = format!(
         "translate({} {}) rotate({})",
@@ -306,7 +357,7 @@ fn draw_transition<L: Label>(
             n(b.y)
         );
     }
-    if highlighted {
+    if highlighted && !label.is_empty() {
         let top = if e.label_below { 0.0 } else { -ASCENT - 3.0 };
         let _ = writeln!(
             svg,
@@ -318,14 +369,16 @@ fn draw_transition<L: Label>(
             n(ASCENT + 3.0)
         );
     }
-    let _ = writeln!(
-        svg,
-        "<text class=\"label\" transform=\"{label_transform}\" y=\"{}\" text-anchor=\"middle\" \
-         fill=\"{}\" stroke=\"none\">{}</text>",
-        n(dy),
-        theme.ink,
-        esc(&label)
-    );
+    if !label.is_empty() {
+        let _ = writeln!(
+            svg,
+            "<text class=\"label\" transform=\"{label_transform}\" y=\"{}\" text-anchor=\"middle\" \
+             fill=\"{}\" stroke=\"none\">{}</text>",
+            n(dy),
+            theme.ink,
+            esc(label)
+        );
+    }
     svg.push_str("</g>\n");
 }
 
