@@ -1,0 +1,6 @@
+{
+  "name": "rflap-web",
+  "private": true,
+  "type": "module",
+  "description": "Rflap web editor (vanilla ES modules, no dependencies). Build: cargo run -p xtask -- build-web. Test: node --test web/test/"
+}
