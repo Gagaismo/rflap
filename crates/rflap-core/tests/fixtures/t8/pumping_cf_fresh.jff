@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--Created with JFLAP 6.4.--><structure>
+	<type>context-free pumping lemma</type>
+	<name>w1 + b^n + w2 : na(w1) &lt; na(w2) &amp; na(w1) &lt; n, w1 &amp; w2 element_of {ab}*</name>
+	<first_player>Computer</first_player>
+	<m>3</m>
+	<w>aaabbbbaaaa</w>
+	<i>-1</i>
+	<uLength>0</uLength>
+	<vLength>0</vLength>
+	<xLength>0</xLength>
+	<yLength>0</yLength>
+</structure>

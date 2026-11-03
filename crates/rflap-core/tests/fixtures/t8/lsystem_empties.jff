@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--Created with JFLAP 6.4.--><structure>
+	<type>lsystem</type>
+	<!--The L-system axiom.-->
+	<axiom/>
+	<!--The rewriting rules.-->
+	<production>
+		<left>a</left>
+		<right/>
+	</production>
+	<production>
+		<left>b</left>
+		<right>b b</right>
+	</production>
+	<!--The drawing parameters.-->
+	<parameter>
+		<name>zz</name>
+		<value>1</value>
+	</parameter>
+	<parameter>
+		<name>angle</name>
+		<value/>
+	</parameter>
+</structure>

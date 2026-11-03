@@ -1,0 +1,528 @@
+CASE koch
+expand0 g - - g - - g
+expand1 g + g - - g + g - - g + g - - g + g - - g + g - - g + g
+expand2 g + g - - g + g + g + g - - g + g - - g + g - - g + g + g + g - - g + g - - g + g - - g + g + g + g - - g + g - - g + g - - g + g + g + g - - g + g - - g + g - - g + g + g + g - - g + g - - g + g - - g + g + g + g - - g + g
+image 61 55
+offset 44 50
+bounds -38.971143170299754 -45.000000000000014 51.961524227066334 45.000000000000014
+CASE plant
+expand0 g [ + g ] g
+image 20 30
+offset 5 25
+bounds 0.0 -20.0 10.0 20.0
+pixels 31
+px 5 5 ff000000
+px 5 6 ff000000
+px 5 7 ff000000
+px 5 8 ff000000
+px 5 9 ff000000
+px 5 10 ff000000
+px 5 11 ff000000
+px 5 12 ff000000
+px 5 13 ff000000
+px 5 14 ff000000
+px 5 15 ff000000
+px 6 15 ff000000
+px 7 15 ff000000
+px 8 15 ff000000
+px 9 15 ff000000
+px 10 15 ff000000
+px 11 15 ff000000
+px 12 15 ff000000
+px 13 15 ff000000
+px 14 15 ff000000
+px 15 15 ff000000
+px 5 16 ff000000
+px 5 17 ff000000
+px 5 18 ff000000
+px 5 19 ff000000
+px 5 20 ff000000
+px 5 21 ff000000
+px 5 22 ff000000
+px 5 23 ff000000
+px 5 24 ff000000
+px 5 25 ff000000
+CASE bush
+expand0 x
+expand1 g [ + x ] [ - x ] g x
+expand2 g g [ + g [ + x ] [ - x ] g x ] [ - g [ + x ] [ - x ] g x ] g g g [ + x ] [ - x ] g x
+expand3 g g g g [ + g g [ + g [ + x ] [ - x ] g x ] [ - g [ + x ] [ - x ] g x ] g g g [ + x ] [ - x ] g x ] [ - g g [ + g [ + x ] [ - x ] g x ] [ - g [ + x ] [ - x ] g x ] g g g [ + x ] [ - x ] g x ] g g g g g g [ + g [ + x ] [ - x ] g x ] [ - g [ + x ] [ - x ] g x ] g g g [ + x ] [ - x ] g x
+image 30 66
+offset 15 61
+bounds -10.14283828177679 -56.0 20.28567656355358 56.0
+CASE colors
+expand0 g color=red lineWidth=3 g [ color(0,0,255) ! g ] g # g ## g polygonColor=forestGreen { g + g + g } g
+image 20 70
+offset 5 65
+bounds 0.0 -60.0 10.000000000000002 60.0
+pixels 304
+px 5 5 ff007f00
+px 6 5 ff007f00
+px 7 5 ff007f00
+px 8 5 ff007f00
+px 9 5 ff007f00
+px 10 5 ff007f00
+px 11 5 ff007f00
+px 12 5 ff007f00
+px 13 5 ff007f00
+px 14 5 ff007f00
+px 5 6 ff007f00
+px 6 6 ff007f00
+px 7 6 ff007f00
+px 8 6 ff007f00
+px 9 6 ff007f00
+px 10 6 ff007f00
+px 11 6 ff007f00
+px 12 6 ff007f00
+px 13 6 ff007f00
+px 14 6 ff007f00
+px 5 7 ff007f00
+px 6 7 ff007f00
+px 7 7 ff007f00
+px 8 7 ff007f00
+px 9 7 ff007f00
+px 10 7 ff007f00
+px 11 7 ff007f00
+px 12 7 ff007f00
+px 13 7 ff007f00
+px 14 7 ff007f00
+px 5 8 ff007f00
+px 6 8 ff007f00
+px 7 8 ff007f00
+px 8 8 ff007f00
+px 9 8 ff007f00
+px 10 8 ff007f00
+px 11 8 ff007f00
+px 12 8 ff007f00
+px 13 8 ff007f00
+px 14 8 ff007f00
+px 5 9 ff007f00
+px 6 9 ff007f00
+px 7 9 ff007f00
+px 8 9 ff007f00
+px 9 9 ff007f00
+px 10 9 ff007f00
+px 11 9 ff007f00
+px 12 9 ff007f00
+px 13 9 ff007f00
+px 14 9 ff007f00
+px 5 10 ff007f00
+px 6 10 ff007f00
+px 7 10 ff007f00
+px 8 10 ff007f00
+px 9 10 ff007f00
+px 10 10 ff007f00
+px 11 10 ff007f00
+px 12 10 ff007f00
+px 13 10 ff007f00
+px 14 10 ff007f00
+px 5 11 ff007f00
+px 6 11 ff007f00
+px 7 11 ff007f00
+px 8 11 ff007f00
+px 9 11 ff007f00
+px 10 11 ff007f00
+px 11 11 ff007f00
+px 12 11 ff007f00
+px 13 11 ff007f00
+px 14 11 ff007f00
+px 5 12 ff007f00
+px 6 12 ff007f00
+px 7 12 ff007f00
+px 8 12 ff007f00
+px 9 12 ff007f00
+px 10 12 ff007f00
+px 11 12 ff007f00
+px 12 12 ff007f00
+px 13 12 ff007f00
+px 14 12 ff007f00
+px 5 13 ff007f00
+px 6 13 ff007f00
+px 7 13 ff007f00
+px 8 13 ff007f00
+px 9 13 ff007f00
+px 10 13 ff007f00
+px 11 13 ff007f00
+px 12 13 ff007f00
+px 13 13 ff007f00
+px 14 13 ff007f00
+px 4 14 ffffff00
+px 5 14 ff007f00
+px 6 14 ff007f00
+px 7 14 ff007f00
+px 8 14 ff007f00
+px 9 14 ff007f00
+px 10 14 ff007f00
+px 11 14 ff007f00
+px 12 14 ff007f00
+px 13 14 ff007f00
+px 14 14 ffffff00
+px 15 14 ffffff00
+px 16 14 ffffff00
+px 4 15 ffffff00
+px 5 15 ffffff00
+px 6 15 ffffff00
+px 14 15 ffffff00
+px 15 15 ffffff00
+px 16 15 ffffff00
+px 4 16 ffffff00
+px 5 16 ffffff00
+px 6 16 ffffff00
+px 14 16 ffffff00
+px 15 16 ffffff00
+px 16 16 ffffff00
+px 4 17 ffffff00
+px 5 17 ffffff00
+px 6 17 ffffff00
+px 14 17 ffffff00
+px 15 17 ffffff00
+px 16 17 ffffff00
+px 4 18 ffffff00
+px 5 18 ffffff00
+px 6 18 ffffff00
+px 14 18 ffffff00
+px 15 18 ffffff00
+px 16 18 ffffff00
+px 4 19 ffffff00
+px 5 19 ffffff00
+px 6 19 ffffff00
+px 14 19 ffffff00
+px 15 19 ffffff00
+px 16 19 ffffff00
+px 4 20 ffffff00
+px 5 20 ffffff00
+px 6 20 ffffff00
+px 14 20 ffffff00
+px 15 20 ffffff00
+px 16 20 ffffff00
+px 4 21 ffffff00
+px 5 21 ffffff00
+px 6 21 ffffff00
+px 14 21 ffffff00
+px 15 21 ffffff00
+px 16 21 ffffff00
+px 4 22 ffffff00
+px 5 22 ffffff00
+px 6 22 ffffff00
+px 14 22 ffffff00
+px 15 22 ffffff00
+px 16 22 ffffff00
+px 4 23 ffffff00
+px 5 23 ffffff00
+px 6 23 ffffff00
+px 14 23 ffffff00
+px 15 23 ffffff00
+px 16 23 ffffff00
+px 4 24 ffffff00
+px 5 24 ffffff00
+px 6 24 ffffff00
+px 14 24 ffffff00
+px 15 24 ffffff00
+px 16 24 ffffff00
+px 4 25 ffffff00
+px 5 25 ffffff00
+px 6 25 ffffff00
+px 14 25 ffffff00
+px 15 25 ffffff00
+px 16 25 ffffff00
+px 4 26 ffffff00
+px 5 26 ffffff00
+px 6 26 ffffff00
+px 14 26 ffffff00
+px 15 26 ffffff00
+px 16 26 ffffff00
+px 4 27 ffffff00
+px 5 27 ffffff00
+px 6 27 ffffff00
+px 4 28 ffffff00
+px 5 28 ffffff00
+px 6 28 ffffff00
+px 4 29 ffffff00
+px 5 29 ffffff00
+px 6 29 ffffff00
+px 4 30 ffffff00
+px 5 30 ffffff00
+px 6 30 ffffff00
+px 4 31 ffffff00
+px 5 31 ffffff00
+px 6 31 ffffff00
+px 4 32 ffffff00
+px 5 32 ffffff00
+px 6 32 ffffff00
+px 3 33 400000ff
+px 4 33 ffffff00
+px 5 33 ffffff00
+px 6 33 ffffff00
+px 7 33 400000ff
+px 3 34 7f0000ff
+px 4 34 ffffff00
+px 5 34 ffffff00
+px 6 34 ffffff00
+px 7 34 7f0000ff
+px 3 35 7f0000ff
+px 4 35 ffffff00
+px 5 35 ffffff00
+px 6 35 ffffff00
+px 7 35 7f0000ff
+px 3 36 7f0000ff
+px 4 36 ffffff00
+px 5 36 ffffff00
+px 6 36 ffffff00
+px 7 36 7f0000ff
+px 3 37 7f0000ff
+px 4 37 ffff0000
+px 5 37 ffff0000
+px 6 37 ffff0000
+px 7 37 7f0000ff
+px 3 38 7f0000ff
+px 4 38 ffff0000
+px 5 38 ffff0000
+px 6 38 ffff0000
+px 7 38 7f0000ff
+px 3 39 7f0000ff
+px 4 39 ffff0000
+px 5 39 ffff0000
+px 6 39 ffff0000
+px 7 39 7f0000ff
+px 3 40 7f0000ff
+px 4 40 ffff0000
+px 5 40 ffff0000
+px 6 40 ffff0000
+px 7 40 7f0000ff
+px 3 41 7f0000ff
+px 4 41 ffff0000
+px 5 41 ffff0000
+px 6 41 ffff0000
+px 7 41 7f0000ff
+px 3 42 7f0000ff
+px 4 42 ffff0000
+px 5 42 ffff0000
+px 6 42 ffff0000
+px 7 42 7f0000ff
+px 3 43 7f0000ff
+px 4 43 ffff0000
+px 5 43 ffff0000
+px 6 43 ffff0000
+px 7 43 7f0000ff
+px 3 44 7f0000ff
+px 4 44 ffff0000
+px 5 44 ffff0000
+px 6 44 ffff0000
+px 7 44 7f0000ff
+px 3 45 7f0000ff
+px 4 45 ffff0000
+px 5 45 ffff0000
+px 6 45 ffff0000
+px 7 45 7f0000ff
+px 3 46 7f0000ff
+px 4 46 ffff0000
+px 5 46 ffff0000
+px 6 46 ffff0000
+px 7 46 7f0000ff
+px 3 47 400000ff
+px 4 47 ff80007f
+px 5 47 ff80007f
+px 6 47 ff80007f
+px 7 47 400000ff
+px 4 48 ffff0000
+px 5 48 ffff0000
+px 6 48 ffff0000
+px 4 49 ffff0000
+px 5 49 ffff0000
+px 6 49 ffff0000
+px 4 50 ffff0000
+px 5 50 ffff0000
+px 6 50 ffff0000
+px 4 51 ffff0000
+px 5 51 ffff0000
+px 6 51 ffff0000
+px 4 52 ffff0000
+px 5 52 ffff0000
+px 6 52 ffff0000
+px 4 53 ffff0000
+px 5 53 ffff0000
+px 6 53 ffff0000
+px 4 54 ffff0000
+px 5 54 ffff0000
+px 6 54 ffff0000
+px 4 55 ffff0000
+px 5 55 ffff0000
+px 6 55 ffff0000
+px 4 56 ffff0000
+px 5 56 ffff0000
+px 6 56 ffff0000
+px 5 57 ff000000
+px 5 58 ff000000
+px 5 59 ff000000
+px 5 60 ff000000
+px 5 61 ff000000
+px 5 62 ff000000
+px 5 63 ff000000
+px 5 64 ff000000
+px 5 65 ff000000
+CASE solid3d
+expand0 / & g g(2*3) distance=4 & g ^ ^ g * g % g
+image 26 18
+offset 5 9
+bounds 0.0 -4.000000000000001 16.0 8.0
+CASE viewed3d
+expand0 g + g & g
+image 20 33
+offset 15 28
+bounds -10.389554484188006 -23.357056573149084 10.389554484188006 23.357056573149084
+CASE stochastic
+expand0 a
+expand1 b a
+expand2 a b a
+expand3 a b a b b a b a
+expand4 b a a b a a b b b a b b a b a
+expand5 a b a a b a a b a a b a a b b a b a a a a b a a a b a
+expand6 b a b b b a b a a a b a b a b b b a b a a a b a b a b b b b b a a a b a b a b a a b a a a b a a b a b a a b a
+image 10 10
+offset 5 5
+bounds 0.0 0.0 0.0 0.0
+CASE context
+expand0 a b a b b a
+expand1 a c d c b a
+expand2 a c d c b a
+expand3 a c d c b a
+image 10 10
+offset 5 5
+bounds 0.0 0.0 0.0 0.0
+CASE empties
+expand0 
+expand1 
+image 10 10
+offset 5 5
+bounds 0.0 0.0 0.0 0.0
+CASE params
+expand0 g(a*2) +(a) g(a) g
+image 11 38
+offset 5 34
+bounds 0.0 -28.88819227461983 1.828040151077212 28.88819227461983
+CASE expr0
+expand0 g(2*3)
+image 10 16
+offset 5 11
+bounds 0.0 -6.0 0.0 6.0
+expr 2*3
+CASE expr1
+expand0 g(10-4)
+image 10 16
+offset 5 11
+bounds 0.0 -6.0 0.0 6.0
+expr 10-4
+CASE expr2
+expand0 g(2^3)
+image 10 18
+offset 5 13
+bounds 0.0 -8.0 0.0 8.0
+expr 2^3
+CASE expr3
+expand0 g((1+2)*4)
+image 10 22
+offset 5 17
+bounds 0.0 -12.0 0.0 12.0
+expr (1+2)*4
+CASE expr4
+expand0 g(-5)
+image 10 15
+offset 5 5
+bounds 0.0 0.0 0.0 5.0
+expr -5
+CASE expr5
+expand0 g(7/2)
+image 10 13
+offset 5 9
+bounds 0.0 -3.5 0.0 3.5
+expr 7/2
+CASE expr6
+expand0 g(zzz)
+image 10 10
+offset 5 5
+bounds 0.0 0.0 0.0 0.0
+expr zzz
+CASE expr7
+expand0 g(a*2)
+image 10 16
+offset 5 11
+bounds 0.0 -6.0 0.0 6.0
+expr a*2
+CASE expr8
+expand0 g(a-1)
+image 10 12
+offset 5 7
+bounds 0.0 -2.0 0.0 2.0
+expr a-1
+CASE expr9
+expand0 g(2^3^2)
+image 10 74
+offset 5 69
+bounds 0.0 -64.0 0.0 64.0
+expr 2^3^2
+CASE expr10
+expand0 g(8/2/2)
+image 10 12
+offset 5 7
+bounds 0.0 -2.0 0.0 2.0
+expr 8/2/2
+CASE expr11
+expand0 g(1+2*3)
+image 10 17
+offset 5 12
+bounds 0.0 -7.0 0.0 7.0
+expr 1+2*3
+CASE expr12
+expand0 g(2*3+1)
+image 10 17
+offset 5 12
+bounds 0.0 -7.0 0.0 7.0
+expr 2*3+1
+CASE expr13
+expand0 g((2+3)(4))
+image 10 14
+offset 5 9
+bounds 0.0 -4.0 0.0 4.0
+expr (2+3)(4)
+CASE expr14
+expand0 g(3-2-1)
+image 10 10
+offset 5 5
+bounds 0.0 0.0 0.0 0.0
+expr 3-2-1
+CASE expr15
+expand0 g(2*-3)
+image 10 16
+offset 5 5
+bounds 0.0 0.0 0.0 6.0
+expr 2*-3
+CASE expr16
+expand0 g(1.5+.5)
+image 10 12
+offset 5 7
+bounds 0.0 -2.0 0.0 2.0
+expr 1.5+.5
+CASE expr17
+expand0 g(((2)))
+image 10 12
+offset 5 7
+bounds 0.0 -2.0 0.0 2.0
+expr ((2))
+CASE expr18
+expand0 g(2^-1)
+image 10 10
+offset 5 6
+bounds 0.0 -0.5 0.0 0.5
+expr 2^-1
+CASE expr19
+expand0 g(1e2)
+image 10 11
+offset 5 6
+bounds 0.0 -1.0 0.0 1.0
+expr 1e2
+CASE expr20
+expand0 g(-a)
+image 10 13
+offset 5 5
+bounds 0.0 0.0 0.0 3.0
+expr -a
