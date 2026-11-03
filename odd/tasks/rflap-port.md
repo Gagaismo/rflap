@@ -25,10 +25,10 @@ Referencia: `reference/src/` (JFLAP descompilado con CFR 0.152, ignorado por git
 
 | ID | Specs | Qué | Ruta | Commit |
 |----|-------|-----|------|--------|
-| T1 | S1, S5 | Workspace Cargo, LICENSE de JFLAP + atribución y contacto, README, .gitignore, CI; crear repo y pushear | inline | |
-| T2 | S2.1 | Núcleo FA: modelo, etiquetas con rangos, simulación (paso a paso, clausura, rápida, múltiple), análisis (no determinismo, λ, inalcanzables, inútiles), estado trampa, combinar, equivalencia | inline | |
+| T1 | S1, S5 | Workspace Cargo, LICENSE de JFLAP + atribución y contacto, README, .gitignore, CI; crear repo y pushear | inline | 3573968, 0b33d15 |
+| T2 | S2.1 | Núcleo FA: modelo, etiquetas con rangos, simulación (paso a paso, clausura, rápida, múltiple), análisis (no determinismo, λ, inalcanzables, inútiles), estado trampa, combinar | inline | |
 | T3 | S2.10 | E/S `.jff` para todos los tipos (ida y vuelta) | inline | |
-| T4 | S2.2, S2.7 | ER (parser), NFA→DFA, minimizar, FA→ER, ER→FA, FA↔gramática regular | inline | |
+| T4 | S2.1, S2.2, S2.7 | ER (parser), NFA→DFA, minimizar, FA→ER, ER→FA, FA↔gramática regular, equivalencia de FA | inline | |
 | T5 | S2.6 | Gramáticas: modelo, tipo, transformaciones, FNC, parsers (fuerza bruta, LL(1), SLR(1), CYK, usuario), corridas múltiples | inline | |
 | T6 | S2.3, S2.6 | PDA: modelo, simulación, PDA→CFG, CFG→PDA (LL y LR) | inline | |
 | T7 | S2.4, S2.5 | MT de una y varias cintas, bloques, MT→gramática; Mealy y Moore | inline | |
@@ -50,3 +50,4 @@ Referencia: `reference/src/` (JFLAP descompilado con CFR 0.152, ignorado por git
   - Claude Code y Codex corren en la terminal y no muestran widgets: reciben un SVG, un diagrama en texto y un link a un visor local.
   - S4: la IA traduce el lenguaje natural a una especificación formal (ER, gramática o especificación declarativa con ejemplos) y Rflap construye, minimiza, dibuja y verifica.
   - La interfaz gráfica es web (WASM), y la misma sirve como widget del chat y como app de escritorio (`rflap gui`).
+- **L5** (plan): la equivalencia de FA pasa de T2 a T4 porque depende de NFA→DFA y de minimizar. Desvío de JFLAP: en el simulador con clausura, una transición con rango `[x-y]` toma la clausura λ del destino (JFLAP no lo hace); un rango solo se reconoce con la forma exacta `[x-y]`.
