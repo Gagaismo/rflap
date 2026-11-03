@@ -57,7 +57,8 @@ Inside Claude Code, run `/mcp` to check that `rflap` is connected, then ask:
 Claude should reason about the language, call `rflap_design_automaton` with a formal spec plus
 accept/reject examples, read the verification, and explain the states. The MCP prompt
 `ssl_exercise` (shown as `/mcp__rflap__ssl_exercise`) starts that workflow from an exercise
-statement.
+statement; `mt_catedra` (`/mcp__rflap__mt_catedra`) does the same for Turing machines and ALL in the
+notation of the course (see [../catedra.md](../catedra.md)).
 
 For a workflow that does not depend on the MCP server being loaded, install the agent skill
 `skills/rflap/SKILL.md` (copy the `skills/rflap` folder to `~/.claude/skills/`).

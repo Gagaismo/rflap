@@ -1,6 +1,6 @@
 ---
 name: rflap
-description: Solve exercises of "Sintaxis y Semántica de los Lenguajes" (finite automata, regular expressions, regular and context-free grammars, pushdown automata, Turing machines, FIRST/FOLLOW, LL(1) and SLR(1) tables, pumping lemma) by designing, verifying and drawing the answer with Rflap (JFLAP 7.1 in Rust), through its MCP tools (rflap_*) or its `rflap` CLI. Use when a student asks for an automaton or grammar for a language, a conversion (NFA to DFA, minimization, regex to automaton, grammar to automaton), a parse table, or a check that two descriptions are equivalent.
+description: Solve exercises of "Sintaxis y Semántica de los Lenguajes" (finite automata, regular expressions, regular and context-free grammars, pushdown automata, Turing machines, FIRST/FOLLOW, LL(1) and SLR(1) tables, pumping lemma) by designing, verifying and drawing the answer with Rflap (JFLAP 7.1 in Rust), through its MCP tools (rflap_*) or its `rflap` CLI. Use when a student asks for an automaton or grammar for a language, a conversion (NFA to DFA, minimization, regex to automaton, grammar to automaton), a parse table, or a check that two descriptions are equivalent. Also use it for Turing machine (MT) and linear bounded automaton (ALL) exercises in the notation of the course bibliography (definition ⟨Q, Σ_E, Σ_A, q0, F, f⟩, transition table, configuration sequences with ├─, ALL check, MT composition, membership by the sets Tk).
 ---
 
 # Solving SSL exercises with Rflap
@@ -87,6 +87,85 @@ CLI: `rflap tables --grammar 'E -> TA\nA -> +TA | λ\nT -> FB\nB -> *FB | λ\nF 
 `rflap parse --grammar '...' 'i+i*i' --parser ll1`. `rflap --help` lists every subcommand and
 `rflap call` sends any raw API request.
 
+## Turing machines and ALL in the notation of the course
+
+For MT / ALL exercises Rflap speaks the notation of the bibliography (CLASE 39 and 41), not JFLAP's.
+Answer in Spanish with the course's terms.
+
+1. **Reason first**: what does the machine do to the tape (mark, run to the end, come back)? MT, or
+   ALL (the tape is `⟨w⟩`, the head starts on the first symbol of `w`)?
+2. **Write the machine** as a compact `turing` document with labels `(e,s,m)`: move `I` left, `N`
+   stay, `D` right, `Δ` the blank, several labels of one edge joined with `" / "`
+   (`"(a,a,D) / (b,b,D)"`). List `"states"` with the names the student expects (1, 2, … or I, A, B, …);
+   `"input_alphabet": "ab"` declares Σ_E (otherwise it is inferred). JFLAP labels (`a;b,R`) also work.
+3. **Run Rflap** (MCP `rflap_mt_catedra` with `action`, or the CLI):
+
+   | Need | MCP `action` | CLI |
+   |---|---|---|
+   | `MT = ⟨Q, Σ_E, Σ_A, q0, F, f⟩` and its sets | `definition` | `rflap catedra definition m.json` |
+   | Transition table (Estado Actual \| Símbolo Entrada \| Estado Nuevo \| Símbolo Salida \| Movimiento Cabezal) | `table` | `rflap catedra table m.json --markdown` |
+   | Configuration sequences `Δ1abaΔ ├─ …` | `run` with `inputs` | `rflap catedra run m.json aba ab` (`--all` for an ALL) |
+   | Is it a valid ALL? | `all_check` with `inputs` | `rflap catedra all-check m.json ab b` |
+   | MT1 followed by MT2 | `rflap_compose_tm` | `rflap catedra compose a.json b.json -o ab.json` |
+   | Is `w` in the language of a non-contracting grammar? | `rflap_membership` | `rflap membership --grammar '…' abbc` |
+
+   Run `run` on words the machine accepts **and** rejects (empty word included). For an ALL,
+   **always** run `all_check` (static rules + dynamic run on sample words) and fix every violation
+   before presenting it.
+4. **Present**: the 6-tuple, the table, the graph (the widget, or `rflap render m.json -o m.svg`) and
+   the sequences, each ending in `final/acepta` or `bloqueo/rechazo`.
+5. **Remember**: final states halt (`f` is defined on Q-F, so a final state has no outgoing
+   transitions); a missing transition is a *bloqueo*, which rejects; an MT may never halt
+   (`no se detiene`), an ALL always accepts or rejects. Multitape uses JFLAP notation
+   (`a;a,R|_;x,S`); `rflap_analyze` says whether it is multipista (all heads move together).
+
+### Worked example 1: the palindrome MT (CLASE 39)
+
+```json
+{"type": "turing", "states": ["1","2","3","4","5","6","7","8"], "initial": "1", "finals": ["8"],
+ "transitions": [
+   ["1","(a,Δ,D)","2"], ["1","(b,Δ,D)","5"], ["1","(Δ,Δ,D)","8"],
+   ["2","(a,a,D) / (b,b,D)","2"], ["2","(Δ,Δ,I)","3"],
+   ["3","(a,Δ,I)","4"], ["3","(Δ,Δ,D)","8"],
+   ["4","(a,a,I) / (b,b,I)","4"], ["4","(Δ,Δ,D)","1"],
+   ["5","(a,a,D) / (b,b,D)","5"], ["5","(Δ,Δ,I)","6"],
+   ["6","(b,Δ,I)","7"], ["6","(Δ,Δ,D)","8"],
+   ["7","(a,a,I) / (b,b,I)","7"], ["7","(Δ,Δ,D)","1"]]}
+```
+
+`rflap_mt_catedra` with `action: "run"`, `inputs: ["aba", "ab", "bb"]` returns:
+
+```text
+Δ1abaΔ ├─ ΔΔ2baΔ ├─ ΔΔb2aΔ ├─ ΔΔba2Δ ├─ ΔΔb3aΔ ├─ ΔΔ4bΔΔ ├─ Δ4ΔbΔΔ ├─ ΔΔ1bΔΔ ├─ ΔΔΔ5ΔΔ ├─ ΔΔ6ΔΔΔ ├─ ΔΔΔ8ΔΔ final/acepta
+Δ1abΔ ├─ ΔΔ2bΔ ├─ ΔΔb2Δ ├─ ΔΔ3bΔ bloqueo/rechazo
+Δ1bbΔ ├─ ΔΔ5bΔ ├─ ΔΔb5Δ ├─ ΔΔ6bΔ ├─ Δ7ΔΔΔ ├─ ΔΔ1ΔΔ ├─ ΔΔΔ8Δ final/acepta
+```
+
+`definition` gives `Q = {1, …, 8}`, `Σ_E = {a, b} (inferido)`, `Σ_A = {Δ}`, `q0 = 1`, `F = {8}`.
+(For the empty word the bibliography writes `Δ1Δ ├─ ΔΔ8`; Rflap prints `Δ1Δ ├─ ΔΔ8Δ`, a known deviation.)
+
+### Worked example 2: the ALL "IGUAL" (same number of a and b)
+
+```json
+{"type": "turing", "states": ["I","A","B","C","D","F"], "initial": "I", "finals": ["F"],
+ "transitions": [
+   ["I","a,X,I","A"], ["I","(b,b,D) / (X,X,D)","I"], ["I","(⟩,⟩,I)","D"],
+   ["A","(b,b,I) / (X,X,I)","A"], ["A","(⟨,⟨,D)","B"],
+   ["B","(a,a,D)","B"], ["B","(b,X,I)","C"], ["B","(X,X,D)","B"],
+   ["C","(a,a,I) / (X,X,I)","C"], ["C","(⟨,⟨,D)","I"],
+   ["D","(X,X,I)","D"], ["D","(⟨,⟨,D)","F"]]}
+```
+
+`action: "all_check"`, `inputs: ["ab", "b"]` reports that it follows the ALL rules and shows:
+
+```text
+⟨Iab⟩ ├─ A⟨Xb⟩ ├─ ⟨BXb⟩ ├─ ⟨XBb⟩ ├─ ⟨CXX⟩ ├─ C⟨XX⟩ ├─ ⟨IXX⟩ ├─ ⟨XIX⟩ ├─ ⟨XXI⟩ ├─ ⟨XDX⟩ ├─ ⟨DXX⟩ ├─ D⟨XX⟩ ├─ ⟨FXX⟩ final/acepta
+⟨Ib⟩ ├─ ⟨bI⟩ ├─ ⟨Db⟩ bloqueo/rechaza
+```
+
+A transition such as `["I","(⟩,X,I)","D"]` is reported as a violation: `La transición I --(⟩,X,I)--> D
+lee ⟩: debe escribir ⟩ y moverse a la izquierda (I).` Student-facing reference: `docs/catedra.md`.
+
 ## Other frequent requests
 
 | Request | Tool |
@@ -98,6 +177,7 @@ CLI: `rflap tables --grammar 'E -> TA\nA -> +TA | λ\nT -> FB\nB -> *FB | λ\nF 
 | Is the student's automaton right? | `rflap_equivalent` against a regex or a reference automaton; it returns a counterexample |
 | Trace a run | `rflap_simulate` (whole trace, or `inputs` for a table), `rflap_step` (one step at a time) |
 | Open or save a JFLAP file | `rflap_open_jff`, `rflap_save_jff` |
+| Turing machine / ALL exercise in the course notation | `rflap_mt_catedra` (see the section above) |
 | Turing machine run with its final tape | `rflap_simulate` (`tape_outputs` is the final content of each tape, blanks trimmed; `acceptance`: `final_state`, `halting`, `both`) |
 | Anything without a dedicated tool (layout, user-controlled parsing, ...) | `rflap_call` with `{"request": {"op": ...}}`; the answer is `{"ok": ..., "result" or "error"}` |
 

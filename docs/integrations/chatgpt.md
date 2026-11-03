@@ -47,7 +47,9 @@ press **Refresh**. To debug raw requests, use MCP Inspector
 
 ## Notes
 
-* Tool reference: [../mcp-tools.md](../mcp-tools.md). The tunnel URL is unauthenticated: close it
+* Tool reference: [../mcp-tools.md](../mcp-tools.md). Turing machines and ALL in the notation of the
+  course: [../catedra.md](../catedra.md) (tools `rflap_mt_catedra`, `rflap_compose_tm`,
+  `rflap_membership`; prompt `mt_catedra`). The tunnel URL is unauthenticated: close it
   when you finish, and keep file access off (`--allow-files` is off by default over HTTP).
 * Verified in OpenAI's Apps/Plugins documentation: `_meta.ui.resourceUri` with the
   `openai/outputTemplate` alias, `text/html;profile=mcp-app`, `openai/toolInvocation/*` (at most
