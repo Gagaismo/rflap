@@ -430,3 +430,123 @@ fn the_summary_counts_the_states_of_a_turing_machine() {
         "{md}"
     );
 }
+
+// ALL shrink (S1) and delimiters in the input (S4)
+
+const SHRINK_JFF: &str =
+    include_str!("../../rflap-api/tests/fixtures/catedra/ALL_2.1e_m_igual_2p_mas_1.jff");
+
+fn shrink_machine() -> Value {
+    let opened = call("rflap_open_jff", json!({"xml": SHRINK_JFF}));
+    opened["structuredContent"]["document"].clone()
+}
+
+#[test]
+fn all_check_text_prints_the_shrink_notes_and_allow_shrink_false_the_violations() {
+    let good = call(
+        "rflap_mt_catedra",
+        json!({"document": shrink_machine(), "action": "all_check", "inputs": ["aab", "aabb"]}),
+    );
+    assert_eq!(good["isError"], false, "{good}");
+    let md = text(&good);
+    assert!(md.contains("cumple"), "{md}");
+    assert!(
+        md.contains("ℹ️ q0 escribe ⟨ sobre a: la cinta se achica"),
+        "{md}"
+    );
+    assert_eq!(good["structuredContent"]["ok"], true);
+    assert!(good["structuredContent"]["notes"].as_array().unwrap().len() >= 5);
+
+    let strict = call(
+        "rflap_mt_catedra",
+        json!({"document": shrink_machine(), "action": "all_check", "inputs": ["aab"],
+               "allow_shrink": false}),
+    );
+    assert_eq!(strict["isError"], false, "{strict}");
+    let md = text(&strict);
+    assert!(md.contains("no es un ALL válido"), "{md}");
+    assert!(!md.contains("ℹ️ q0 escribe"), "{md}");
+    assert_eq!(strict["structuredContent"]["ok"], false);
+}
+
+#[test]
+fn mt_catedra_run_prints_the_trim_and_shrink_notes() {
+    let result = call(
+        "rflap_mt_catedra",
+        json!({"document": shrink_machine(), "action": "run", "inputs": ["<aab>"]}),
+    );
+    assert_eq!(result["isError"], false, "{result}");
+    let md = text(&result);
+    assert!(
+        md.contains(
+            "ℹ️ La entrada «<aab>» ya traía los delimitadores; se quitaron y se corre ⟨aab⟩."
+        ),
+        "{md}"
+    );
+    assert!(md.contains("⟨⟨q1ab⟩"), "{md}");
+    assert!(md.contains("final/acepta"), "{md}");
+}
+
+#[test]
+fn definition_and_table_ignore_allow_shrink_without_failing() {
+    for action in ["definition", "table"] {
+        let result = call(
+            "rflap_mt_catedra",
+            json!({"document": shrink_machine(), "action": action, "allow_shrink": false}),
+        );
+        assert_eq!(result["isError"], false, "{action}: {result}");
+    }
+}
+
+#[test]
+fn simulate_step_and_show_pass_allow_shrink_through_on_the_all_paths() {
+    let sim = call(
+        "rflap_simulate",
+        json!({"document": shrink_machine(), "model": "all", "inputs": ["aab"]}),
+    );
+    assert_eq!(sim["isError"], false, "{sim}");
+    assert!(
+        text(&sim).contains("ℹ️ q0 escribe ⟨ sobre a: la cinta se achica"),
+        "{}",
+        text(&sim)
+    );
+    let strict = call(
+        "rflap_simulate",
+        json!({"document": shrink_machine(), "model": "all", "inputs": ["aab"],
+               "allow_shrink": false}),
+    );
+    assert_eq!(strict["isError"], false, "{strict}");
+    assert!(text(&strict).contains("violación"), "{}", text(&strict));
+
+    let step = call(
+        "rflap_step",
+        json!({"document": shrink_machine(), "model": "all", "input": "aab", "steps": 2,
+               "allow_shrink": false}),
+    );
+    assert_eq!(step["isError"], false, "{step}");
+    assert!(text(&step).contains("⚠️"), "{}", text(&step));
+
+    let shown = call(
+        "rflap_show",
+        json!({"document": shrink_machine(), "model": "all", "allow_shrink": false}),
+    );
+    assert_eq!(shown["isError"], false, "{shown}");
+    assert_eq!(shown["structuredContent"]["all_check"]["ok"], false);
+    let shown = call(
+        "rflap_show",
+        json!({"document": shrink_machine(), "model": "all"}),
+    );
+    assert_eq!(shown["structuredContent"]["all_check"]["ok"], true);
+}
+
+#[test]
+fn allow_shrink_is_rejected_on_a_non_all_generic_path_never() {
+    // a finite automaton ignores it instead of failing the whole call
+    let fa = json!({"type": "fa", "initial": "q0", "finals": ["q1"],
+                    "transitions": [["q0", "a", "q1"]]});
+    let r = call(
+        "rflap_simulate",
+        json!({"document": fa, "input": "a", "allow_shrink": true}),
+    );
+    assert_eq!(r["isError"], false, "{r}");
+}

@@ -138,13 +138,52 @@ el estado va antes de `⟨`. `rflap catedra run igual.json ab b --all`:
 reglas de un ALL y nombra cada violación:
 
 * **Estáticas**: toda transición que lee `⟨` escribe `⟨` y mueve `D` (`f(q,⟨) = (q′,⟨,D)`); toda
-  transición que lee `⟩` escribe `⟩` y mueve `I` (`f(q,⟩) = (q′,⟩,I)`); ninguna lee ni escribe `Δ`.
+  transición que lee `⟩` escribe `⟩` y mueve `I` (`f(q,⟩) = (q′,⟩,I)`) (salvo `N` hacia un estado
+  final); ninguna lee ni escribe `Δ`; `⟨` y `⟩` solo se escriben sobre sí mismos, o sobre otro símbolo
+  achicando la cinta (ver más abajo).
 * **Dinámicas** (con palabras de prueba): al simular, el cabezal nunca sale de `⟨…⟩` ni se pisa un
   delimitador.
 
 Cada violación dice la transición o el paso que la produce, por ejemplo:
 `La transición I --(⟩,X,I)--> D lee ⟩: debe escribir ⟩ y moverse a la izquierda (I).` Sale con
 código 0 si cumple y 1 si hay violaciones.
+
+### Delimitadores ⟨ ⟩ y entradas que ya los traen
+
+Los delimitadores del ALL son siempre `⟨` (U+27E8) y `⟩` (U+27E9): en las etiquetas, las tablas, las
+secuencias y el archivo `.jff`. Si una máquina de Turing sin `⟨` `⟩` usa **los dos** `<` y `>` en
+sus etiquetas (`(a,<,D)`, `(c,>,I)`), Rflap los convierte a `⟨` y `⟩` al construir el documento, al
+normalizarlo y al abrir un `.jff` viejo; `save_jff` escribe entonces `⟨ ⟩` y la máquina se trata
+como un ALL. Si usa solo uno de los dos, queda como un símbolo común de la cinta.
+
+Si la palabra de entrada ya trae sus delimitadores (`⟨aba⟩` o `<aba>`: empieza con `⟨`/`<` y termina
+con `⟩`/`>`), Rflap los quita y corre `⟨aba⟩`; el resultado lleva la nota
+`ℹ️ La entrada «<aba>» ya traía los delimitadores; se quitaron y se corre ⟨aba⟩.`
+
+### La cinta se achica
+
+La bibliografía usa una técnica que ahorra celdas: escribir el delimitador sobre un símbolo para
+consumirlo, por ejemplo `(a,⟨,D)` por la izquierda y `(c,⟩,I)` por la derecha. En Rflap es válido
+por defecto: escribir `⟨` sobre un símbolo que no es delimitador moviéndose a `D`, o `⟩` moviéndose
+a `I`. No es una violación sino una nota: `ℹ️ q0 escribe ⟨ sobre a: la cinta se achica`. La cinta
+se muestra con sus celdas reales; ALL «m = 2p + 1» (inciso e), entrada `aab`:
+
+```text
+⟨q0aab⟩ ├─ ⟨⟨q1ab⟩ ├─ ⟨⟨⟨q2b⟩ ├─ ⟨⟨⟨⟨q3⟩ ├─ ⟨⟨⟨qf⟨⟩ final/acepta
+```
+
+Siguen siendo violaciones: escribir `⟨` moviéndose a `I` o `N`, escribir `⟩` moviéndose a `D` o `N`,
+leer un delimitador sin reescribirlo y que el cabezal cruce un delimitador. Quien siga una
+definición más estricta (la de Hopcroft, donde `⟨` y `⟩` solo se escriben sobre sí mismos) usa
+`allow_shrink: false` (MCP y API) o `--no-shrink` (CLI: `catedra run` y `catedra all-check`), que
+restaura la regla estricta y sus mensajes.
+
+### Leer un delimitador y quedarse en un estado final
+
+`(⟨,⟨,N)` o `(⟩,⟩,N)` hacia un estado final es válido: al entrar en un estado final la máquina se
+detiene, así que no necesita moverse. Rflap lo informa como nota: `ℹ️ q1 lee ⟩ y escribe ⟩ sin
+moverse (N) hacia qf: los estados finales son de parada`. Con `I` sobre `⟨` (o `D` sobre `⟩`) sigue
+siendo una violación.
 
 ## Composición de MT
 

@@ -27,6 +27,7 @@ mod docs;
 mod http;
 mod instructions;
 mod log;
+mod paths;
 mod schemas;
 mod server;
 mod stdio;

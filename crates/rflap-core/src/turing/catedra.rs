@@ -20,7 +20,9 @@ use crate::automaton::Transition;
 
 pub use compose::{Multipista, compose, multipista};
 pub use definition::{Definition, Issue, Table, definition, transition_table};
-pub use run::{AllReport, AllViolation, RunReport, Verdict, all_check, run};
+pub use run::{
+    AllReport, AllViolation, RunReport, Verdict, all_check, all_check_with, run, run_with,
+};
 
 /// The blank of the course.
 pub const DELTA: char = 'Δ';
@@ -80,11 +82,19 @@ impl Model {
     }
 }
 
-/// The machine with `<` and `>` read as the delimiters `⟨` and `⟩` of an ALL, in every read and
-/// write symbol. Only when the machine uses no `⟨` or `⟩` yet; otherwise it is returned as is,
-/// and `<` and `>` stay ordinary tape symbols.
+/// The machine with `<` and `>` turned into the delimiters `⟨` and `⟩` of an ALL, in every read
+/// and write symbol. Only when the machine uses no `⟨` or `⟩` yet and its labels use both `<`
+/// and `>`; otherwise it is returned as is, and a lone `<` or `>` stays an ordinary tape symbol.
 pub fn with_delimiter_aliases(machine: &TuringMachine) -> TuringMachine {
-    if Model::detect(machine) == Model::All {
+    let uses = |c: char| {
+        machine.automaton().transitions().iter().any(|t| {
+            t.label
+                .actions()
+                .iter()
+                .any(|a| a.read().contains(c) || a.write() == c)
+        })
+    };
+    if Model::detect(machine) == Model::All || !(uses('<') && uses('>')) {
         return machine.clone();
     }
     let alias = |c: char| match c {

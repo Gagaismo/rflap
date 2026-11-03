@@ -16,6 +16,7 @@ use rflap_core::pda::Pda;
 use rflap_core::pumping::Game;
 use rflap_core::regex::Regex;
 use rflap_core::turing::TuringMachine;
+use rflap_core::turing::catedra::with_delimiter_aliases;
 use serde::{Deserialize, Deserializer, Serialize, de};
 use serde_json::{Map, Value};
 
@@ -170,12 +171,21 @@ impl Document {
             ));
         }
         if compact::is_compact(&kind, &object) {
-            return compact::build(&kind, &object);
+            return compact::build(&kind, &object).map(Document::with_delimiters);
         }
         object.remove("type");
         let doc = decode_full(&kind, object)?;
         doc.check()?;
-        Ok(doc)
+        Ok(doc.with_delimiters())
+    }
+
+    /// A Turing machine with no `⟨` `⟩` whose labels use both `<` and `>` gets them turned into
+    /// `⟨` and `⟩`, so every view and file shows the delimiters of an ALL.
+    pub fn with_delimiters(self) -> Document {
+        match self {
+            Document::Turing(t) => Document::Turing(with_delimiter_aliases(&t)),
+            other => other,
+        }
     }
 
     /// Reads a document from JSON text.

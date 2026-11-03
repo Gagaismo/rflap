@@ -90,7 +90,7 @@ fn verdict_line(run: &Value) -> String {
 }
 
 /// One run: its input, the verdict and the configuration sequence in a code block.
-fn run_block(run: &Value) -> String {
+fn run_block(run: &Value, skip: &Value) -> String {
     let mut out = format!(
         "**Entrada `{}`**: {}\n\n{}",
         word(str_of(&run["input"])),
@@ -100,7 +100,27 @@ fn run_block(run: &Value) -> String {
     if let Some(message) = run["violation"]["message"].as_str() {
         let _ = write!(out, "\n\n⚠️ {message}");
     }
+    out.push_str(&notes(&run["notes"], skip));
     out
+}
+
+/// `ℹ️ note` per line, each after a blank line; empty without notes.
+fn notes(notes: &Value, skip: &Value) -> String {
+    let skip = skip.as_array().cloned().unwrap_or_default();
+    notes
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter(|n| !skip.contains(n))
+        .filter_map(Value::as_str)
+        .map(|n| {
+            format!(
+                "
+
+ℹ️ {n}"
+            )
+        })
+        .collect()
 }
 
 /// The configuration sequences of `catedra_run`.
@@ -114,7 +134,7 @@ pub fn run(result: &Value) -> String {
         .as_array()
         .into_iter()
         .flatten()
-        .map(run_block)
+        .map(|r| run_block(r, &Value::Null))
         .collect();
     format!(
         "**Secuencias de configuraciones ({model})**, `├─` es un paso de la máquina:\n\n{}",
@@ -152,8 +172,12 @@ pub fn all_check(result: &Value) -> String {
             let _ = write!(out, "\n- {}", str_of(&v["message"]));
         }
     }
+    out.push_str(&notes(&result["notes"], &Value::Null));
     if !runs.is_empty() {
-        let blocks: Vec<String> = runs.iter().map(run_block).collect();
+        let blocks: Vec<String> = runs
+            .iter()
+            .map(|r| run_block(r, &result["notes"]))
+            .collect();
         let _ = write!(out, "\n\n{}", blocks.join("\n\n"));
     }
     out
@@ -187,9 +211,10 @@ pub fn step(result: &Value, steps: u64) -> String {
         verdict_line(run)
     };
     format!(
-        "**Entrada `{}`, primeros {steps} paso(s) (ALL)**: {state}\n\n{}",
+        "**Entrada `{}`, primeros {steps} paso(s) (ALL)**: {state}\n\n{}{}",
         word(str_of(&run["input"])),
-        fence("text", &configurations.join(" ├─ "))
+        fence("text", &configurations.join(" ├─ ")),
+        notes(&run["notes"], &Value::Null)
     )
 }
 

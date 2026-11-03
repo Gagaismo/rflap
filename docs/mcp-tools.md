@@ -31,6 +31,7 @@ Shows any Rflap document (automaton, grammar, regex, L-system…) in the interac
 
 | argument | type | required | description |
 |---|---|---|---|
+| `allow_shrink` | boolean | no | ALL only (default true): writing ⟨ over another symbol moving D, or ⟩ moving I, is valid (the tape shrinks, reported as a note). false = the strict rule, where ⟨ and ⟩ are only written over themselves. |
 | `document` | object | yes | The document to show. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `model` | `mt` \| `all` | no | Turing machines only. all = run it as an ALL (linear bounded automaton): the tape is ⟨w⟩ with the delimiters placed automatically and the head on the first symbol. mt = a Turing machine on a blank-delimited tape. Default: all when a transition mentions ⟨ or ⟩, otherwise mt. |
 | `notation` | `catedra` \| `jflap` | no | Turing machines only: catedra (default) writes the labels (e,s,m) with Δ and I/N/D, jflap writes e;s,m with □ and L/S/R, in the table and the drawing. |
@@ -46,6 +47,7 @@ Runs a finite automaton, PDA, Turing machine, Mealy or Moore machine on one inpu
 | argument | type | required | description |
 |---|---|---|---|
 | `acceptance` | `final_state` \| `empty_stack` \| `halting` \| `both` | no | When a run accepts (PDA, Turing). |
+| `allow_shrink` | boolean | no | ALL only (default true): writing ⟨ over another symbol moving D, or ⟩ moving I, is valid (the tape shrinks, reported as a note). false = the strict rule, where ⟨ and ⟩ are only written over themselves. |
 | `document` | object | yes | The machine to run. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `input` | string | no | One input string ("" is the empty string). |
 | `inputs` | array of string or array of string | no | Many inputs at once (a batch run); each a string, or an array with one string per tape. |
@@ -67,6 +69,7 @@ Runs an input for exactly `steps` steps (stateless: it replays from the start) a
 | argument | type | required | description |
 |---|---|---|---|
 | `acceptance` | `final_state` \| `empty_stack` \| `halting` \| `both` | no | When a run accepts (PDA, Turing). |
+| `allow_shrink` | boolean | no | ALL only (default true): writing ⟨ over another symbol moving D, or ⟩ moving I, is valid (the tape shrinks, reported as a note). false = the strict rule, where ⟨ and ⟩ are only written over themselves. |
 | `document` | object | yes | The machine to run. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `input` | string | yes | The input string. |
 | `max_configs` | integer | no | Frontier size at which the run stops as truncated (default 10000). |
@@ -196,7 +199,7 @@ Reads a JFLAP .jff file (any type) into a document and shows it. Pass the file's
 
 | argument | type | required | description |
 |---|---|---|---|
-| `path` | string | no | Path of a .jff file to read (local servers only). |
+| `path` | string | no | Path of a .jff file to read (local servers only). A leading ~ (or ~/, ~\) and %VAR% on Windows are expanded. |
 | `xml` | string | no | The text of the .jff file. |
 
 `structuredContent` keys: `document`.
@@ -211,7 +214,7 @@ Writes a document as .jff text that JFLAP 7.1 opens. Returns the XML; with `path
 |---|---|---|---|
 | `document` | object | yes | The document to save. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `overwrite` | boolean | no | Allow replacing an existing file. |
-| `path` | string | no | Where to write the file; must end in .jff (local servers only). |
+| `path` | string | no | Where to write the file; must end in .jff (local servers only). A leading ~ (or ~/, ~\) and %VAR% on Windows are expanded; ~/Desktop falls back to ~/OneDrive/Desktop (or Escritorio) when the plain folder does not exist, and the reply says the real path. |
 
 `structuredContent` keys: `type`, `xml`.
 
@@ -270,18 +273,19 @@ Escape hatch: sends one raw Rflap API request {"op": ..., ...} (see rflap_capabi
 
 **Turing machine / ALL in the course notation** · shows the widget
 
-ALL (autómata linealmente acotado, linear bounded automaton) or one-tape Turing machine (MT) in the notation of the course "Sintaxis y Semántica de los Lenguajes" (UTN FRT). `action`: "definition" = the formal definition MT = ⟨Q, Σ_E, Σ_A, q0, F, f⟩ with its sets; "table" = the transition table (Estado Actual | Símbolo Entrada | Estado Nuevo | Símbolo Salida | Movimiento Cabezal); "run" = the configuration sequences (Δ1abaΔ ├─ ΔΔ2baΔ … final/acepta or bloqueo/rechazo) for `inputs`; "all_check" = whether the machine obeys the rules of an ALL (reads ⟨ moving D, reads ⟩ moving I, never reads or writes Δ, the head never leaves ⟨…⟩) and lists every violation. Write the machine as a compact turing document with cátedra labels (e,s,m): move I left, N stay, D right, Δ the blank, several labels on one edge joined with " / "; final states halt. Example: {"document":{"type":"turing","initial":"1","finals":["8"],"transitions":[["1","(a,Δ,D)","2"],["2","(a,a,D) / (b,b,D)","2"],["2","(Δ,Δ,D)","8"]]},"action":"run","inputs":["aa"]}.
+ALL (autómata linealmente acotado, linear bounded automaton) or one-tape Turing machine (MT) in the notation of the course "Sintaxis y Semántica de los Lenguajes" (UTN FRT). `action`: "definition" = the formal definition MT = ⟨Q, Σ_E, Σ_A, q0, F, f⟩ with its sets; "table" = the transition table (Estado Actual | Símbolo Entrada | Estado Nuevo | Símbolo Salida | Movimiento Cabezal); "run" = the configuration sequences (Δ1abaΔ ├─ ΔΔ2baΔ … final/acepta or bloqueo/rechazo) for `inputs`; "all_check" = whether the machine obeys the rules of an ALL (reads ⟨ moving D, reads ⟩ moving I, never reads or writes Δ, the head never leaves ⟨…⟩) and lists every violation; writing ⟨ over another symbol moving D (or ⟩ moving I) shrinks the tape and is valid unless `allow_shrink` is false, reported as a note. An input that already carries its delimiters (⟨aba⟩ or <aba>) is run without them and says so. Write the machine as a compact turing document with cátedra labels (e,s,m): move I left, N stay, D right, Δ the blank, several labels on one edge joined with " / "; final states halt. Example: {"document":{"type":"turing","initial":"1","finals":["8"],"transitions":[["1","(a,Δ,D)","2"],["2","(a,a,D) / (b,b,D)","2"],["2","(Δ,Δ,D)","8"]]},"action":"run","inputs":["aa"]}.
 
 | argument | type | required | description |
 |---|---|---|---|
 | `action` | `definition` \| `table` \| `run` \| `all_check` | yes | definition, table, run (needs `inputs`) or all_check (static check, plus a dynamic one on `inputs`). |
+| `allow_shrink` | boolean | no | ALL only (default true): writing ⟨ over another symbol moving D, or ⟩ moving I, is valid (the tape shrinks, reported as a note). false = the strict rule, where ⟨ and ⟩ are only written over themselves. |
 | `document` | object | yes | The one-tape Turing machine or ALL. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. A compact document may also carry `title` (alias `name`, shown as the header of the result and the widget), `layout` (an algorithm name, default `layered`: initial state at the left) and `points` ({"q0": [x, y]}, fixed coordinates). Other types: rflap_capabilities. |
 | `input_alphabet` | string or array of string | no | Declares Σ_E, such as "ab" or ["a","b"]; if missing it is inferred. |
 | `inputs` | array of string | no | Words to run ("" is the empty word). Needed by `run`; optional for `all_check`. |
 | `max_steps` | integer | no | Steps before a run is reported as not halting (default 1000, at most 100000). |
 | `model` | `mt` \| `all` | no | mt (Turing machine) or all (linear bounded automaton, the tape is delimited by ⟨ and ⟩). Default: all when a transition mentions ⟨ or ⟩, otherwise mt. |
 
-`structuredContent` keys: `action`, `document`, `model`, `ok`, `results`, `text`, `violations`.
+`structuredContent` keys: `action`, `document`, `model`, `notes`, `ok`, `results`, `text`, `violations`.
 
 ## `rflap_compose_tm`
 

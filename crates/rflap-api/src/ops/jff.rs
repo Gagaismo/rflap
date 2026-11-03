@@ -33,7 +33,7 @@ pub fn open(xml: &str) -> Result<Value, ApiError> {
             Structure::Regex(r) => Document::Regex(RegexDoc::of(&r)),
         },
     };
-    Ok(json!({"document": document}))
+    Ok(json!({"document": document.with_delimiters()}))
 }
 
 /// Writes a document as `.jff` text.
