@@ -260,6 +260,18 @@ fn turing_machine_a_n_b_n_c_n() {
 }
 
 #[test]
+fn turing_tape_outputs_are_the_final_tape_without_surrounding_blanks() {
+    // The head ends past the data (on the blank after `aa`): the output is still `aa`.
+    let walk = json!({
+        "type": "turing", "initial": "q0", "finals": ["q1"],
+        "transitions": [["q0", "a;a,R", "q0"], ["q0", "_;_,S", "q1"]]
+    });
+    let r = ok(json!({"op": "simulate", "document": walk, "input": "aa"}));
+    assert_eq!(r["outcome"], "accepted");
+    assert_eq!(r["tape_outputs"], json!(["aa"]));
+}
+
+#[test]
 fn turing_machine_output_and_halting() {
     let rewrite = json!({
         "type": "turing", "initial": "q0", "finals": ["q2"],
@@ -508,4 +520,33 @@ fn calls_are_deterministic() {
     assert_eq!(rflap_api::call(&request), rflap_api::call(&request));
     let request = json!({"op": "layout", "document": abb_nfa(), "algorithm": "random"}).to_string();
     assert_eq!(rflap_api::call(&request), rflap_api::call(&request));
+}
+
+#[test]
+fn combine_appends_the_second_turing_machine_with_its_blocks() {
+    let first = json!({"type": "turing", "initial": "p0", "finals": ["p1"],
+                       "transitions": [["p0", "a;a,R", "p1"]]});
+    let second = json!({
+        "type": "turing", "initial": "start", "finals": ["done"],
+        "transitions": [["start", "a;a,S", "block"], ["block", "_;_,S", "done"]],
+        "blocks": {"block": {"initial": "m0", "finals": ["m1"],
+                             "transitions": [["m0", "a;b,R", "m1"]]}}
+    });
+    let r = ok(json!({"op": "combine", "a": first, "b": second}));
+    let d = &r["document"];
+    assert_eq!(d["type"], "turing");
+    assert_eq!(d["automaton"]["states"].as_object().unwrap().len(), 2 + 3);
+    assert_eq!(
+        d["automaton"]["transitions"].as_array().unwrap().len(),
+        1 + 2
+    );
+    assert_eq!(d["blocks"].as_object().unwrap().len(), 1, "{d}");
+    // The combined machine still runs the first machine's initial state.
+    let sim = ok(json!({"op": "simulate", "document": d.clone(), "input": "a"}));
+    assert_eq!(sim["outcome"], "accepted");
+
+    let two_tapes = json!({"type": "turing", "tapes": 2, "initial": "q", "finals": ["q"],
+                           "transitions": []});
+    let e = err(json!({"op": "combine", "a": d.clone(), "b": two_tapes}));
+    assert_eq!(e["code"], "invalid_argument", "{e}");
 }

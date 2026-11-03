@@ -13,6 +13,7 @@ use super::{
 use crate::grammar::model::Grammar;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum UserParseError {
     /// There is no production with that index.
     NoSuchProduction {

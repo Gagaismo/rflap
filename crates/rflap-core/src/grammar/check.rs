@@ -6,6 +6,7 @@ use super::model::{Grammar, Production, is_variable_symbol};
 
 /// What JFLAP's "Test for Grammar Type" reports, in the order it checks.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Classification {
     RightLinear,
     LeftLinear,

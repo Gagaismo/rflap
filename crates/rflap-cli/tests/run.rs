@@ -125,7 +125,7 @@ fn run_turing_machine_with_one_input_per_tape() {
     let out = rflap(&["run", &f, "--tape", "aa", "--tape", "λ"]);
     assert_eq!(
         out.stdout,
-        "\"aa\" | \"\": accepted, tape 1 \"\", tape 2 \"\"\n"
+        "\"aa\" | \"\": accepted, tape 1 \"aa\", tape 2 \"xx\"\n"
     );
     assert_eq!(out.code, 0);
 }

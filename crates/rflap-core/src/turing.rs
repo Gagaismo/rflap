@@ -48,9 +48,13 @@ impl std::error::Error for TmError {}
 
 /// Head movement of one tape.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Direction {
+    #[serde(alias = "Left")]
     Left,
+    #[serde(alias = "Right")]
     Right,
+    #[serde(alias = "Stay")]
     Stay,
 }
 
@@ -379,6 +383,14 @@ impl TuringMachine {
         &self.automaton
     }
 
+    /// Mutable access to the underlying automaton, for operations written for any
+    /// automaton (combine, removing useless states). It does not touch the blocks: after
+    /// removing states, drop their blocks with [`TuringMachine::remove_state`], which is a
+    /// no-op on the automaton for a state that is already gone.
+    pub fn automaton_mut(&mut self) -> &mut Automaton<TmLabel> {
+        &mut self.automaton
+    }
+
     pub fn create_state(&mut self, point: Point) -> StateId {
         self.automaton.create_state(point)
     }
@@ -537,6 +549,18 @@ pub fn tape_outputs(outcome: &RunOutcome<TmConfig>) -> Option<Vec<String>> {
         RunOutcome::Accepted { trace } => trace
             .last()
             .map(|c| c.tapes.iter().map(Tape::output).collect()),
+        _ => None,
+    }
+}
+
+/// The final contents of every tape of the accepting configuration, without the blanks around
+/// the data (Rflap addition: `tape_outputs` shows only what is under and after the head),
+/// `None` when the run did not accept.
+pub fn tape_contents(outcome: &RunOutcome<TmConfig>) -> Option<Vec<String>> {
+    match outcome {
+        RunOutcome::Accepted { trace } => trace
+            .last()
+            .map(|c| c.tapes.iter().map(Tape::trimmed).collect()),
         _ => None,
     }
 }

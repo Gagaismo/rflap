@@ -168,6 +168,7 @@ pub fn slr_automaton(g: &Grammar) -> LrAutomaton {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LrAction {
     Shift(usize),
     /// Reduce by the production with this index in the augmented list.
@@ -303,6 +304,7 @@ pub fn slr_table(g: &Grammar) -> LrTable {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LrStepAction {
     Shift {
         state: usize,

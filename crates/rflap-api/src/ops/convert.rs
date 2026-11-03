@@ -2,7 +2,8 @@
 
 use rflap_core::analysis::clean_useless;
 use rflap_core::convert::{
-    cfg_to_pda_ll, cfg_to_pda_lr, fa_to_grammar, grammar_to_fa, pda_to_cfg, tm_to_grammar,
+    ConvertError, cfg_to_pda_ll, cfg_to_pda_lr, check_pda_form, fa_to_grammar, grammar_to_fa,
+    pda_to_cfg, pda_to_jflap_form, tm_to_grammar,
 };
 use rflap_core::fa::{Fa, add_trap_state, split_multi_char_labels};
 use rflap_core::fa_convert;
@@ -133,14 +134,47 @@ pub fn convert(doc: &Document, to: ConvertTo) -> Result<Value, ApiError> {
         }
         ConvertTo::Cfg => match doc {
             Document::Pda(pda) => {
-                let conversion = pda_to_cfg(pda).map_err(failed)?;
+                // JFLAP refuses a PDA that is not in its form; Rflap rewrites it first.
+                let rewritten = match check_pda_form(pda) {
+                    Err(ConvertError::NoInitialState) | Ok(()) => None,
+                    Err(_) => Some(pda_to_jflap_form(pda).map_err(failed)?),
+                };
+                let conversion =
+                    pda_to_cfg(rewritten.as_ref().map_or(pda, |f| &f.pda)).map_err(failed)?;
                 let grammar = conversion.grammar.clone();
-                result(to, &conversion, "grammar", Document::Grammar(grammar))
+                let mut out = result(to, &conversion, "grammar", Document::Grammar(grammar));
+                if let Some(form) = rewritten {
+                    let rewriting = json!({
+                        "kind": "pda_to_jflap_form",
+                        "document": Document::Pda(form.pda.clone()).to_value(),
+                        "steps": form.steps,
+                    });
+                    let mut steps = vec![rewriting];
+                    steps.extend(out["steps"].as_array().cloned().unwrap_or_default());
+                    out["steps"] = Value::Array(steps);
+                    // The steps that follow name the states of the rewritten machine.
+                    out["pda"] = Document::Pda(form.pda).to_value();
+                }
+                out
             }
             other => {
                 return Err(wrong_type(
                     "convert",
                     "a pda document to convert to `cfg`",
+                    other,
+                ));
+            }
+        },
+        ConvertTo::PdaJflapForm => match doc {
+            Document::Pda(pda) => {
+                let form = pda_to_jflap_form(pda).map_err(failed)?;
+                let document = Document::Pda(form.pda.clone());
+                result(to, &form, "pda", document)
+            }
+            other => {
+                return Err(wrong_type(
+                    "convert",
+                    "a pda document to convert to `pda_jflap_form`",
                     other,
                 ));
             }
@@ -228,10 +262,22 @@ pub fn convert(doc: &Document, to: ConvertTo) -> Result<Value, ApiError> {
                 Document::Moore(a) => {
                     Document::Moore(clean_useless(a).map_err(|_| no_initial_state())?)
                 }
+                Document::Turing(tm) => {
+                    let cleaned = clean_useless(tm.automaton()).map_err(|_| no_initial_state())?;
+                    let mut out = tm.clone();
+                    *out.automaton_mut() = cleaned;
+                    // Drops the blocks of the removed states.
+                    for id in tm.blocks().keys() {
+                        if out.automaton().state(*id).is_none() {
+                            out.remove_state(*id);
+                        }
+                    }
+                    Document::Turing(out)
+                }
                 other => {
                     return Err(wrong_type(
                         "convert",
-                        "a fa, pda, mealy or moore document to convert to `remove_useless_states`",
+                        "a fa, pda, turing, mealy or moore document to convert to `remove_useless_states`",
                         other,
                     ));
                 }

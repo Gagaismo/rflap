@@ -143,6 +143,7 @@ impl fmt::Display for Production {
 
 /// Why a grammar could not be built.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum GrammarError {
     /// A line without an arrow (`line` is 1-based).
     Syntax { line: usize, message: String },

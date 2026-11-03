@@ -102,6 +102,7 @@ pub struct LlStep {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LlAction {
     /// Pop the variable and push the right side of `production`.
     Replace {

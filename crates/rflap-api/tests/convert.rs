@@ -168,9 +168,18 @@ fn pda_to_cfg() {
             ["q1", "b,A;λ", "q1"], ["q1", "λ,Z;A", "qf"]
         ]
     });
-    let e = err(json!({"op": "convert", "document": pda.clone(), "to": "cfg"}));
+    // Not in JFLAP form (it pushes one symbol into the final state): `cfg` first rewrites it
+    // and reports that in the steps.
+    let r = ok(json!({"op": "convert", "document": pda.clone(), "to": "cfg"}));
+    assert_eq!(r["document"]["type"], "grammar");
+    assert_eq!(r["steps"][0]["kind"], "pda_to_jflap_form");
+    assert_eq!(r["steps"][0]["document"]["type"], "pda");
+    assert!(r["steps"][0]["steps"].as_array().unwrap().len() >= 3);
+    assert_eq!(r["pda"]["type"], "pda");
+
+    let no_initial = json!({"type": "pda", "states": ["q0"], "transitions": []});
+    let e = err(json!({"op": "convert", "document": no_initial, "to": "cfg"}));
     assert_eq!(e["code"], "conversion_failed");
-    assert!(e["message"].as_str().unwrap().contains("pop"));
 
     let ok_pda = json!({
         "type": "pda", "initial": "q0", "finals": ["qf"],
@@ -182,6 +191,69 @@ fn pda_to_cfg() {
     let r = ok(json!({"op": "convert", "document": ok_pda, "to": "cfg"}));
     assert_eq!(r["document"]["type"], "grammar");
     assert!(!r["document"]["productions"].as_array().unwrap().is_empty());
+    // Already in form: no rewriting step.
+    assert!(
+        r["steps"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|s| s["kind"] != "pda_to_jflap_form")
+    );
+}
+
+#[test]
+fn designed_an_bn_converts_to_a_cfg_that_agrees_with_the_pda() {
+    let designed = ok(json!({"op": "design", "spec": {"alphabet": "ab",
+        "language": {"template": {"name": "an_bn", "a": "a", "b": "b"}}}}));
+    let pda = designed["document"].clone();
+    let r = ok(json!({"op": "convert", "document": pda.clone(), "to": "cfg"}));
+    assert_eq!(r["steps"][0]["kind"], "pda_to_jflap_form");
+    let grammar = r["document"].clone();
+    let mut all = vec![String::new()];
+    let mut frontier = vec![String::new()];
+    for _ in 0..6 {
+        frontier = frontier
+            .iter()
+            .flat_map(|s| ["a", "b"].map(|c| format!("{s}{c}")))
+            .collect();
+        all.extend(frontier.iter().cloned());
+    }
+    for s in all {
+        let by_pda = ok(json!({"op": "simulate", "document": pda.clone(), "input": s}));
+        let by_grammar = ok(
+            json!({"op": "parse", "grammar": grammar.clone(), "input": s,
+                                   "budget": 500000}),
+        );
+        assert_eq!(
+            by_pda["accepted"],
+            json!(by_grammar["results"][0]["outcome"] == "accepted"),
+            "disagree on {s:?}"
+        );
+    }
+}
+
+#[test]
+fn pda_jflap_form_is_a_target_of_its_own() {
+    let designed = ok(json!({"op": "design", "spec": {"alphabet": "ab",
+        "language": {"template": {"name": "an_bn", "a": "a", "b": "b"}}}}));
+    let r = ok(
+        json!({"op": "convert", "document": designed["document"].clone(),
+                      "to": "pda_jflap_form"}),
+    );
+    assert_eq!(r["to"], "pda_jflap_form");
+    assert_eq!(r["document"]["type"], "pda");
+    assert_eq!(r["steps"][0]["kind"], "bottom_marker");
+    // The result is accepted by `cfg` without another rewriting.
+    let cfg = ok(json!({"op": "convert", "document": r["document"].clone(), "to": "cfg"}));
+    assert!(
+        cfg["steps"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|s| s["kind"] != "pda_to_jflap_form")
+    );
+    let wrong = err(json!({"op": "convert", "document": abb_nfa(), "to": "pda_jflap_form"}));
+    assert_eq!(wrong["code"], "wrong_document_type");
 }
 
 #[test]
@@ -275,6 +347,26 @@ fn conversions_reject_the_wrong_type() {
                 .collect::<Value>()
         )
         .len(),
-        17
+        18
     );
+}
+
+#[test]
+fn remove_useless_states_of_a_turing_machine() {
+    let doc = json!({
+        "type": "turing", "initial": "q0", "finals": ["qf"],
+        "transitions": [["q0", "a;a,R", "qf"], ["q0", "b;b,R", "dead"], ["dead", "a;a,R", "dead"]]
+    });
+    let r = ok(json!({"op": "convert", "document": doc, "to": "remove_useless_states"}));
+    assert_eq!(r["document"]["type"], "turing");
+    assert_eq!(
+        r["document"]["automaton"]["states"]
+            .as_object()
+            .unwrap()
+            .len(),
+        2
+    );
+    assert_eq!(r["steps"][0]["states"], json!(["dead"]));
+    let sim = ok(json!({"op": "simulate", "document": r["document"], "input": "a"}));
+    assert_eq!(sim["outcome"], "accepted");
 }

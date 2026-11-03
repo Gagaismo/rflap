@@ -608,18 +608,28 @@ fn capabilities(args: &Map<String, Value>) -> Outcome {
     })
 }
 
+/// `rflap_call` answers the `rflap_api::call` envelope (`{"ok": ..., "result" | "error"}`) as
+/// is, errors included, because the widget's remote fallback (`web/README.md`) reads it from
+/// `structuredContent`. `request` is the request as JSON text, or the request object itself.
 fn raw_call(args: &Map<String, Value>) -> Outcome {
-    let request = args["request"].clone();
-    if !request.is_object() {
-        return Err("`request` must be a JSON object such as {\"op\": \"capabilities\"}.".into());
-    }
-    let result = api(request)?;
+    let request = match &args["request"] {
+        Value::String(text) => text.clone(),
+        object @ Value::Object(_) => object.to_string(),
+        _ => {
+            return Err(
+                "`request` must be the request as JSON text (or a JSON object) such as                  {\"op\": \"capabilities\"}."
+                    .into(),
+            );
+        }
+    };
+    let envelope: Value = serde_json::from_str(&rflap_api::call(&request))
+        .map_err(|e| format!("unreadable API answer: {e}"))?;
     let text = content::fence(
         "json",
-        &serde_json::to_string_pretty(&result).unwrap_or_default(),
+        &serde_json::to_string_pretty(&envelope).unwrap_or_default(),
     );
     Ok(Done {
         text,
-        structured: result,
+        structured: envelope,
     })
 }

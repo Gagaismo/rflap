@@ -14,6 +14,7 @@ use super::model::{Grammar, Production};
 
 /// Why a transformation refused a grammar.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum TransformError {
     /// A production whose left side is not a single variable.
     NotContextFree(Production),
@@ -69,6 +70,7 @@ fn single(lhs: &str) -> char {
 
 /// One step of the λ-removal walk-through.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LambdaStep {
     /// `variable` joins the set of variables that derive λ, because of `production`.
     DerivesLambda {
@@ -202,6 +204,7 @@ pub fn remove_lambda_productions(g: &Grammar) -> Result<LambdaRemoval, Transform
 // ---------------------------------------------------------------------------------------------
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum UnitStep {
     /// An edge of the variable dependency graph, one per unit production.
     Edge {
@@ -328,6 +331,7 @@ fn reachable_from(start: char, edges: &[(char, char)]) -> BTreeSet<char> {
 // ---------------------------------------------------------------------------------------------
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum UselessStep {
     /// `variable` derives a terminal string, because of `production`.
     DerivesTerminals {
@@ -450,6 +454,7 @@ pub fn remove_useless_productions(g: &Grammar) -> Result<UselessRemoval, Transfo
 // ---------------------------------------------------------------------------------------------
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CnfKind {
     /// Terminals in a longer right side are replaced by variables (`B(a) → a`).
     Terminals,

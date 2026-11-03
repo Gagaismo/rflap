@@ -38,6 +38,7 @@ pub use lemma::{CaseView, Lemma};
 
 /// Which pumping lemma: for regular or for context-free languages.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Kind {
     Regular,
     ContextFree,
@@ -55,6 +56,7 @@ impl Kind {
 
 /// The predefined regular languages, in the order JFLAP lists them.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum RegLang {
     /// a^n b^n
     AnBn,
@@ -86,6 +88,7 @@ pub enum RegLang {
 
 /// The predefined context-free languages, in the order JFLAP lists them.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CfLang {
     /// a^n b^n c^n
     AnBnCn,
@@ -149,6 +152,7 @@ const CF_LANGS: [CfLang; 13] = [
 
 /// One of JFLAP's predefined languages.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Language {
     Regular(RegLang),
     ContextFree(CfLang),

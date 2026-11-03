@@ -7,6 +7,7 @@ use super::{ParseOutcome, brute_parse, cyk_parse, ll1_parse, slr_parse};
 use crate::grammar::model::Grammar;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ParseMethod {
     Brute { max_nodes: usize },
     Ll1,
@@ -15,6 +16,7 @@ pub enum ParseMethod {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum MultiOutcome {
     Accepted,
     Rejected,

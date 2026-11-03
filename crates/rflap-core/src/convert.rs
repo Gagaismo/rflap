@@ -15,6 +15,7 @@ use crate::pda::PdaLabel;
 mod cfg_pda;
 mod fa_grammar;
 mod pda_cfg;
+mod pda_form;
 mod tm_grammar;
 
 pub use cfg_pda::{CfgToPda, CfgToPdaStep, cfg_to_pda_ll, cfg_to_pda_lr};
@@ -25,6 +26,7 @@ pub use fa_grammar::{
 pub use pda_cfg::{
     PdaToCfg, PdaToCfgStep, TripleProduction, TripleVariable, check_pda_form, pda_to_cfg,
 };
+pub use pda_form::{PdaToJflapForm, PdaToJflapFormStep, pda_to_jflap_form};
 pub use tm_grammar::{TmToGrammar, TmToGrammarStep, tm_to_grammar};
 
 /// A PDA transition named by its endpoints and label, for error reports.
@@ -61,6 +63,8 @@ pub enum ConvertError {
     FinalTransitionsMustPopZ { transitions: Vec<TransitionRef> },
     /// PDA to CFG: every transition must pop one symbol and push zero or two.
     TransitionsMustPopOnePushZeroOrTwo { transitions: Vec<TransitionRef> },
+    /// PDA to JFLAP form (Rflap): every candidate for the new bottom symbol is already used.
+    NoFreeStackSymbol,
     /// PDA to CFG: more variables than letters, even after trimming.
     TooManyVariables { count: usize },
     /// TM to grammar: JFLAP's construction is for one tape.
@@ -103,6 +107,9 @@ impl fmt::Display for ConvertError {
             }
             ConvertError::TransitionsMustPopOnePushZeroOrTwo { .. } => {
                 f.write_str("Transitions must pop 1 and push 0 or 2.")
+            }
+            ConvertError::NoFreeStackSymbol => {
+                f.write_str("There is no free stack symbol left to use as the bottom marker.")
             }
             ConvertError::TooManyVariables { .. } => {
                 f.write_str("There are more variables than can be uniquely represented.")

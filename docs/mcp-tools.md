@@ -75,12 +75,12 @@ Runs an input for exactly `steps` steps (stateless: it replays from the start) a
 
 **Convert between models** · shows the widget
 
-Converts a document. Targets (`to`): dfa, minimal_dfa (from fa, regex or regular grammar); regex, regular_grammar (from fa); nfa (from regex); fa (from a right-linear grammar); pda_ll, pda_lr (from a CFG); cfg (from a pda); unrestricted_grammar (from a one-tape Turing machine); remove_lambda, remove_unit, remove_useless, cnf (grammar transformations); complete (adds the trap state), split_labels, remove_useless_states. Returns the new document and the construction steps. Example: {"document":{"type":"regex","expression":"(a+b)*abb"},"to":"minimal_dfa"}.
+Converts a document. Targets (`to`): dfa, minimal_dfa (from fa, regex or regular grammar); regex, regular_grammar (from fa); nfa (from regex); fa (from a right-linear grammar); pda_ll, pda_lr (from a CFG); cfg (from a pda; one not in JFLAP form is rewritten first), pda_jflap_form (rewrites a pda into that form); unrestricted_grammar (from a one-tape Turing machine); remove_lambda, remove_unit, remove_useless, cnf (grammar transformations); complete (adds the trap state), split_labels, remove_useless_states. Returns the new document and the construction steps. Example: {"document":{"type":"regex","expression":"(a+b)*abb"},"to":"minimal_dfa"}.
 
 | argument | type | required | description |
 |---|---|---|---|
 | `document` | object | yes | The document to convert. A JSON object with a "type": fa, pda, turing, mealy, moore, grammar, regex, lsystem or a pumping lemma game. Compact form: {"type":"fa","initial":"q0","finals":["q1"], "transitions":[["q0","a","q1"]]}, {"type":"grammar","text":"S -> aSb \| λ"}, {"type":"regex","expression":"(a+b)*abb"}; the full form other tools return works too. Other types: rflap_capabilities. |
-| `to` | `dfa` \| `minimal_dfa` \| `regex` \| `nfa` \| `regular_grammar` \| `fa` \| `pda_ll` \| `pda_lr` \| `cfg` \| `unrestricted_grammar` \| `remove_lambda` \| `remove_unit` \| `remove_useless` \| `cnf` \| `complete` \| `split_labels` \| `remove_useless_states` | yes | The target. |
+| `to` | `dfa` \| `minimal_dfa` \| `regex` \| `nfa` \| `regular_grammar` \| `fa` \| `pda_ll` \| `pda_lr` \| `cfg` \| `pda_jflap_form` \| `unrestricted_grammar` \| `remove_lambda` \| `remove_unit` \| `remove_useless` \| `cnf` \| `complete` \| `split_labels` \| `remove_useless_states` | yes | The target. |
 
 `structuredContent` keys: `document`, `steps`, `to`.
 
@@ -252,8 +252,8 @@ The full description of the Rflap API: every operation with an example, every do
 
 **Raw Rflap API call**
 
-Escape hatch: sends one raw Rflap API request {"op": ..., ...} (see rflap_capabilities) and returns the raw result. Use it for operations without a dedicated tool: normalize, layout, multiple_run, user_parse, explain, … Example: {"request":{"op":"layout","document":{...},"algorithm":"tree"}}.
+Escape hatch: sends one raw Rflap API request {"op": ..., ...} (see rflap_capabilities) and returns the raw envelope {"ok": true, "result": ...} or {"ok": false, "error": {...}} (the widget uses it as its remote engine). Use it for operations without a dedicated tool: normalize, layout, multiple_run, user_parse, explain, … Example: {"request":{"op":"layout","document":{...},"algorithm":"tree"}}.
 
 | argument | type | required | description |
 |---|---|---|---|
-| `request` | object | yes | The request object; `op` names the operation. |
+| `request` | string or object | yes | The request: a JSON object (or the same JSON as text) whose `op` names the operation. |

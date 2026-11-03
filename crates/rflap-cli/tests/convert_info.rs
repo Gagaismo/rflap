@@ -1,7 +1,7 @@
 mod common;
 use common::*;
 
-const TARGETS: &str = "dfa, minimal-dfa, regex, nfa, regular-grammar, fa, pda-ll, pda-lr, cfg, unrestricted-grammar, remove-lambda, remove-unit, remove-useless, cnf, complete, split-labels, remove-useless-states";
+const TARGETS: &str = "dfa, minimal-dfa, regex, nfa, regular-grammar, fa, pda-ll, pda-lr, cfg, pda-jflap-form, unrestricted-grammar, remove-lambda, remove-unit, remove-useless, cnf, complete, split-labels, remove-useless-states";
 
 #[test]
 fn info_of_a_dfa_is_exact() {
@@ -133,7 +133,7 @@ fn convert_accepts_every_target_of_capabilities() {
     let caps: serde_json::Value = serde_json::from_str(&caps.stdout).unwrap();
     let t = Temp::new();
     let entries = caps["result"]["convert"].as_array().unwrap();
-    assert_eq!(entries.len(), 17);
+    assert_eq!(entries.len(), 18);
     for entry in entries {
         let to = entry["to"].as_str().unwrap().replace('_', "-");
         let doc = entry["example"]["document"].to_string();
@@ -248,4 +248,15 @@ fn explain_prints_the_markdown_summary() {
         out.stdout
     );
     assert_eq!(out.code, 0);
+}
+
+#[test]
+fn convert_help_lists_every_target() {
+    let help = rflap(&["convert", "--help"]).stdout.replace('\n', " ");
+    for target in TARGETS.split(", ") {
+        assert!(
+            help.contains(target),
+            "`convert --help` does not list `{target}`"
+        );
+    }
 }

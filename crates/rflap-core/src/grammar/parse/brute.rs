@@ -20,6 +20,7 @@ use crate::grammar::model::{Grammar, Production, is_variable_symbol};
 
 /// Which JFLAP parser applies: `Unrestricted` as soon as a left side is not a single symbol.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum BruteKind {
     Restricted,
     Unrestricted,

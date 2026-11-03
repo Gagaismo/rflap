@@ -4,6 +4,9 @@ use serde_json::{Value, json};
 
 use crate::EDITOR_URI;
 
+/// The non-visual tool the widget calls as its remote engine when the host blocks wasm.
+const APP_CALLABLE: &str = "rflap_call";
+
 /// One tool of the server.
 pub struct ToolDef {
     pub name: &'static str,
@@ -37,6 +40,14 @@ impl ToolDef {
         });
         if let Some(output) = &self.output {
             tool["outputSchema"] = output.clone();
+        }
+        if !self.visual && self.name == APP_CALLABLE {
+            // The widget calls it as its remote engine: visible to the app (MCP Apps
+            // `_meta.ui.visibility`) and to ChatGPT's widgets.
+            tool["_meta"] = json!({
+                "ui": {"visibility": ["model", "app"]},
+                "openai/widgetAccessible": true,
+            });
         }
         if self.visual {
             tool["_meta"] = json!({
@@ -369,7 +380,8 @@ fn convert() -> ToolDef {
         title: "Convert between models",
         description: "Converts a document. Targets (`to`): dfa, minimal_dfa (from fa, regex or \
             regular grammar); regex, regular_grammar (from fa); nfa (from regex); fa (from a \
-            right-linear grammar); pda_ll, pda_lr (from a CFG); cfg (from a pda); \
+            right-linear grammar); pda_ll, pda_lr (from a CFG); cfg (from a pda; one not in JFLAP \
+            form is rewritten first), pda_jflap_form (rewrites a pda into that form); \
             unrestricted_grammar (from a one-tape Turing machine); remove_lambda, remove_unit, \
             remove_useless, cnf (grammar transformations); complete (adds the trap state), \
             split_labels, remove_useless_states. Returns the new document and the construction \
@@ -393,6 +405,7 @@ fn convert() -> ToolDef {
                             "pda_ll",
                             "pda_lr",
                             "cfg",
+                            "pda_jflap_form",
                             "unrestricted_grammar",
                             "remove_lambda",
                             "remove_unit",
@@ -778,14 +791,15 @@ fn call() -> ToolDef {
         name: "rflap_call",
         title: "Raw Rflap API call",
         description: "Escape hatch: sends one raw Rflap API request {\"op\": ..., ...} (see \
-            rflap_capabilities) and returns the raw result. Use it for operations without a \
+            rflap_capabilities) and returns the raw envelope {\"ok\": true, \"result\": ...} or {\"ok\": false, \"error\": {...}} (the widget uses it as its remote engine). Use it for operations without a \
             dedicated tool: normalize, layout, multiple_run, user_parse, explain, … Example: \
             {\"request\":{\"op\":\"layout\",\"document\":{...},\"algorithm\":\"tree\"}}."
             .to_string(),
         input: schema(
             vec![(
                 "request",
-                object("The request object; `op` names the operation."),
+                json!({"anyOf": [{"type": "string"}, {"type": "object"}],
+                    "description": "The request: a JSON object (or the same JSON as text) whose `op` names the operation."}),
             )],
             &["request"],
         ),
