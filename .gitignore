@@ -1,0 +1,6 @@
+/target
+/reference/
+/.atl/
+*.jar
+*.JAR
+/web/node_modules/
