@@ -374,3 +374,59 @@ fn the_mt_catedra_prompt_and_the_updated_ssl_exercise() {
         .unwrap();
     assert!(body.contains("rflap_mt_catedra"));
 }
+
+#[test]
+fn show_of_a_turing_machine_has_only_the_catedra_table() {
+    let md = text(&call("rflap_show", json!({"document": palindrome()})));
+    assert_eq!(md.matches("Estado Actual").count(), 1, "{md}");
+    assert!(!md.contains("Transition table / productions:"), "{md}");
+    let fa = text(&call(
+        "rflap_show",
+        json!({"document": {"type": "fa", "initial": "q", "transitions": [["q", "a", "q"]]}}),
+    ));
+    assert!(fa.contains("Transition table / productions:"), "{fa}");
+}
+
+#[test]
+fn render_takes_the_label_notation() {
+    let tools = rpc("tools/list", json!({}));
+    let render = tools["result"]["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|t| t["name"] == "rflap_render")
+        .unwrap();
+    assert_eq!(
+        render["inputSchema"]["properties"]["notation"]["enum"],
+        json!(["catedra", "jflap"])
+    );
+    let svg = |result: &Value| {
+        result["structuredContent"]["content"]
+            .as_str()
+            .unwrap()
+            .to_string()
+    };
+    let catedra = call(
+        "rflap_render",
+        json!({"document": palindrome(), "format": "svg"}),
+    );
+    assert!(svg(&catedra).contains("(a,Δ,D)"), "{catedra}");
+    let jflap = call(
+        "rflap_render",
+        json!({"document": palindrome(), "format": "svg", "notation": "jflap"}),
+    );
+    assert_eq!(jflap["isError"], false, "{jflap}");
+    assert!(!svg(&jflap).contains("(a,Δ,D)"), "{jflap}");
+    assert!(svg(&jflap).contains("□"), "{jflap}");
+    // The Markdown next to the SVG of a single-tape machine is the cátedra table.
+    assert!(text(&catedra).contains("Estado Actual"), "{catedra}");
+}
+
+#[test]
+fn the_summary_counts_the_states_of_a_turing_machine() {
+    let md = text(&call("rflap_show", json!({"document": palindrome()})));
+    assert!(
+        md.starts_with("Turing machine with 8 states and 19 transitions"),
+        "{md}"
+    );
+}

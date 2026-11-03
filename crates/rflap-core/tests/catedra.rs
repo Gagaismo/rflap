@@ -538,3 +538,35 @@ fn multipista_means_every_head_moves_the_same_way() {
     let r = catedra::multipista(&palindrome());
     assert!(!r.applicable);
 }
+
+#[test]
+fn states_are_listed_initial_first_then_in_natural_order() {
+    // Created in a scrambled order, as a compact document lists them by first use.
+    let m = machine(
+        &["8", "10", "2", "1"],
+        "1",
+        &["10"],
+        &["1 a 2 Δ D", "2 a 8 a D", "8 a 10 a D"],
+    );
+    let def = catedra::definition(&m, Some(Model::Mt)).unwrap();
+    assert_eq!(def.states, strings(&["1", "2", "8", "10"]));
+    let table = catedra::transition_table(&m).unwrap();
+    let first_column: Vec<&str> = table.rows.iter().map(|r| r[0].as_str()).collect();
+    assert_eq!(first_column, ["→1", "2", "8", "*10"]);
+
+    let igual_scrambled = machine(
+        &["F", "D", "C", "B", "A", "I"],
+        "I",
+        &["F"],
+        &[
+            "I a A X I",
+            "A ⟨ B ⟨ D",
+            "B b C X I",
+            "C ⟨ I ⟨ D",
+            "I ⟩ D ⟩ I",
+            "D ⟨ F ⟨ D",
+        ],
+    );
+    let def = catedra::definition(&igual_scrambled, Some(Model::All)).unwrap();
+    assert_eq!(def.states, strings(&["I", "A", "B", "C", "D", "F"]));
+}

@@ -8,8 +8,46 @@ use super::{
     CatedraError, DELTA, LEFT_DELIMITER, Model, Notation, RIGHT_DELIMITER, check_supported,
     format_label, show,
 };
-use crate::automaton::Label;
+use crate::automaton::{Label, State};
 use crate::turing::{BLANK, ReadSymbol, TuringMachine};
+
+/// The states as the bibliography lists them: the initial state first, then the rest in natural
+/// order, comparing digit runs as numbers (`1, 2, …, 10`; `I, A, B, C, D, F`).
+fn course_order(machine: &TuringMachine) -> Vec<&State> {
+    let a = machine.automaton();
+    let mut states: Vec<&State> = a.states().collect();
+    states.sort_by(|x, y| {
+        let initial = |s: &State| a.initial() != Some(s.id);
+        initial(x)
+            .cmp(&initial(y))
+            .then_with(|| natural_key(&x.name).cmp(&natural_key(&y.name)))
+    });
+    states
+}
+
+/// Splits a name into text and number runs so that `q2` sorts before `q10`.
+fn natural_key(name: &str) -> Vec<(bool, u128, String)> {
+    let mut key = Vec::new();
+    let mut chars = name.chars().peekable();
+    while let Some(&c) = chars.peek() {
+        let digit = c.is_ascii_digit();
+        let mut run = String::new();
+        while let Some(&d) = chars.peek() {
+            if d.is_ascii_digit() != digit {
+                break;
+            }
+            run.push(d);
+            chars.next();
+        }
+        let number = if digit {
+            run.parse().unwrap_or(u128::MAX)
+        } else {
+            0
+        };
+        key.push((digit, number, run));
+    }
+    key
+}
 
 /// A problem of the definition: a transition leaving a final state, nondeterminism, ...
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -26,7 +64,7 @@ pub struct Issue {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct Definition {
     pub model: Model,
-    /// Q, in state order (the order the states were created).
+    /// Q, in the course's order: the initial state first, then natural order (`2` before `10`).
     pub states: Vec<String>,
     /// Σ_E.
     pub input_alphabet: Vec<String>,
@@ -166,14 +204,19 @@ pub fn definition(
     let model = model.unwrap_or_else(|| Model::detect(machine));
     let a = machine.automaton();
     let alpha = alphabets(machine);
-    let states: Vec<String> = a.states().map(|s| s.name.clone()).collect();
+    let order = course_order(machine);
+    let states: Vec<String> = order.iter().map(|s| s.name.clone()).collect();
     let input: Vec<String> = alpha.input.iter().map(|c| c.to_string()).collect();
     let auxiliary: Vec<String> = auxiliary_order(alpha.auxiliary, model)
         .into_iter()
         .map(|c| show(c).to_string())
         .collect();
     let initial = a.initial().map(|i| name_of(machine, i));
-    let finals: Vec<String> = a.finals().iter().map(|f| name_of(machine, *f)).collect();
+    let finals: Vec<String> = order
+        .iter()
+        .filter(|s| a.is_final(s.id))
+        .map(|s| s.name.clone())
+        .collect();
 
     let mut issues = Vec::new();
     if initial.is_none() {
@@ -340,7 +383,7 @@ pub fn transition_table(machine: &TuringMachine) -> Result<Table, CatedraError> 
         }
     };
     let mut rows = Vec::new();
-    for state in a.states() {
+    for state in course_order(machine) {
         let marker = format!(
             "{}{}{}",
             if a.initial() == Some(state.id) {

@@ -625,6 +625,17 @@ fn render() -> ToolDef {
                 ),
                 ("dark", boolean("Dark theme.")),
                 (
+                    "notation",
+                    choice(
+                        "Turing machine labels: catedra `(e,s,m)` with Δ and I/N/D (default) or jflap `e;s,m` with □ and L/S/R.",
+                        &["catedra", "jflap"],
+                    ),
+                ),
+                (
+                    "join_labels",
+                    boolean("Join parallel labels with \" / \" instead of stacking them."),
+                ),
+                (
                     "depth",
                     integer("Rewrite level when drawing an L-system (default 3)."),
                 ),

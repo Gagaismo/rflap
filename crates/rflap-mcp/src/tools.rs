@@ -332,20 +332,20 @@ fn show(args: &Map<String, Value>) -> Outcome {
     if let Some(svg) = svg_of(&document) {
         out.insert("svg".into(), json!(svg));
     }
-    if let Some(table) = table_of(&document) {
+    // A single-tape Turing machine shows the cátedra table only; everything else the generic one.
+    if let Some(extra) = catedra_table_md(&document) {
+        text.push_str(&format!(
+            "
+
+{extra}"
+        ));
+    } else if let Some(table) = table_of(&document) {
         text.push_str(&format!(
             "
 
 Transition table / productions:
 
 {table}"
-        ));
-    }
-    if let Some(extra) = catedra_table_md(&document) {
-        text.push_str(&format!(
-            "
-
-{extra}"
         ));
     }
     Ok(Done {
@@ -488,7 +488,7 @@ fn render(args: &Map<String, Value>) -> Outcome {
     let text = match format {
         "markdown" => body.trim_end().to_string(),
         "svg" => {
-            let table = table_of(&document);
+            let table = catedra_table_md(&document).or_else(|| table_of(&document));
             let mut text = content::document(&document, table.as_deref());
             text.push_str(&format!("\n\n{}", content::fence("svg", body)));
             text

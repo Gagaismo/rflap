@@ -177,6 +177,8 @@ Draws a document as svg (machines and L-systems), markdown (transition table), d
 | `format` | `svg` \| `markdown` \| `dot` \| `text` | no | Output format (default svg). |
 | `highlight_states` | array of string | no | State names to highlight. |
 | `highlight_transitions` | array of integer | no | Transition indices to highlight. |
+| `join_labels` | boolean | no | Join parallel labels with " / " instead of stacking them. |
+| `notation` | `catedra` \| `jflap` | no | Turing machine labels: catedra `(e,s,m)` with Δ and I/N/D (default) or jflap `e;s,m` with □ and L/S/R. |
 
 `structuredContent` keys: `content`, `document`, `format`.
 
