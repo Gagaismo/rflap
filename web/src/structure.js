@@ -28,7 +28,7 @@ registerPanel({
       const states = stateList(tab.doc, tab.path);
       const moore = tab.type === 'moore';
       const turing = tab.type === 'turing';
-      const notation = turing ? tab.app.notation : undefined;
+      const notation = turing ? tab.notation : undefined;
 
       const stateRows = states.map((s) =>
         h(
@@ -84,7 +84,7 @@ registerPanel({
         '→',
         to,
         h('button', { type: 'button', disabled: !states.length, onclick: async () => {
-          const label = await askLabel({ api: tab.api, type: tab.type, tapes: realMachine(tab.doc, tab.path).tapes || 1, notation: tab.app.notation, title: t('label.new_transition', { from: c.states[from.value].name, to: c.states[to.value].name }) });
+          const label = await askLabel({ api: tab.api, type: tab.type, tapes: realMachine(tab.doc, tab.path).tapes || 1, notation: tab.notation, title: t('label.new_transition', { from: c.states[from.value].name, to: c.states[to.value].name }) });
           if (label) tab.edit((d, p) => addTransition(d, Number(from.value), Number(to.value), label, p));
         } }, t('structure.add_transition')),
       );
