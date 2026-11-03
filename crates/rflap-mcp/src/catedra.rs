@@ -132,6 +132,12 @@ pub fn all_check(result: &Value) -> String {
         out.push_str("f(q,⟨) = (q′,⟨,D), f(q,⟩) = (q′,⟩,I), no lee ni escribe Δ");
         if runs.is_empty() {
             out.push_str(" (solo chequeo estático; pasá `inputs` para el chequeo dinámico).");
+        } else if runs.iter().any(|r| r["verdict"] == "no_halt") {
+            out.push_str(
+                ", pero alguna entrada no se detiene dentro del límite (⏳): un ALL siempre \
+                 decide, así que la máquina entra en un ciclo dentro de ⟨…⟩ o `max_steps` es \
+                 chico.",
+            );
         } else {
             out.push_str(" y el cabezal nunca sale de ⟨…⟩ en las entradas probadas.");
         }
@@ -152,6 +158,44 @@ pub fn all_check(result: &Value) -> String {
     }
     out
 }
+
+/// The static violations of the ALL rules as a warning list; empty when there are none.
+pub fn warnings(check: &Value) -> String {
+    let violations = check["violations"].as_array().cloned().unwrap_or_default();
+    if violations.is_empty() {
+        return String::new();
+    }
+    let mut out = String::from("⚠️ Avisos del ALL (reglas que la máquina no cumple):");
+    for v in &violations {
+        let _ = write!(out, "\n- {}", str_of(&v["message"]));
+    }
+    out
+}
+
+/// The first configurations of a run in the ALL model (`rflap_step`).
+pub fn step(result: &Value, steps: u64) -> String {
+    let run = &result["results"][0];
+    let configurations: Vec<&str> = run["configurations"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(Value::as_str)
+        .collect();
+    let state = if run["verdict"] == "no_halt" {
+        "⏳ la ejecución sigue después de estos pasos".to_string()
+    } else {
+        verdict_line(run)
+    };
+    format!(
+        "**Entrada `{}`, primeros {steps} paso(s) (ALL)**: {state}\n\n{}",
+        word(str_of(&run["input"])),
+        fence("text", &configurations.join(" ├─ "))
+    )
+}
+
+/// The reminder shown with a Turing machine that is not an ALL.
+pub const ALL_HINT: &str = "Para verificarla como ALL (autómata linealmente acotado, cinta ⟨w⟩): \
+    `rflap_mt_catedra` con action `all_check`, o `model: \"all\"` en esta herramienta.";
 
 /// The composition `MT3 = ⟨Q1∪Q2, Σ_E, Σ_A, q01, F2, f3⟩`.
 pub fn compose(definition_text: Option<&str>, table: Option<&str>) -> String {

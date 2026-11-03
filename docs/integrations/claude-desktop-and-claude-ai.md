@@ -34,6 +34,15 @@ documentation lists Claude and Claude Desktop among the hosts that support MCP A
    over {a,b} that end in ab"* and the widget should appear below the answer. Chats that cannot
    show it still get the Markdown table and the verification report.
 
+### Permissions: the first call of each tool waits for you
+
+Claude Desktop asks for permission the first time each tool is used, and the call does not start
+until you answer. If a call seems to hang (minutes with no answer), the server is not stuck: look
+for the pending permission prompt in the chat (it can be scrolled out of view). Choose *Always
+allow* for the Rflap tools (`rflap_show`, `rflap_simulate`, `rflap_mt_catedra`, ...) so that no
+call waits again. The server log (see *Logs*) shows whether a call ever arrived: a call that
+never reached `rflap-mcp` was waiting for that prompt.
+
 ## Claude.ai (web) and Claude Desktop with a remote server
 
 Claude.ai connects to remote MCP servers from Anthropic's servers, so the server must be reachable

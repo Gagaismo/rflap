@@ -169,6 +169,9 @@ three prompts (`ssl_exercise`, `mt_catedra`, `grammar_tables`) are described in 
 | ChatGPT | [docs/integrations/chatgpt.md](docs/integrations/chatgpt.md) |
 | Claude Desktop and Claude.ai | [docs/integrations/claude-desktop-and-claude-ai.md](docs/integrations/claude-desktop-and-claude-ai.md) |
 
+Claude Desktop asks permission the first time each tool is used. If a call seems to hang, look for
+the pending permission prompt in the chat, and choose *Always allow* for the Rflap tools.
+
 For agents, [skills/rflap/SKILL.md](skills/rflap/SKILL.md) is a ready-made skill for solving
 "Sintaxis y Semántica de los Lenguajes" exercises with the tools.
 
