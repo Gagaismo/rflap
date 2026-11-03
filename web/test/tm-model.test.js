@@ -299,7 +299,7 @@ test('S3: the tab commit stores ⟨ ⟩ (never ASCII) and switches to ALL', asyn
   assert.equal(tab.model, 'all');
 });
 
-test('S3: b) multiple run of aba, abab, babab, aaa, a, b, bb accepts only abab (1 of 7)', async (t) => {
+test('S3: b) multiple run of aba, abab, babab, aaa, a, b, bb accepts only abab (1 of 7)', async () => {
   const api = await loadApi();
   const xml = fs.readFileSync(new URL('../../crates/rflap-api/tests/fixtures/catedra/ALL_2.1b_complemento_palindromo.jff', import.meta.url), 'utf8');
   const { document } = await api({ op: 'open_jff', xml });
@@ -307,7 +307,7 @@ test('S3: b) multiple run of aba, abab, babab, aaa, a, b, bb accepts only abab (
   const inputs = ['aba', 'abab', 'babab', 'aaa', 'a', 'b', 'bb'];
   const r = await api(catedraBatchRequest(document, inputs, 'all', 1000));
   const rows = catedraRows(r.results);
-  if (rows.some((x) => x.outcome === 'rejected' && x.message)) return t.skip('needs T1: the engine of this dist still flags the shrink as a violation');
+  assert.ok(rows.every((x) => !x.message), 'the shrink is a note, never a violation');
   assert.deepEqual(rows.map((x) => x.accepted), inputs.map((w) => w === 'abab'));
   assert.equal(rows.filter((x) => x.accepted).length, 1);
 });
