@@ -5,7 +5,8 @@ documentation lists Claude and Claude Desktop among the hosts that support MCP A
 
 ## Claude Desktop with a local server (stdio)
 
-1. Build the server: `cargo build --release -p rflap-mcp`.
+1. Download `rflap-mcp` from https://github.com/Gagaismo/rflap/releases/latest and unzip it
+   (or build it: `cargo build --release -p rflap-mcp`).
 2. In Claude Desktop open the Claude menu → *Settings…* → *Developer* → *Edit Config*, which opens
    `claude_desktop_config.json` (`%APPDATA%\Claude\claude_desktop_config.json` on Windows,
    `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS).

@@ -3,7 +3,9 @@
 Codex (CLI and IDE extension) runs in a terminal-like environment: it receives Markdown
 (summary, transition table, verification report) and an optional viewer link, not the widget.
 
-## 1. Build the server
+## 1. Get the server
+
+Download `rflap-mcp` for your system from https://github.com/Gagaismo/rflap/releases/latest and unzip it, or build it from source:
 
 ```powershell
 cargo build --release -p rflap-mcp

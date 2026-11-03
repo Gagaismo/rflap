@@ -1,0 +1,77 @@
+name: Release
+
+# Pushing a tag `v*` builds `rflap` and `rflap-mcp` for Windows, Linux and macOS and publishes them
+# as a GitHub release. Running it by hand (workflow_dispatch) only builds and uploads the artifacts.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest, target: x86_64-pc-windows-msvc, exe: .exe }
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu, exe: "" }
+          - { os: macos-latest, target: aarch64-apple-darwin, exe: "" }
+          - { os: macos-latest, target: x86_64-apple-darwin, exe: "" }
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - name: Build
+        run: cargo build --release --locked --target ${{ matrix.target }} -p rflap-cli -p rflap-mcp
+      - name: Smoke test
+        if: matrix.target != 'x86_64-apple-darwin'
+        run: |
+          bin=target/${{ matrix.target }}/release
+          "$bin/rflap${{ matrix.exe }}" design --constraint 'ends_with("ab")' --alphabet ab
+          printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}' \
+            | "$bin/rflap-mcp${{ matrix.exe }}" | grep -q '"serverInfo"'
+      - name: Package
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          [ "${GITHUB_REF_TYPE}" = tag ] || version="dev"
+          name="rflap-${version}-${{ matrix.target }}"
+          mkdir -p "pkg/$name/docs" "pkg/$name/skills"
+          cp target/${{ matrix.target }}/release/rflap${{ matrix.exe }} target/${{ matrix.target }}/release/rflap-mcp${{ matrix.exe }} "pkg/$name/"
+          cp LICENSE README.md "pkg/$name/"
+          cp -r docs/integrations docs/mcp-tools.md "pkg/$name/docs/"
+          cp -r skills/rflap "pkg/$name/skills/"
+          cd pkg
+          if [ "${{ runner.os }}" = Windows ]; then 7z a -bd "$name.zip" "$name" >/dev/null; else tar czf "$name.tar.gz" "$name"; fi
+          rm -rf "$name"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rflap-${{ matrix.target }}
+          path: pkg/*
+
+  release:
+    if: github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd dist && sha256sum * > SHA256SUMS.txt && cd ..
+          notes=".github/release-notes/${GITHUB_REF_NAME}.md"
+          if [ -f "$notes" ]; then flag=(--notes-file "$notes"); else flag=(--generate-notes); fi
+          gh release create "$GITHUB_REF_NAME" --title "Rflap $GITHUB_REF_NAME" "${flag[@]}" dist/*

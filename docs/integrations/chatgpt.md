@@ -6,6 +6,8 @@ Tunnel).
 
 ## 1. Run the server and publish it
 
+Download `rflap-mcp` for your system from https://github.com/Gagaismo/rflap/releases/latest and unzip it, or build it from source:
+
 ```powershell
 cargo build --release -p rflap-mcp
 C:\path\to\rflap-mcp.exe --http 8787

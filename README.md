@@ -92,6 +92,13 @@ the same actions in its menus. `rflap call` / `rflap_call` reach any API op dire
 
 The deviations from JFLAP are listed in [docs/differences-from-jflap.md](docs/differences-from-jflap.md).
 
+## Download
+
+Prebuilt `rflap` and `rflap-mcp` for Windows, Linux and macOS are on the
+[releases page](https://github.com/Gagaismo/rflap/releases/latest). Unzip the archive for your
+system; it also has the integration guides and the agent skill. The binaries are not signed
+(Windows: "More info → Run anyway"; macOS: `xattr -d com.apple.quarantine rflap rflap-mcp`).
+
 ## Install from source
 
 You need a stable Rust toolchain (edition 2024, Rust 1.85 or newer) and git.

@@ -4,7 +4,9 @@ Claude Code runs in a terminal, so it cannot draw the interactive widget. It get
 visual result, a Markdown summary with the transition table and the verification report, and
 (optionally) a link that opens the same automaton in your browser.
 
-## 1. Build the server
+## 1. Get the server
+
+Download `rflap-mcp` for your system from https://github.com/Gagaismo/rflap/releases/latest and unzip it, or build it from source:
 
 ```powershell
 cargo build --release -p rflap-mcp
