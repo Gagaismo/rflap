@@ -1,0 +1,13 @@
+[package]
+name = "rflap-core"
+description = "Automata, grammars and formal-language algorithms ported from JFLAP 7.1"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+quick-xml = "0.42.0"
+serde.workspace = true
+serde_json.workspace = true

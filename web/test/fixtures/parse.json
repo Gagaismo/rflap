@@ -1,0 +1,1485 @@
+{
+ "grammar": "S -> aSb | λ",
+ "ll1": {
+  "parser": "ll1",
+  "results": [
+   {
+    "derivation": {
+     "start": "S",
+     "steps": [
+      {
+       "position": 0,
+       "production": {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       "result": "aSb"
+      },
+      {
+       "position": 1,
+       "production": {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       "result": "aaSbb"
+      },
+      {
+       "position": 2,
+       "production": {
+        "lhs": "S",
+        "rhs": ""
+       },
+       "result": "aabb"
+      }
+     ]
+    },
+    "derivation_forms": [
+     "S",
+     "aSb",
+     "aaSbb",
+     "aabb"
+    ],
+    "input": "aabb",
+    "outcome": "accepted",
+    "steps": [
+     {
+      "action": {
+       "replace": {
+        "production": {
+         "lhs": "S",
+         "rhs": "aSb"
+        }
+       }
+      },
+      "input": "aabb$",
+      "stack": "S"
+     },
+     {
+      "action": {
+       "match": {
+        "symbol": "a"
+       }
+      },
+      "input": "aabb$",
+      "stack": "aSb"
+     },
+     {
+      "action": {
+       "replace": {
+        "production": {
+         "lhs": "S",
+         "rhs": "aSb"
+        }
+       }
+      },
+      "input": "abb$",
+      "stack": "Sb"
+     },
+     {
+      "action": {
+       "match": {
+        "symbol": "a"
+       }
+      },
+      "input": "abb$",
+      "stack": "aSbb"
+     },
+     {
+      "action": {
+       "replace": {
+        "production": {
+         "lhs": "S",
+         "rhs": ""
+        }
+       }
+      },
+      "input": "bb$",
+      "stack": "Sbb"
+     },
+     {
+      "action": {
+       "match": {
+        "symbol": "b"
+       }
+      },
+      "input": "bb$",
+      "stack": "bb"
+     },
+     {
+      "action": {
+       "match": {
+        "symbol": "b"
+       }
+      },
+      "input": "b$",
+      "stack": "b"
+     },
+     {
+      "action": "accept",
+      "input": "$",
+      "stack": ""
+     }
+    ],
+    "tree": {
+     "children": [
+      {
+       "children": [],
+       "symbol": "a"
+      },
+      {
+       "children": [
+        {
+         "children": [],
+         "symbol": "a"
+        },
+        {
+         "children": [
+          {
+           "children": [],
+           "symbol": "λ"
+          }
+         ],
+         "symbol": "S"
+        },
+        {
+         "children": [],
+         "symbol": "b"
+        }
+       ],
+       "symbol": "S"
+      },
+      {
+       "children": [],
+       "symbol": "b"
+      }
+     ],
+     "symbol": "S"
+    }
+   }
+  ]
+ },
+ "ll1Rejected": {
+  "parser": "ll1",
+  "results": [
+   {
+    "derivation": {
+     "start": "S",
+     "steps": [
+      {
+       "position": 0,
+       "production": {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       "result": "aSb"
+      },
+      {
+       "position": 1,
+       "production": {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       "result": "aaSbb"
+      },
+      {
+       "position": 2,
+       "production": {
+        "lhs": "S",
+        "rhs": ""
+       },
+       "result": "aabb"
+      }
+     ]
+    },
+    "derivation_forms": [
+     "S",
+     "aSb",
+     "aaSbb",
+     "aabb"
+    ],
+    "input": "aab",
+    "outcome": "rejected",
+    "steps": [
+     {
+      "action": {
+       "replace": {
+        "production": {
+         "lhs": "S",
+         "rhs": "aSb"
+        }
+       }
+      },
+      "input": "aab$",
+      "stack": "S"
+     },
+     {
+      "action": {
+       "match": {
+        "symbol": "a"
+       }
+      },
+      "input": "aab$",
+      "stack": "aSb"
+     },
+     {
+      "action": {
+       "replace": {
+        "production": {
+         "lhs": "S",
+         "rhs": "aSb"
+        }
+       }
+      },
+      "input": "ab$",
+      "stack": "Sb"
+     },
+     {
+      "action": {
+       "match": {
+        "symbol": "a"
+       }
+      },
+      "input": "ab$",
+      "stack": "aSbb"
+     },
+     {
+      "action": {
+       "replace": {
+        "production": {
+         "lhs": "S",
+         "rhs": ""
+        }
+       }
+      },
+      "input": "b$",
+      "stack": "Sbb"
+     },
+     {
+      "action": {
+       "match": {
+        "symbol": "b"
+       }
+      },
+      "input": "b$",
+      "stack": "bb"
+     },
+     {
+      "action": {
+       "reject": {
+        "reason": "Stack and input don't match."
+       }
+      },
+      "input": "$",
+      "stack": "b"
+     }
+    ],
+    "tree": {
+     "children": [
+      {
+       "children": [],
+       "symbol": "a"
+      },
+      {
+       "children": [
+        {
+         "children": [],
+         "symbol": "a"
+        },
+        {
+         "children": [
+          {
+           "children": [],
+           "symbol": "λ"
+          }
+         ],
+         "symbol": "S"
+        },
+        {
+         "children": [],
+         "symbol": "b"
+        }
+       ],
+       "symbol": "S"
+      },
+      {
+       "children": [],
+       "symbol": "b"
+      }
+     ],
+     "symbol": "S"
+    }
+   }
+  ]
+ },
+ "slr1": {
+  "parser": "slr1",
+  "results": [
+   {
+    "derivation": {
+     "start": "S",
+     "steps": [
+      {
+       "position": 0,
+       "production": {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       "result": "aSb"
+      },
+      {
+       "position": 1,
+       "production": {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       "result": "aaSbb"
+      },
+      {
+       "position": 2,
+       "production": {
+        "lhs": "S",
+        "rhs": ""
+       },
+       "result": "aabb"
+      }
+     ]
+    },
+    "derivation_forms": [
+     "S",
+     "aSb",
+     "aaSbb",
+     "aabb"
+    ],
+    "input": "aabb",
+    "outcome": "accepted",
+    "steps": [
+     {
+      "action": {
+       "shift": {
+        "state": 2
+       }
+      },
+      "input": "aabb$",
+      "states": [
+       0
+      ],
+      "symbols": ""
+     },
+     {
+      "action": {
+       "shift": {
+        "state": 2
+       }
+      },
+      "input": "abb$",
+      "states": [
+       0,
+       2
+      ],
+      "symbols": "a"
+     },
+     {
+      "action": {
+       "reduce": {
+        "production": {
+         "lhs": "S",
+         "rhs": ""
+        },
+        "production_index": 2
+       }
+      },
+      "input": "bb$",
+      "states": [
+       0,
+       2,
+       2
+      ],
+      "symbols": "aa"
+     },
+     {
+      "action": {
+       "shift": {
+        "state": 4
+       }
+      },
+      "input": "bb$",
+      "states": [
+       0,
+       2,
+       2,
+       3
+      ],
+      "symbols": "aaS"
+     },
+     {
+      "action": {
+       "reduce": {
+        "production": {
+         "lhs": "S",
+         "rhs": "aSb"
+        },
+        "production_index": 1
+       }
+      },
+      "input": "b$",
+      "states": [
+       0,
+       2,
+       2,
+       3,
+       4
+      ],
+      "symbols": "aaSb"
+     },
+     {
+      "action": {
+       "shift": {
+        "state": 4
+       }
+      },
+      "input": "b$",
+      "states": [
+       0,
+       2,
+       3
+      ],
+      "symbols": "aS"
+     },
+     {
+      "action": {
+       "reduce": {
+        "production": {
+         "lhs": "S",
+         "rhs": "aSb"
+        },
+        "production_index": 1
+       }
+      },
+      "input": "$",
+      "states": [
+       0,
+       2,
+       3,
+       4
+      ],
+      "symbols": "aSb"
+     },
+     {
+      "action": "accept",
+      "input": "$",
+      "states": [
+       0,
+       1
+      ],
+      "symbols": "S"
+     }
+    ],
+    "tree": {
+     "children": [
+      {
+       "children": [],
+       "symbol": "a"
+      },
+      {
+       "children": [
+        {
+         "children": [],
+         "symbol": "a"
+        },
+        {
+         "children": [
+          {
+           "children": [],
+           "symbol": "λ"
+          }
+         ],
+         "symbol": "S"
+        },
+        {
+         "children": [],
+         "symbol": "b"
+        }
+       ],
+       "symbol": "S"
+      },
+      {
+       "children": [],
+       "symbol": "b"
+      }
+     ],
+     "symbol": "S"
+    }
+   }
+  ]
+ },
+ "brute": {
+  "parser": "brute",
+  "results": [
+   {
+    "candidates_examined": 15,
+    "derivation": {
+     "start": "S",
+     "steps": [
+      {
+       "position": 0,
+       "production": {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       "result": "aSb"
+      },
+      {
+       "position": 1,
+       "production": {
+        "lhs": "S",
+        "rhs": "aSb"
+       },
+       "result": "aaSbb"
+      },
+      {
+       "position": 2,
+       "production": {
+        "lhs": "S",
+        "rhs": ""
+       },
+       "result": "aabb"
+      }
+     ]
+    },
+    "derivation_forms": [
+     "S",
+     "aSb",
+     "aaSbb",
+     "aabb"
+    ],
+    "input": "aabb",
+    "kind": "restricted",
+    "nodes_considered": 5,
+    "outcome": "accepted",
+    "tree": {
+     "children": [
+      {
+       "children": [],
+       "symbol": "a"
+      },
+      {
+       "children": [
+        {
+         "children": [],
+         "symbol": "a"
+        },
+        {
+         "children": [
+          {
+           "children": [],
+           "symbol": "λ"
+          }
+         ],
+         "symbol": "S"
+        },
+        {
+         "children": [],
+         "symbol": "b"
+        }
+       ],
+       "symbol": "S"
+      },
+      {
+       "children": [],
+       "symbol": "b"
+      }
+     ],
+     "symbol": "S"
+    }
+   },
+   {
+    "candidates_examined": 12,
+    "derivation": null,
+    "derivation_forms": null,
+    "input": "aab",
+    "kind": "restricted",
+    "nodes_considered": 3,
+    "outcome": "rejected",
+    "tree": null
+   },
+   {
+    "candidates_examined": 3,
+    "derivation": {
+     "start": "S",
+     "steps": [
+      {
+       "position": 0,
+       "production": {
+        "lhs": "S",
+        "rhs": ""
+       },
+       "result": ""
+      }
+     ]
+    },
+    "derivation_forms": [
+     "S",
+     ""
+    ],
+    "input": "",
+    "kind": "restricted",
+    "nodes_considered": 2,
+    "outcome": "accepted",
+    "tree": {
+     "children": [
+      {
+       "children": [],
+       "symbol": "λ"
+      }
+     ],
+     "symbol": "S"
+    }
+   }
+  ]
+ },
+ "cyk": {
+  "parser": "cyk",
+  "results": [
+   {
+    "derivation": {
+     "start": "S",
+     "steps": [
+      {
+       "position": 0,
+       "production": {
+        "lhs": "S",
+        "rhs": "AB"
+       },
+       "result": "AB"
+      },
+      {
+       "position": 0,
+       "production": {
+        "lhs": "A",
+        "rhs": "a"
+       },
+       "result": "aB"
+      },
+      {
+       "position": 1,
+       "production": {
+        "lhs": "B",
+        "rhs": "b"
+       },
+       "result": "ab"
+      }
+     ]
+    },
+    "derivation_forms": [
+     "S",
+     "AB",
+     "aB",
+     "ab"
+    ],
+    "input": "ab",
+    "outcome": "accepted",
+    "table": {
+     "cells": [
+      [
+       [
+        "A"
+       ],
+       [
+        "S"
+       ]
+      ],
+      [
+       [],
+       [
+        "B"
+       ]
+      ]
+     ],
+     "length": 2
+    },
+    "tree": {
+     "children": [
+      {
+       "children": [
+        {
+         "children": [],
+         "symbol": "a"
+        }
+       ],
+       "symbol": "A"
+      },
+      {
+       "children": [
+        {
+         "children": [],
+         "symbol": "b"
+        }
+       ],
+       "symbol": "B"
+      }
+     ],
+     "symbol": "S"
+    }
+   }
+  ]
+ },
+ "tables": {
+  "first": {
+   "E": [
+    "(",
+    "i"
+   ],
+   "F": [
+    "(",
+    "i"
+   ],
+   "T": [
+    "(",
+    "i"
+   ]
+  },
+  "follow": {
+   "E": [
+    "$",
+    ")",
+    "+"
+   ],
+   "F": [
+    "$",
+    ")",
+    "*",
+    "+"
+   ],
+   "T": [
+    "$",
+    ")",
+    "*",
+    "+"
+   ]
+  },
+  "ll1": {
+   "conflicts": [
+    {
+     "entries": [
+      "E -> E+T",
+      "E -> T"
+     ],
+     "terminal": "(",
+     "variable": "E"
+    },
+    {
+     "entries": [
+      "E -> E+T",
+      "E -> T"
+     ],
+     "terminal": "i",
+     "variable": "E"
+    },
+    {
+     "entries": [
+      "T -> F",
+      "T -> T*F"
+     ],
+     "terminal": "(",
+     "variable": "T"
+    },
+    {
+     "entries": [
+      "T -> F",
+      "T -> T*F"
+     ],
+     "terminal": "i",
+     "variable": "T"
+    }
+   ],
+   "is_ll1": false,
+   "table": {
+    "E": {
+     "(": [
+      "E -> E+T",
+      "E -> T"
+     ],
+     "i": [
+      "E -> E+T",
+      "E -> T"
+     ]
+    },
+    "F": {
+     "(": [
+      "F -> (E)"
+     ],
+     "i": [
+      "F -> i"
+     ]
+    },
+    "T": {
+     "(": [
+      "T -> F",
+      "T -> T*F"
+     ],
+     "i": [
+      "T -> F",
+      "T -> T*F"
+     ]
+    }
+   },
+   "terminals": [
+    "(",
+    ")",
+    "*",
+    "+",
+    "i",
+    "$"
+   ],
+   "variables": [
+    "E",
+    "F",
+    "T"
+   ]
+  },
+  "slr1": {
+   "actions": [
+    {
+     "(": [
+      "s1"
+     ],
+     "i": [
+      "s5"
+     ]
+    },
+    {
+     "(": [
+      "s1"
+     ],
+     "i": [
+      "s5"
+     ]
+    },
+    {
+     "$": [
+      "acc"
+     ],
+     "+": [
+      "s7"
+     ]
+    },
+    {
+     "$": [
+      "r4"
+     ],
+     ")": [
+      "r4"
+     ],
+     "*": [
+      "r4"
+     ],
+     "+": [
+      "r4"
+     ]
+    },
+    {
+     "$": [
+      "r2"
+     ],
+     ")": [
+      "r2"
+     ],
+     "*": [
+      "s8"
+     ],
+     "+": [
+      "r2"
+     ]
+    },
+    {
+     "$": [
+      "r6"
+     ],
+     ")": [
+      "r6"
+     ],
+     "*": [
+      "r6"
+     ],
+     "+": [
+      "r6"
+     ]
+    },
+    {
+     ")": [
+      "s9"
+     ],
+     "+": [
+      "s7"
+     ]
+    },
+    {
+     "(": [
+      "s1"
+     ],
+     "i": [
+      "s5"
+     ]
+    },
+    {
+     "(": [
+      "s1"
+     ],
+     "i": [
+      "s5"
+     ]
+    },
+    {
+     "$": [
+      "r5"
+     ],
+     ")": [
+      "r5"
+     ],
+     "*": [
+      "r5"
+     ],
+     "+": [
+      "r5"
+     ]
+    },
+    {
+     "$": [
+      "r1"
+     ],
+     ")": [
+      "r1"
+     ],
+     "*": [
+      "s8"
+     ],
+     "+": [
+      "r1"
+     ]
+    },
+    {
+     "$": [
+      "r3"
+     ],
+     ")": [
+      "r3"
+     ],
+     "*": [
+      "r3"
+     ],
+     "+": [
+      "r3"
+     ]
+    }
+   ],
+   "conflicts": [],
+   "gotos": [
+    {
+     "E": 2,
+     "F": 3,
+     "T": 4
+    },
+    {
+     "E": 6,
+     "F": 3,
+     "T": 4
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+     "F": 3,
+     "T": 10
+    },
+    {
+     "F": 11
+    },
+    {},
+    {},
+    {}
+   ],
+   "is_slr1": true,
+   "productions": [
+    "E' -> E",
+    "E -> E+T",
+    "E -> T",
+    "T -> T*F",
+    "T -> F",
+    "F -> (E)",
+    "F -> i"
+   ],
+   "states": [
+    {
+     "id": 0,
+     "is_final": false,
+     "items": [
+      "E'→·E",
+      "E→·E+T",
+      "E→·T",
+      "T→·T*F",
+      "T→·F",
+      "F→·(E)",
+      "F→·i"
+     ],
+     "transitions": {
+      "(": 1,
+      "E": 2,
+      "F": 3,
+      "T": 4,
+      "i": 5
+     }
+    },
+    {
+     "id": 1,
+     "is_final": false,
+     "items": [
+      "E→·E+T",
+      "E→·T",
+      "T→·T*F",
+      "T→·F",
+      "F→·(E)",
+      "F→(·E)",
+      "F→·i"
+     ],
+     "transitions": {
+      "(": 1,
+      "E": 6,
+      "F": 3,
+      "T": 4,
+      "i": 5
+     }
+    },
+    {
+     "id": 2,
+     "is_final": true,
+     "items": [
+      "E'→E·",
+      "E→E·+T"
+     ],
+     "transitions": {
+      "+": 7
+     }
+    },
+    {
+     "id": 3,
+     "is_final": true,
+     "items": [
+      "T→F·"
+     ],
+     "transitions": {}
+    },
+    {
+     "id": 4,
+     "is_final": true,
+     "items": [
+      "E→T·",
+      "T→T·*F"
+     ],
+     "transitions": {
+      "*": 8
+     }
+    },
+    {
+     "id": 5,
+     "is_final": true,
+     "items": [
+      "F→i·"
+     ],
+     "transitions": {}
+    },
+    {
+     "id": 6,
+     "is_final": false,
+     "items": [
+      "E→E·+T",
+      "F→(E·)"
+     ],
+     "transitions": {
+      ")": 9,
+      "+": 7
+     }
+    },
+    {
+     "id": 7,
+     "is_final": false,
+     "items": [
+      "E→E+·T",
+      "T→·T*F",
+      "T→·F",
+      "F→·(E)",
+      "F→·i"
+     ],
+     "transitions": {
+      "(": 1,
+      "F": 3,
+      "T": 10,
+      "i": 5
+     }
+    },
+    {
+     "id": 8,
+     "is_final": false,
+     "items": [
+      "T→T*·F",
+      "F→·(E)",
+      "F→·i"
+     ],
+     "transitions": {
+      "(": 1,
+      "F": 11,
+      "i": 5
+     }
+    },
+    {
+     "id": 9,
+     "is_final": true,
+     "items": [
+      "F→(E)·"
+     ],
+     "transitions": {}
+    },
+    {
+     "id": 10,
+     "is_final": true,
+     "items": [
+      "E→E+T·",
+      "T→T·*F"
+     ],
+     "transitions": {
+      "*": 8
+     }
+    },
+    {
+     "id": 11,
+     "is_final": true,
+     "items": [
+      "T→T*F·"
+     ],
+     "transitions": {}
+    }
+   ],
+   "terminals": [
+    "(",
+    ")",
+    "*",
+    "+",
+    "i",
+    "$"
+   ],
+   "variables": [
+    "E",
+    "F",
+    "T"
+   ]
+  },
+  "start": "E"
+ },
+ "conflicts": {
+  "first": {
+   "E": [
+    "i"
+   ]
+  },
+  "follow": {
+   "E": [
+    "$",
+    "+"
+   ]
+  },
+  "ll1": {
+   "conflicts": [
+    {
+     "entries": [
+      "E -> E+E",
+      "E -> i"
+     ],
+     "terminal": "i",
+     "variable": "E"
+    }
+   ],
+   "is_ll1": false,
+   "table": {
+    "E": {
+     "i": [
+      "E -> E+E",
+      "E -> i"
+     ]
+    }
+   },
+   "terminals": [
+    "+",
+    "i",
+    "$"
+   ],
+   "variables": [
+    "E"
+   ]
+  },
+  "slr1": {
+   "actions": [
+    {
+     "i": [
+      "s2"
+     ]
+    },
+    {
+     "$": [
+      "acc"
+     ],
+     "+": [
+      "s3"
+     ]
+    },
+    {
+     "$": [
+      "r2"
+     ],
+     "+": [
+      "r2"
+     ]
+    },
+    {
+     "i": [
+      "s2"
+     ]
+    },
+    {
+     "$": [
+      "r1"
+     ],
+     "+": [
+      "r1",
+      "s3"
+     ]
+    }
+   ],
+   "conflicts": [
+    {
+     "actions": [
+      "r1",
+      "s3"
+     ],
+     "state": 4,
+     "symbol": "+"
+    }
+   ],
+   "gotos": [
+    {
+     "E": 1
+    },
+    {},
+    {},
+    {
+     "E": 4
+    },
+    {}
+   ],
+   "is_slr1": false,
+   "productions": [
+    "E' -> E",
+    "E -> E+E",
+    "E -> i"
+   ],
+   "states": [
+    {
+     "id": 0,
+     "is_final": false,
+     "items": [
+      "E'→·E",
+      "E→·E+E",
+      "E→·i"
+     ],
+     "transitions": {
+      "E": 1,
+      "i": 2
+     }
+    },
+    {
+     "id": 1,
+     "is_final": true,
+     "items": [
+      "E'→E·",
+      "E→E·+E"
+     ],
+     "transitions": {
+      "+": 3
+     }
+    },
+    {
+     "id": 2,
+     "is_final": true,
+     "items": [
+      "E→i·"
+     ],
+     "transitions": {}
+    },
+    {
+     "id": 3,
+     "is_final": false,
+     "items": [
+      "E→·E+E",
+      "E→E+·E",
+      "E→·i"
+     ],
+     "transitions": {
+      "E": 4,
+      "i": 2
+     }
+    },
+    {
+     "id": 4,
+     "is_final": true,
+     "items": [
+      "E→E·+E",
+      "E→E+E·"
+     ],
+     "transitions": {
+      "+": 3
+     }
+    }
+   ],
+   "terminals": [
+    "+",
+    "i",
+    "$"
+   ],
+   "variables": [
+    "E"
+   ]
+  },
+  "start": "E"
+ },
+ "user": {
+  "applicable": [
+   {
+    "positions": [
+     1
+    ],
+    "production": 0,
+    "text": "S -> aSb"
+   },
+   {
+    "positions": [
+     1
+    ],
+    "production": 1,
+    "text": "S -> λ"
+   }
+  ],
+  "derivation": {
+   "start": "S",
+   "steps": [
+    {
+     "position": 0,
+     "production": {
+      "lhs": "S",
+      "rhs": "aSb"
+     },
+     "result": "aSb"
+    }
+   ]
+  },
+  "derivation_forms": [
+   "S",
+   "aSb"
+  ],
+  "finished": false,
+  "sentential": "aSb",
+  "target": "aabb",
+  "tree": {
+   "children": [
+    {
+     "children": [],
+     "symbol": "a"
+    },
+    {
+     "children": [],
+     "symbol": "S"
+    },
+    {
+     "children": [],
+     "symbol": "b"
+    }
+   ],
+   "symbol": "S"
+  }
+ },
+ "userDone": {
+  "applicable": [],
+  "derivation": {
+   "start": "S",
+   "steps": [
+    {
+     "position": 0,
+     "production": {
+      "lhs": "S",
+      "rhs": "aSb"
+     },
+     "result": "aSb"
+    },
+    {
+     "position": 1,
+     "production": {
+      "lhs": "S",
+      "rhs": "aSb"
+     },
+     "result": "aaSbb"
+    },
+    {
+     "position": 2,
+     "production": {
+      "lhs": "S",
+      "rhs": ""
+     },
+     "result": "aabb"
+    }
+   ]
+  },
+  "derivation_forms": [
+   "S",
+   "aSb",
+   "aaSbb",
+   "aabb"
+  ],
+  "finished": true,
+  "sentential": "aabb",
+  "target": "aabb",
+  "tree": {
+   "children": [
+    {
+     "children": [],
+     "symbol": "a"
+    },
+    {
+     "children": [
+      {
+       "children": [],
+       "symbol": "a"
+      },
+      {
+       "children": [
+        {
+         "children": [],
+         "symbol": "λ"
+        }
+       ],
+       "symbol": "S"
+      },
+      {
+       "children": [],
+       "symbol": "b"
+      }
+     ],
+     "symbol": "S"
+    },
+    {
+     "children": [],
+     "symbol": "b"
+    }
+   ],
+   "symbol": "S"
+  }
+ }
+}

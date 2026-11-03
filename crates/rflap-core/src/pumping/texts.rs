@@ -1,0 +1,200 @@
+//! Generated from the decompiled JFLAP 7.1 sources (`pumping/reg/*.java`, `pumping/cf/*.java`):
+//! the titles, descriptions and ranges of the predefined languages, in the order of
+//! JFLAP's `RegPumpingLemmaChooser` and `CFPumpingLemmaChooser`.
+
+/// What JFLAP shows about a predefined language.
+pub(super) struct LangText {
+    pub title: &'static str,
+    pub html_title: &'static str,
+    pub partition_is_valid: bool,
+    pub explanation: &'static str,
+    pub range: (i32, i32),
+}
+
+pub(super) const REGULAR: [LangText; 13] = [
+    LangText {
+        title: "a^n b^n : n >= 0",
+        html_title: "<i>a<sup>n</sup>b<sup>n</sup></i> : <i>n</i> &#8805; 0",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i></sup>\".  The <i>y</i> value thus would be a multiple of \"a\".  For any <i>i</i> &#8800; 1, n<sub>a</sub> &#8800; n<sub>b</sub>, giving a string which is not in the language.  Thus, the language is not regular.",
+        range: (4, 18),
+    },
+    LangText {
+        title: "w element_of {ab}* : na(w) < nb(w)",
+        html_title: "<i>w</i> &#8712; {<i>a</i>, <i>b</i>}* : <i>n<sub>a</sub></i> (<i>w</i>) &#60; <i>n<sub>b</sub></i> (<i>w</i>)",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i>+1</sup>\".  The <i>y</i> value thus would be a multiple of \"a\".  For any <i>i</i> &#62; 1, n<sub>a</sub> &#8805; n<sub>b</sub>, giving a string which is not in the language.  Thus, the language is not regular.",
+        range: (2, 17),
+    },
+    LangText {
+        title: "w w^R : w element_of {ab}*",
+        html_title: "<i>ww<sup>R</sup></i> : <i>w</i> &#8712; {<i>a</i>, <i>b</i>}*",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>bba<sup><i>m</i></sup>\".  The <i>y</i> value thus would be a multiple of \"a\" in 'w' and not in 'w<sup>R</sup>'.  If <i>i</i> = 0, then the total string becomes at most \"a<sup><i>m</i>-1</sup>bba<sup><i>m</i></sup>\", which is not in the language.  Thus, the language is not regular.",
+        range: (2, 10),
+    },
+    LangText {
+        title: "(ab)^n a^k : n > k, k >= 0",
+        html_title: "(<i>ab</i>)<i><sup>n</sup>a<sup>k</sup></i> : <i>n</i> &#62; <i>k</i>, <i>k</i> &#8805; 0",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"(ab)<sup><i>m</i>+1</sup>a<sup><i>m</i></sup>\".  To be in the language, <i>y</i> must possess \"ab\"s, \"ba\"s, \"a\"s, and/or \"b\"s.  Any multiple or combination thereof yields a string that is not in the language when <i>i</i> = 0, meaning this is not a regular language.",
+        range: (2, 11),
+    },
+    LangText {
+        title: "a^n b^k c^(n+k) : n >= 0, k >= 0",
+        html_title: "<i>a<sup>n</sup>b<sup>k</sup>c<sup>n+k</sup></i> : <i>n</i> &#8805; 0, <i>k</i> &#8805; 0",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i></sup>c<sup>2<i>m</i></sup>\".  The <i>y</i> value thus would be a multiple of \"a\".  If <i>i</i> = 0, the string becomes at most \"a<sup><i>m</i>-1</sup>b<sup><i>m</i></sup>c<sup>2<i>m</i></sup>\", which is not in the language.  Thus, the language is not regular.",
+        range: (2, 9),
+    },
+    LangText {
+        title: "a^n b^l a^k : n > 5, l > 3, k <= l",
+        html_title: "<i>a<sup>n</sup>b<sup>l</sup>a<sup>k</sup></i> : <i>n</i> &#62; 5, <i>l</i> &#62; 3, <i>k</i> &#8804; <i>l</i>",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value &#8805; 4, a possible value for <i>w</i> is \"a<sup>6</sup>b<sup><i>m</i></sup>a<sup><i>m</i></sup>\".  The <i>y</i> value thus would be a combination of \"a\"s and \"b\"s, in that order.  If <i>i</i> = 0, either n &#8804; 5, k > l, or both, giving a string that is not in the language.  Thus, the language is not regular.",
+        range: (2, 15),
+    },
+    LangText {
+        title: "a^n : n is even",
+        html_title: "<i>a<sup>n</sup></i> : <i>n</i> is even",
+        partition_is_valid: true,
+        explanation: "Because this is a regular language, a valid decomposition exists.  If <i>m</i> &#8805; 2, the <i>y</i> value \"aa\" will always pump the string.",
+        range: (2, 18),
+    },
+    LangText {
+        title: "a^n b^k : n is odd or k is even",
+        html_title: "<i>a<sup>n</sup>b<sup>k</sup></i> : <i>n</i> is odd or <i>k</i> is even.",
+        partition_is_valid: true,
+        explanation: "Because this is a regular language, a valid decomposition exists.  If <i>m</i> &#8805; 3, a <i>y</i> value of \"aa\" or \"bb\" will always pump the string.  At least one of those substrings can be the <i>y</i> value.",
+        range: (3, 10),
+    },
+    LangText {
+        title: "bba(ba)^n a^(n-1)",
+        html_title: "<i>bba(ba)<sup>n</sup>a<sup>n-1</sup></i>",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"bba(ba)<sup><i>m</i></sup>a<sup><i>m</i>-1</sup>\".  No possible <i>y</i> value among the \"bba(ba)<sup><i>m</i></sup>\" segment is possible to pump, meaning any possible generated string is not in the language.  Thus, the language is not regular.",
+        range: (5, 10),
+    },
+    LangText {
+        title: "b^5w: w element_of {ab}* : 2na(w) = 3nb(w)",
+        html_title: "<i>b<sup>5</sup>w</i> : <i>w</i> &#8712; {<i>a</i>, <i>b</i>}*, 2<i>n<sub>a</sub></i> (<i>w</i>) =  3<i>n<sub>b</sub></i> (<i>w</i>)",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value &#8805; 6, a possible value for <i>w</i> is \"b<sup>5</sup>b<sup>2(<i>m</i>-5)</sup>a<sup>3(<i>m</i>-5)</sup>\".  The <i>y</i> value thus would be a multiple of \"b\".  For any <i>i</i> &#8800; 1, 2n<sub>a</sub>('w') &#8800; 3n<sub>b</sub>('w') or n<sub>b</sub> in the whole string&#60; 5, giving a string which is not in the language.  Thus, the language is not regular.",
+        range: (6, 10),
+    },
+    LangText {
+        title: "b^5w: w element_of {ab}* : (2na(w) + 5nb(w)) % 3 = 0",
+        html_title: "<i>b<sup>5</sup>w</i> : <i>w</i> &#8712; {<i>a</i>, <i>b</i>}*, (2<i>n<sub>a</sub></i> (<i>w</i>) +  5<i>n<sub>b</sub></i> (<i>w</i>)) mod 3 = 0",
+        partition_is_valid: true,
+        explanation: "Because this is a regular language, a valid decomposition exists.  If <i>m</i> &#8805; 8, as long as |<i>y</i>| % 3 = 0 and none of the first 5 \"b\"s are in <i>y</i>, the decomposition is successful.  Pumping any possible combination of 3 characters yields a string divisible by 3.",
+        range: (8, 20),
+    },
+    LangText {
+        title: "b^k (ab)^n (ba)^n: k>=4, n = 1,2,...",
+        html_title: "<i>b<sup>k</sup>(ab)<sup>n</sup>(ba)<sup>n</sup></i> : <i>k</i> &#8805; 4, <i>n</i> = 1,2...",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"b<sup>4</sup>(ab)<sup><i>m</i>/2</sup>(ba)<sup><i>m</i>/2</sup>\".  No possible <i>y</i> value among the \"b<sup>4</sup>(ab)<sup><i>m</i>/2</sup>\" segment will work, so the language is not regular.",
+        range: (4, 15),
+    },
+    LangText {
+        title: "(ab)^2n : n = 1,2,...",
+        html_title: "(<i>ab</i>)<i><sup>2n</sup></i> : <i>n</i> = 1,2,...",
+        partition_is_valid: true,
+        explanation: "Because this is a regular language, a valid decomposition exists.  As long as <i>m</i> &#8805; 4, then if <i>y</i> = \"abab\" (or \"baba\" if <i>m</i>&#8805;5), the decomposition can be pumped for any <i>i</i> value.",
+        range: (4, 10),
+    },
+];
+
+pub(super) const CONTEXT_FREE: [LangText; 13] = [
+    LangText {
+        title: "a^n b^n c^n",
+        html_title: "<i>a<sup>n</sup>b<sup>n</sup>c<sup>n</sup></i> : <i>n</i> &#8805; 0",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i></sup>c<sup><i>m</i></sup>\".  With this example, it is impossible to have \"a\"s, \"b\"s, and \"c\"s in both <i>v</i> and <i>y</i> together.  Thus, if <i>i</i> &#8800; 1, an inequality will be generated, meaning this is not a context-free language.",
+        range: (3, 11),
+    },
+    LangText {
+        title: "ww : w element_of {ab}*",
+        html_title: "<i>ww</i> : <i>w</i> &#8712; {<i>a</i>, <i>b</i>}*",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i></sup>a<sup><i>m</i></sup>b<sup><i>m</i></sup>\".  To be in the language with this example, <i>v</i> & <i>y</i> together cannot possess identical letters that are from separate blocks of alike letters (ex: <i>v</i> has \"b\"s from the first set of \"b\"s, while <i>y</i> has \"b\"s from the second set of \"b\"s.  Because of this, any increase or decrease in \"a\"s or \"b\"s will not be matched by any corresponding change in the other blocks of similar letters, resulting in an inequality that prevents the decomposition from working.  Thus, this language is not context-free.",
+        range: (3, 6),
+    },
+    LangText {
+        title: "a^n b^j a^n b^j : n >= 0, j >= 0",
+        html_title: "<i>a<sup>n</sup>b<sup>j</sup>a<sup>n</sup>b<sup>j</sup></i> : <i>n</i> &#8805; 0, <i>j</i> &#8805; 0",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i></sup>a<sup><i>m</i></sup>b<sup><i>m</i></sup>\".  To be in the language with this example, <i>v</i> & <i>y</i> together cannot possess identical letters that are from separate blocks of alike letters (ex: <i>v</i> has \"b\"s from the first set of \"b\"s, while <i>y</i> has \"b\"s from the second set of \"b\"s).  Because of this, any increase or decrease in \"a\"s or \"b\"s will not be matched by any change in the other blocks of similar letters, resulting in an inequality that prevents the decomposition from working.  Thus, this language is not context-free.",
+        range: (3, 5),
+    },
+    LangText {
+        title: "w element_of {a, b, c}* : na(w) < nb(w) < nc(w)",
+        html_title: "<i>w</i> &#8712; {<i>a</i>, <i>b</i>, <i>c</i>}* : <i>n<sub>a</sub></i> (<i>w</i>) &#60; <i>n<sub>b</sub></i> (<i>w</i>) &#60; <i>n<sub>c</sub></i> (<i>w</i>)",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i>+1</sup>c<sup><i>m</i>+2</sup>\".  With this example, it is impossible to have \"a\"s, \"b\"s, and \"c\"s in both <i>v</i> and <i>y</i> together.  Thus, if <i>i</i> = 0, <i>i</i> = 2, or perhaps both, one of the inequalities will be violated, meaning there is no adequate decomposition.  Thus, this language is not context-free.",
+        range: (3, 6),
+    },
+    LangText {
+        title: "w element_of {abc}* : na(w) > nb(w) = nc(w)",
+        html_title: "<i>w</i> &#8712; {<i>a</i>, <i>b</i>, <i>c</i>}* : <i>n<sub>a</sub></i> (<i>w</i>) &#62; <i>n<sub>b</sub></i> (<i>w</i>) = <i>n<sub>c</sub></i> (<i>w</i>)",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i>+1</sup>b<sup><i>m</i></sup>c<sup><i>m</i></sup>\".  With this example, it is impossible to have \"a\"s, \"b\"s, and \"c\"s in both <i>v</i> and <i>y</i> together.  Thus, if <i>i</i> = 0, <i>i</i> = 2, or perhaps both, one of the inequalities will be violated, meaning there is no valid decomposition.  Thus, this language is not context-free.",
+        range: (3, 7),
+    },
+    LangText {
+        title: "a^i b^j c^k : i > j, i > k",
+        html_title: "<i>a<sup>i</sup>b<sup>j</sup>c<sup>k</sup></i> : <i>i</i> &#62; <i>j</i>, <i>i</i> &#62; <i>k</i>",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i>+1</sup>b<sup><i>m</i></sup>c<sup><i>m</i></sup>\".  The <i>v</i> and <i>y</i> values together thus would have a maximum of two unique letters.  Any possible <i>v</i> or <i>y</i> values would then be problematic if <i>i</i> = 0, <i>i</i> = 2, or perhaps both.  Thus, this language is not context-free.",
+        range: (3, 7),
+    },
+    LangText {
+        title: "a^n b^n : n >= 0",
+        html_title: "<i>a<sup>n</sup>b<sup>n</sup></i> : <i>n</i> &#8805; 0",
+        partition_is_valid: true,
+        explanation: "Because this is a context-free language, a valid decomposition exists.  If <i>m</i> &#8805; 2, one could choose <i>v</i> to be \"a\" and <i>y</i> to be \"b\", which will work for all values of <i>i</i>.",
+        range: (4, 11),
+    },
+    LangText {
+        title: "a^k b^n c^n d^j : j != k",
+        html_title: "<i>a<sup>k</sup>b<sup>n</sup>c<sup>n</sup>d<sup>j</sup></i> : <i>j</i> &#8800; k",
+        partition_is_valid: true,
+        explanation: "Because this is a context-free language, a valid decomposition exists.  For all m &#8805; 2, if <i>n</i> &#8805; 1, <i>v</i> could equal \"b\" and <i>y</i> could equal \"c\".  If <i>n</i> = 0 and <i>k</i> & <i>j</i> &#8805; 1, <i>v</i> could equal \"a\" and <i>y</i> could equal \"d\".  If <i>n</i> = 0 and only one of <i>k</i> or <i>j</i> &#8805; 1, <i>v</i> could equal \"a\" or \"d\" (whichever one is in the string).  and <i>y</i> could be empty.  This covers all possible combinations.",
+        range: (3, 5),
+    },
+    LangText {
+        title: "w w1 w^R : |w1| >= 5, w & w1 element_of {ab}*",
+        html_title: "<i>ww<sub>1</sub>w<sup>R</sup></i> : |<i>w<sub>1</sub></i>| &#8805; 5, <i>w</i> & <i>w<sub>1</sub></i> &#8712; {<i>a</i>, <i>b</i>}*",
+        partition_is_valid: true,
+        explanation: "Because this is a context-free language, a valid decomposition exists.  For any <i>m</i> value &#8805; 6, it is possible to assign to both 'w' and 'w<sup>R</sup>' the empty string.  Thus, |'w<sub>1</sub>'| &#8805; 6.  If |<i>v</i>| = 0 and <i>y</i> is one character from 'w<sub>1</sub>', |'w<sub>1</sub>'| &#8805; 5 for all values of <i>i</i>.",
+        range: (1, 7),
+    },
+    LangText {
+        title: "w w1 w^R : |w| = |w1|, w & w1 element_of {ab}*",
+        html_title: "<i>ww<sub>1</sub>w<sup>R</sup></i> : |<i>w</i>| = |<i>w<sub>1</sub></i>| , <i>w</i> & <i>w<sub>1</sub></i> &#8712; {<i>a</i>, <i>b</i>}*",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i></sup>a<sup><i>m</i></sup>\".  To be in the language with this example, <i>v</i> & <i>y</i> together cannot possess substrings that are from both 'w' and 'w<sup>R</sup>'.  Thus, pumping a substring from either 'w', 'w<sup>1</sup>',  or 'w<sup>R</sup>' will violate the |'w'| = |'w<sup>R</sup>'| equality or cause |'w'| &#8800;|'w<sup>1</sup>'|.    Thus, this language is not context-free.",
+        range: (3, 10),
+    },
+    LangText {
+        title: "w1 + b^n + w2 : na(w1) < na(w2) & na(w1) < n, w1 & w2 element_of {ab}*",
+        html_title: "<i>w<sub>1</sub>b<sup>n</sup>w<sub>2</sub></i> : <i>n<sub>a</sub></i>(<i>w<sub>1</sub></i>) &#60; <i>n<sub>a</sub></i>(<i>w<sub>2</sub></i>),  n<sub>a</sub>(<i>w<sub>1</sub></i>) &#60; <i>n</i>, <i>w<sub>1</sub></i> & <i>w<sub>2</sub></i> &#8712; {<i>a</i>, <i>b</i>}*",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i>+1</sup>a<sup><i>m</i>+1</sup>\".  To be in the language with this example, <i>v</i> & <i>y</i> together cannot possess substrings that are from 'w'<sub>1</sub>, from b<sup>n</sup>, and from 'w<sub>2</sub>'.  Thus, if <i>i</i> = 0, <i>i</i> = 2, or perhaps both, either <i>v</i> or <i>y</i> will violate one of the conditions, meaning there is no valid decomposition.  Thus, this language is not context-free.",
+        range: (2, 10),
+    },
+    LangText {
+        title: "w1cw2cw3cw4 : w1 = w2 or w3 = w4, wi element_of {ab}*, |wi| >= 5",
+        html_title: "<i>w<sub>1</sub>cw<sub>2</sub>cw<sub>3</sub>cw<sub>4</sub></i>, : <i>w<sub>1</sub></i> = <i>w<sub>2</sub></i> or <i>w<sub>3</sub></i> = <i>w<sub>4</sub></i>, <i>w<sub>i</sub></i> &#8712; {<i>a</i>, <i>b</i>}*, |<i>w<sub>i</sub></i>| > 0",
+        partition_is_valid: false,
+        explanation: "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i></sup>ca<sup><i>m</i></sup>b<sup><i>m</i></sup>cacb\".  If either <i>v</i> or <i>y</i> together span two 'w<sub>n</sub>'s or span less but possess a \"c\", then pumping that value could result in more or less than three \"c\"s, which is not permissible.  If either <i>v</i> or <i>y</i> span 'w<sub>3</sub>' or 'w<sub>4</sub>', then if <i>i</i> = 0, |'w<sub>3</sub>'| = 0 or |'w<sub>4</sub>'| = 0.  If either <i>v</i> or <i>y</i> span 'w<sub>1</sub>' or 'w<sub>2</sub>', then for any <i>i</i> &#8800; 1, 'w<sub>1</sub>' &#8800; 'w<sub>2</sub>'.  Thus, this language is not context-free.",
+        range: (2, 7),
+    },
+    LangText {
+        title: "w1 v v^R w2 : na(w1) = na(w2), |v|>=3, w1 & w2 element_of {ab}*",
+        html_title: "<i>w<sub>1</sub>vv<sup>R</sup>w<sub>2</sub></i>, : <i>n<sub>a</sub></i>(<i>w<sub>1</sub></i>) = <i>n<sub>a</sub></i>(<i>w<sub>2</sub></i>),  |<i>v</i>| &#62; 3,  <i>v</i>, <i>w<sub>1</sub>, w<sub>2</sub> &#8712; {<i>a</i>, <i>b</i>}*",
+        partition_is_valid: true,
+        explanation: "Because this is a context-free language, a valid decomposition exists.  If |'v'| &#62; 3, or if <i>m</i> &#8805; 8 and there are no \"b\"s in w<sub>1</sub> and w<sub>2</sub>, one could just pump single opposite characters in 'v' and 'v<sup>R</sup>' repeatedly to find a valid decomposition.  For example, if |'v'| = 4, then <i>v</i> could equal the fourth character of 'v' and <i>y</i> the first character of 'v<sup>R</sup>'.  Otherwise, if <i>m</i> &#8805; 8 and |v| = 3, one could just pump the first \"b\" value in w<sub>1</sub> or w<sub>2</sub>.",
+        range: (2, 15),
+    },
+];

@@ -1,0 +1,1482 @@
+{
+ "languages": {
+  "total": 26,
+  "languages": [
+   {
+    "cases": 0,
+    "explanation": "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i></sup>\".  The <i>y</i> value thus would be a multiple of \"a\".  For any <i>i</i> &#8800; 1, n<sub>a</sub> &#8800; n<sub>b</sub>, giving a string which is not in the language.  Thus, the language is not regular.",
+    "html_title": "<i>a<sup>n</sup>b<sup>n</sup></i> : <i>n</i> &#8805; 0",
+    "index": 0,
+    "kind": "regular",
+    "partition_is_valid": false,
+    "range": [
+     4,
+     18
+    ],
+    "title": "a^n b^n : n >= 0"
+   },
+   {
+    "cases": 0,
+    "explanation": "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i>+1</sup>\".  The <i>y</i> value thus would be a multiple of \"a\".  For any <i>i</i> &#62; 1, n<sub>a</sub> &#8805; n<sub>b</sub>, giving a string which is not in the language.  Thus, the language is not regular.",
+    "html_title": "<i>w</i> &#8712; {<i>a</i>, <i>b</i>}* : <i>n<sub>a</sub></i> (<i>w</i>) &#60; <i>n<sub>b</sub></i> (<i>w</i>)",
+    "index": 1,
+    "kind": "regular",
+    "partition_is_valid": false,
+    "range": [
+     2,
+     17
+    ],
+    "title": "w element_of {ab}* : na(w) < nb(w)"
+   },
+   {
+    "cases": 11,
+    "explanation": "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i></sup>c<sup><i>m</i></sup>\".  With this example, it is impossible to have \"a\"s, \"b\"s, and \"c\"s in both <i>v</i> and <i>y</i> together.  Thus, if <i>i</i> &#8800; 1, an inequality will be generated, meaning this is not a context-free language.",
+    "html_title": "<i>a<sup>n</sup>b<sup>n</sup>c<sup>n</sup></i> : <i>n</i> &#8805; 0",
+    "index": 0,
+    "kind": "context_free",
+    "partition_is_valid": false,
+    "range": [
+     3,
+     11
+    ],
+    "title": "a^n b^n c^n"
+   },
+   {
+    "cases": 10,
+    "explanation": "For any <i>m</i> value, a possible value for <i>w</i> is \"a<sup><i>m</i></sup>b<sup><i>m</i></sup>a<sup><i>m</i></sup>b<sup><i>m</i></sup>\".  To be in the language with this example, <i>v</i> & <i>y</i> together cannot possess identical letters that are from separate blocks of alike letters (ex: <i>v</i> has \"b\"s from the first set of \"b\"s, while <i>y</i> has \"b\"s from the second set of \"b\"s.  Because of this, any increase or decrease in \"a\"s or \"b\"s will not be matched by any corresponding change in the other blocks of similar letters, resulting in an inequality that prevents the decomposition from working.  Thus, this language is not context-free.",
+    "html_title": "<i>ww</i> : <i>w</i> &#8712; {<i>a</i>, <i>b</i>}*",
+    "index": 1,
+    "kind": "context_free",
+    "partition_is_valid": false,
+    "range": [
+     3,
+     6
+    ],
+    "title": "ww : w element_of {ab}*"
+   }
+  ]
+ },
+ "regularComputerFirst": [
+  {
+   "conclusion": null,
+   "document": {
+    "cases": null,
+    "lemma": {
+     "attempts": [],
+     "case_state": [],
+     "decomposition": null,
+     "done_cases": [],
+     "first_player": "Computer",
+     "i": -1,
+     "language": {
+      "regular": "an_bn"
+     },
+     "m": 4,
+     "parts": [
+      "",
+      "",
+      ""
+     ],
+     "random": {
+      "seed": 205723924636679
+     },
+     "w": ""
+    },
+    "messages": [
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "mode": "computer_first",
+    "pumped": "",
+    "result": null,
+    "type": "regular_pumping_lemma",
+    "visible": [
+     true,
+     true,
+     true,
+     false,
+     false,
+     false
+    ]
+   },
+   "lemma": {
+    "attempts": [],
+    "decomposition": null,
+    "i": -1,
+    "m": 4,
+    "u": "",
+    "v": "",
+    "w": "",
+    "x": "",
+    "y": "",
+    "z": ""
+   },
+   "result": null,
+   "view": {
+    "attempts": [],
+    "awaiting": "w",
+    "boxes": [
+     {
+      "caption": "I have selected a value for m, displayed below.",
+      "content": "4",
+      "message": "",
+      "number": 1,
+      "visible": true
+     },
+     {
+      "caption": "Please enter a possible value for w and press \"Enter\".",
+      "content": "",
+      "message": "",
+      "number": 2,
+      "visible": true
+     },
+     {
+      "caption": "I have decomposed w into the following...",
+      "content": "",
+      "message": "",
+      "number": 3,
+      "visible": false
+     },
+     {
+      "caption": "Please enter a possible value for i and press \"Enter\".",
+      "content": "",
+      "message": "",
+      "number": 4,
+      "visible": false
+     },
+     {
+      "caption": "Animation",
+      "content": "",
+      "message": "",
+      "number": 5,
+      "visible": false
+     }
+    ],
+    "cases": null,
+    "html_title": "L = {<i>a<sup>n</sup>b<sup>n</sup></i> : <i>n</i> &#8805; 0}",
+    "mode": "computer_first",
+    "notice": "",
+    "objective": "Prevent the computer from finding a valid partition.",
+    "prompt": "Please enter a possible value for w and press \"Enter\".",
+    "pumped": "",
+    "result": null,
+    "title": "L = {a^n b^n : n >= 0} Regular Pumping Lemma"
+   }
+  },
+  {
+   "conclusion": null,
+   "document": {
+    "cases": null,
+    "lemma": {
+     "attempts": [],
+     "case_state": [],
+     "decomposition": [
+      0,
+      4
+     ],
+     "done_cases": [],
+     "first_player": "Computer",
+     "i": -1,
+     "language": {
+      "regular": "an_bn"
+     },
+     "m": 4,
+     "parts": [
+      "",
+      "aaaa",
+      "bbbb"
+     ],
+     "random": {
+      "seed": 28280696119558
+     },
+     "w": "aaaabbbb"
+    },
+    "messages": [
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "mode": "computer_first",
+    "pumped": "",
+    "result": null,
+    "type": "regular_pumping_lemma",
+    "visible": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     false
+    ]
+   },
+   "lemma": {
+    "attempts": [],
+    "decomposition": [
+     0,
+     4
+    ],
+    "i": -1,
+    "m": 4,
+    "u": "",
+    "v": "",
+    "w": "aaaabbbb",
+    "x": "",
+    "y": "aaaa",
+    "z": "bbbb"
+   },
+   "reply": {
+    "accepted": true,
+    "message": "X = λ;   Y = aaaa;   Z = bbbb"
+   },
+   "result": null,
+   "view": {
+    "attempts": [],
+    "awaiting": "i",
+    "boxes": [
+     {
+      "caption": "I have selected a value for m, displayed below.",
+      "content": "4",
+      "message": "",
+      "number": 1,
+      "visible": true
+     },
+     {
+      "caption": "Please enter a possible value for w and press \"Enter\".",
+      "content": "aaaabbbb",
+      "message": "",
+      "number": 2,
+      "visible": true
+     },
+     {
+      "caption": "I have decomposed w into the following...",
+      "content": "X = λ;   Y = aaaa;   Z = bbbb",
+      "message": "",
+      "number": 3,
+      "visible": true
+     },
+     {
+      "caption": "Please enter a possible value for i and press \"Enter\".",
+      "content": "",
+      "message": "",
+      "number": 4,
+      "visible": true
+     },
+     {
+      "caption": "Animation",
+      "content": "",
+      "message": "",
+      "number": 5,
+      "visible": false
+     }
+    ],
+    "cases": null,
+    "html_title": "L = {<i>a<sup>n</sup>b<sup>n</sup></i> : <i>n</i> &#8805; 0}",
+    "mode": "computer_first",
+    "notice": "",
+    "objective": "Prevent the computer from finding a valid partition.",
+    "prompt": "Please enter a possible value for i and press \"Enter\".",
+    "pumped": "",
+    "result": null,
+    "title": "L = {a^n b^n : n >= 0} Regular Pumping Lemma"
+   }
+  },
+  {
+   "conclusion": "not_regular",
+   "document": {
+    "cases": null,
+    "lemma": {
+     "attempts": [
+      "X = λ;   Y = aaaa;   Z = bbbb; I = 2; <i>Won</i>"
+     ],
+     "case_state": [],
+     "decomposition": [
+      0,
+      4
+     ],
+     "done_cases": [],
+     "first_player": "Computer",
+     "i": 2,
+     "language": {
+      "regular": "an_bn"
+     },
+     "m": 4,
+     "parts": [
+      "",
+      "aaaa",
+      "bbbb"
+     ],
+     "random": {
+      "seed": 28280696119558
+     },
+     "w": "aaaabbbb"
+    },
+    "messages": [
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "mode": "computer_first",
+    "pumped": "aaaaaaaabbbb",
+    "result": {
+     "in_language": false,
+     "message": "<i>xy</i><sup>2</sup><i>z</i> = <i>a</i><sup>8</sup><i>b</i><sup>4</sup> = aaaaaaaabbbb is NOT in the language.  YOU WIN!",
+     "pumped": "aaaaaaaabbbb",
+     "takeaway": null,
+     "user_wins": true
+    },
+    "type": "regular_pumping_lemma",
+    "visible": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ]
+   },
+   "lemma": {
+    "attempts": [
+     "X = λ;   Y = aaaa;   Z = bbbb; I = 2; <i>Won</i>"
+    ],
+    "decomposition": [
+     0,
+     4
+    ],
+    "i": 2,
+    "m": 4,
+    "u": "",
+    "v": "",
+    "w": "aaaabbbb",
+    "x": "",
+    "y": "aaaa",
+    "z": "bbbb"
+   },
+   "reply": {
+    "accepted": true,
+    "message": "<i>xy</i><sup>2</sup><i>z</i> = <i>a</i><sup>8</sup><i>b</i><sup>4</sup> = aaaaaaaabbbb is NOT in the language.  YOU WIN!"
+   },
+   "result": {
+    "in_language": false,
+    "message": "<i>xy</i><sup>2</sup><i>z</i> = <i>a</i><sup>8</sup><i>b</i><sup>4</sup> = aaaaaaaabbbb is NOT in the language.  YOU WIN!",
+    "pumped": "aaaaaaaabbbb",
+    "takeaway": null,
+    "user_wins": true
+   },
+   "view": {
+    "attempts": [
+     "X = λ;   Y = aaaa;   Z = bbbb; I = 2; <i>Won</i>"
+    ],
+    "awaiting": "i",
+    "boxes": [
+     {
+      "caption": "I have selected a value for m, displayed below.",
+      "content": "4",
+      "message": "",
+      "number": 1,
+      "visible": true
+     },
+     {
+      "caption": "Please enter a possible value for w and press \"Enter\".",
+      "content": "aaaabbbb",
+      "message": "",
+      "number": 2,
+      "visible": true
+     },
+     {
+      "caption": "I have decomposed w into the following...",
+      "content": "X = λ;   Y = aaaa;   Z = bbbb",
+      "message": "",
+      "number": 3,
+      "visible": true
+     },
+     {
+      "caption": "Please enter a possible value for i and press \"Enter\".",
+      "content": "2",
+      "message": "",
+      "number": 4,
+      "visible": true
+     },
+     {
+      "caption": "Animation",
+      "content": "<i>xy</i><sup>2</sup><i>z</i> = <i>a</i><sup>8</sup><i>b</i><sup>4</sup> = aaaaaaaabbbb is NOT in the language.  YOU WIN!",
+      "message": "",
+      "number": 5,
+      "visible": true
+     }
+    ],
+    "cases": null,
+    "html_title": "L = {<i>a<sup>n</sup>b<sup>n</sup></i> : <i>n</i> &#8805; 0}",
+    "mode": "computer_first",
+    "notice": "",
+    "objective": "Prevent the computer from finding a valid partition.",
+    "prompt": "Please enter a possible value for i and press \"Enter\".",
+    "pumped": "aaaaaaaabbbb",
+    "result": {
+     "in_language": false,
+     "message": "<i>xy</i><sup>2</sup><i>z</i> = <i>a</i><sup>8</sup><i>b</i><sup>4</sup> = aaaaaaaabbbb is NOT in the language.  YOU WIN!",
+     "pumped": "aaaaaaaabbbb",
+     "takeaway": null,
+     "user_wins": true
+    },
+    "title": "L = {a^n b^n : n >= 0} Regular Pumping Lemma"
+   }
+  }
+ ],
+ "regularHumanFirst": [
+  {
+   "conclusion": null,
+   "document": {
+    "cases": null,
+    "lemma": {
+     "attempts": [],
+     "case_state": [],
+     "decomposition": null,
+     "done_cases": [],
+     "first_player": "Human",
+     "i": -1,
+     "language": {
+      "regular": "an_bn"
+     },
+     "m": -1,
+     "parts": [
+      "",
+      "",
+      ""
+     ],
+     "random": {
+      "seed": 25214903916
+     },
+     "w": ""
+    },
+    "messages": [
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "mode": "human_first",
+    "pumped": "",
+    "result": null,
+    "type": "regular_pumping_lemma",
+    "visible": [
+     true,
+     true,
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "lemma": {
+    "attempts": [],
+    "decomposition": null,
+    "i": -1,
+    "m": -1,
+    "u": "",
+    "v": "",
+    "w": "",
+    "x": "",
+    "y": "",
+    "z": ""
+   },
+   "result": null,
+   "view": {
+    "attempts": [],
+    "awaiting": "m",
+    "boxes": [
+     {
+      "caption": "Please select a value for m in Box 1 and press \"Enter\".",
+      "content": "",
+      "message": "",
+      "number": 1,
+      "visible": true
+     },
+     {
+      "caption": "I have selected w such that |w| >= m. It is displayed in Box 2.",
+      "content": "",
+      "message": "",
+      "number": 2,
+      "visible": false
+     },
+     {
+      "caption": "Select decomposition of w into xyz.",
+      "content": "",
+      "message": "",
+      "number": 3,
+      "visible": false
+     },
+     {
+      "caption": "I have selected i to give a contradition. It is displayed in Box 4.",
+      "content": "",
+      "message": "",
+      "number": 4,
+      "visible": false
+     },
+     {
+      "caption": "Animation",
+      "content": "",
+      "message": "",
+      "number": 5,
+      "visible": false
+     }
+    ],
+    "cases": null,
+    "html_title": "L = {<i>a<sup>n</sup>b<sup>n</sup></i> : <i>n</i> &#8805; 0}",
+    "mode": "human_first",
+    "notice": "",
+    "objective": "Find a valid partition that can be pumped.",
+    "prompt": "Please select a value for m in Box 1 and press \"Enter\".",
+    "pumped": "",
+    "result": null,
+    "title": "L = {a^n b^n : n >= 0} Regular Pumping Lemma"
+   }
+  },
+  {
+   "conclusion": null,
+   "document": {
+    "cases": null,
+    "lemma": {
+     "attempts": [],
+     "case_state": [],
+     "decomposition": null,
+     "done_cases": [],
+     "first_player": "Human",
+     "i": -1,
+     "language": {
+      "regular": "an_bn"
+     },
+     "m": 4,
+     "parts": [
+      "",
+      "",
+      ""
+     ],
+     "random": {
+      "seed": 25214903916
+     },
+     "w": "aaaabbbb"
+    },
+    "messages": [
+     "",
+     "",
+     "",
+     "Condition violated: |y| > 0",
+     "",
+     ""
+    ],
+    "mode": "human_first",
+    "pumped": "",
+    "result": null,
+    "type": "regular_pumping_lemma",
+    "visible": [
+     true,
+     true,
+     true,
+     true,
+     false,
+     false
+    ]
+   },
+   "lemma": {
+    "attempts": [],
+    "decomposition": null,
+    "i": -1,
+    "m": 4,
+    "u": "",
+    "v": "",
+    "w": "aaaabbbb",
+    "x": "",
+    "y": "",
+    "z": ""
+   },
+   "reply": {
+    "accepted": true,
+    "message": ""
+   },
+   "result": null,
+   "view": {
+    "attempts": [],
+    "awaiting": "decomposition",
+    "boxes": [
+     {
+      "caption": "Please select a value for m in Box 1 and press \"Enter\".",
+      "content": "4",
+      "message": "",
+      "number": 1,
+      "visible": true
+     },
+     {
+      "caption": "I have selected w such that |w| >= m. It is displayed in Box 2.",
+      "content": "aaaabbbb",
+      "message": "",
+      "number": 2,
+      "visible": true
+     },
+     {
+      "caption": "Select decomposition of w into xyz.",
+      "content": "",
+      "message": "Condition violated: |y| > 0",
+      "number": 3,
+      "visible": true
+     },
+     {
+      "caption": "I have selected i to give a contradition. It is displayed in Box 4.",
+      "content": "",
+      "message": "",
+      "number": 4,
+      "visible": false
+     },
+     {
+      "caption": "Animation",
+      "content": "",
+      "message": "",
+      "number": 5,
+      "visible": false
+     }
+    ],
+    "cases": null,
+    "html_title": "L = {<i>a<sup>n</sup>b<sup>n</sup></i> : <i>n</i> &#8805; 0}",
+    "mode": "human_first",
+    "notice": "",
+    "objective": "Find a valid partition that can be pumped.",
+    "prompt": "Select decomposition of w into xyz.",
+    "pumped": "",
+    "result": null,
+    "title": "L = {a^n b^n : n >= 0} Regular Pumping Lemma"
+   }
+  }
+ ],
+ "contextFreeHumanFirst": [
+  {
+   "conclusion": null,
+   "document": {
+    "cases": {
+     "add_replace_enabled": false,
+     "list_enabled": false,
+     "message": "",
+     "rows": [],
+     "selected": null,
+     "temp_decomposition": null,
+     "temp_i": -1,
+     "total": 11
+    },
+    "lemma": {
+     "attempts": [],
+     "case_state": [
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      }
+     ],
+     "decomposition": null,
+     "done_cases": [],
+     "first_player": "Human",
+     "i": -1,
+     "language": {
+      "context_free": "an_bn_cn"
+     },
+     "m": -1,
+     "parts": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "random": {
+      "seed": 25214903916
+     },
+     "w": ""
+    },
+    "messages": [
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "mode": "human_first",
+    "pumped": "",
+    "result": null,
+    "type": "context_free_pumping_lemma",
+    "visible": [
+     true,
+     true,
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "lemma": {
+    "attempts": [],
+    "decomposition": null,
+    "i": -1,
+    "m": -1,
+    "u": "",
+    "v": "",
+    "w": "",
+    "x": "",
+    "y": "",
+    "z": ""
+   },
+   "result": null,
+   "view": {
+    "attempts": [],
+    "awaiting": "m",
+    "boxes": [
+     {
+      "caption": "Please select a value for m in Box 1 and press \"Enter\".",
+      "content": "",
+      "message": "",
+      "number": 1,
+      "visible": true
+     },
+     {
+      "caption": "I have selected w such that |w| >= m. It is displayed in Box 2.",
+      "content": "",
+      "message": "",
+      "number": 2,
+      "visible": false
+     },
+     {
+      "caption": "Select decomposition of w into uvxyz.",
+      "content": "",
+      "message": "",
+      "number": 3,
+      "visible": false
+     },
+     {
+      "caption": "I have selected i to give a contradition. It is displayed in Box 4.",
+      "content": "",
+      "message": "",
+      "number": 4,
+      "visible": false
+     },
+     {
+      "caption": "Animation",
+      "content": "",
+      "message": "",
+      "number": 5,
+      "visible": false
+     }
+    ],
+    "cases": {
+     "add_replace_enabled": false,
+     "list_enabled": false,
+     "message": "",
+     "rows": [],
+     "selected": null,
+     "temp_decomposition": null,
+     "temp_i": -1,
+     "total": 11
+    },
+    "html_title": "L = {<i>a<sup>n</sup>b<sup>n</sup>c<sup>n</sup></i> : <i>n</i> &#8805; 0}",
+    "mode": "human_first",
+    "notice": "",
+    "objective": "Find a valid partition that can be pumped.",
+    "prompt": "Please select a value for m in Box 1 and press \"Enter\".",
+    "pumped": "",
+    "result": null,
+    "title": "L = {a^n b^n c^n} Context-Free Pumping Lemma"
+   }
+  },
+  {
+   "conclusion": null,
+   "document": {
+    "cases": {
+     "add_replace_enabled": false,
+     "list_enabled": true,
+     "message": "",
+     "rows": [],
+     "selected": null,
+     "temp_decomposition": null,
+     "temp_i": -1,
+     "total": 11
+    },
+    "lemma": {
+     "attempts": [],
+     "case_state": [
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      }
+     ],
+     "decomposition": null,
+     "done_cases": [],
+     "first_player": "Human",
+     "i": -1,
+     "language": {
+      "context_free": "an_bn_cn"
+     },
+     "m": 3,
+     "parts": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "random": {
+      "seed": 25214903916
+     },
+     "w": "aaabbbccc"
+    },
+    "messages": [
+     "",
+     "",
+     "",
+     "Condition violated: |vy| >= 1",
+     "",
+     ""
+    ],
+    "mode": "human_first",
+    "pumped": "",
+    "result": null,
+    "type": "context_free_pumping_lemma",
+    "visible": [
+     true,
+     true,
+     true,
+     true,
+     false,
+     false
+    ]
+   },
+   "lemma": {
+    "attempts": [],
+    "decomposition": null,
+    "i": -1,
+    "m": 3,
+    "u": "",
+    "v": "",
+    "w": "aaabbbccc",
+    "x": "",
+    "y": "",
+    "z": ""
+   },
+   "reply": {
+    "accepted": true,
+    "message": ""
+   },
+   "result": null,
+   "view": {
+    "attempts": [],
+    "awaiting": "decomposition",
+    "boxes": [
+     {
+      "caption": "Please select a value for m in Box 1 and press \"Enter\".",
+      "content": "3",
+      "message": "",
+      "number": 1,
+      "visible": true
+     },
+     {
+      "caption": "I have selected w such that |w| >= m. It is displayed in Box 2.",
+      "content": "aaabbbccc",
+      "message": "",
+      "number": 2,
+      "visible": true
+     },
+     {
+      "caption": "Select decomposition of w into uvxyz.",
+      "content": "",
+      "message": "Condition violated: |vy| >= 1",
+      "number": 3,
+      "visible": true
+     },
+     {
+      "caption": "I have selected i to give a contradition. It is displayed in Box 4.",
+      "content": "",
+      "message": "",
+      "number": 4,
+      "visible": false
+     },
+     {
+      "caption": "Animation",
+      "content": "",
+      "message": "",
+      "number": 5,
+      "visible": false
+     }
+    ],
+    "cases": {
+     "add_replace_enabled": false,
+     "list_enabled": true,
+     "message": "",
+     "rows": [],
+     "selected": null,
+     "temp_decomposition": null,
+     "temp_i": -1,
+     "total": 11
+    },
+    "html_title": "L = {<i>a<sup>n</sup>b<sup>n</sup>c<sup>n</sup></i> : <i>n</i> &#8805; 0}",
+    "mode": "human_first",
+    "notice": "",
+    "objective": "Find a valid partition that can be pumped.",
+    "prompt": "Select decomposition of w into uvxyz.",
+    "pumped": "",
+    "result": null,
+    "title": "L = {a^n b^n c^n} Context-Free Pumping Lemma"
+   }
+  },
+  {
+   "conclusion": null,
+   "document": {
+    "cases": {
+     "add_replace_enabled": true,
+     "list_enabled": true,
+     "message": "",
+     "rows": [],
+     "selected": null,
+     "temp_decomposition": [
+      0,
+      1,
+      1,
+      0,
+      7
+     ],
+     "temp_i": 0,
+     "total": 11
+    },
+    "lemma": {
+     "attempts": [
+      "U = λ;   V = a;   X = a;   Y = λ;   Z = abbbccc; I = 0; <i>Failed</i>"
+     ],
+     "case_state": [
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      }
+     ],
+     "decomposition": [
+      0,
+      1,
+      1,
+      0,
+      7
+     ],
+     "done_cases": [],
+     "first_player": "Human",
+     "i": 0,
+     "language": {
+      "context_free": "an_bn_cn"
+     },
+     "m": 3,
+     "parts": [
+      "",
+      "a",
+      "a",
+      "",
+      "abbbccc"
+     ],
+     "random": {
+      "seed": 205723924636679
+     },
+     "w": "aaabbbccc"
+    },
+    "messages": [
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "mode": "human_first",
+    "pumped": "aabbbccc",
+    "result": {
+     "in_language": false,
+     "message": "<i>uv</i><sup>0</sup><i>xy</i><sup>0</sup><i>z</i> = <i>a</i><sup>2</sup><i>b</i><sup>3</sup><i>c</i><sup>3</sup> = aabbbccc is NOT in the language.  Please try again.",
+     "pumped": "aabbbccc",
+     "takeaway": "I WIN. Do you want to play again or concede that the language is not context-free?",
+     "user_wins": false
+    },
+    "type": "context_free_pumping_lemma",
+    "visible": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ]
+   },
+   "lemma": {
+    "attempts": [
+     "U = λ;   V = a;   X = a;   Y = λ;   Z = abbbccc; I = 0; <i>Failed</i>"
+    ],
+    "decomposition": [
+     0,
+     1,
+     1,
+     0,
+     7
+    ],
+    "i": 0,
+    "m": 3,
+    "u": "",
+    "v": "a",
+    "w": "aaabbbccc",
+    "x": "a",
+    "y": "",
+    "z": "abbbccc"
+   },
+   "reply": {
+    "accepted": true,
+    "message": "<i>uv</i><sup>0</sup><i>xy</i><sup>0</sup><i>z</i> = <i>a</i><sup>2</sup><i>b</i><sup>3</sup><i>c</i><sup>3</sup> = aabbbccc is NOT in the language.  Please try again."
+   },
+   "result": {
+    "in_language": false,
+    "message": "<i>uv</i><sup>0</sup><i>xy</i><sup>0</sup><i>z</i> = <i>a</i><sup>2</sup><i>b</i><sup>3</sup><i>c</i><sup>3</sup> = aabbbccc is NOT in the language.  Please try again.",
+    "pumped": "aabbbccc",
+    "takeaway": "I WIN. Do you want to play again or concede that the language is not context-free?",
+    "user_wins": false
+   },
+   "view": {
+    "attempts": [
+     "U = λ;   V = a;   X = a;   Y = λ;   Z = abbbccc; I = 0; <i>Failed</i>"
+    ],
+    "awaiting": "decomposition",
+    "boxes": [
+     {
+      "caption": "Please select a value for m in Box 1 and press \"Enter\".",
+      "content": "3",
+      "message": "",
+      "number": 1,
+      "visible": true
+     },
+     {
+      "caption": "I have selected w such that |w| >= m. It is displayed in Box 2.",
+      "content": "aaabbbccc",
+      "message": "",
+      "number": 2,
+      "visible": true
+     },
+     {
+      "caption": "Select decomposition of w into uvxyz.",
+      "content": "U = λ;   V = a;   X = a;   Y = λ;   Z = abbbccc",
+      "message": "",
+      "number": 3,
+      "visible": true
+     },
+     {
+      "caption": "I have selected i to give a contradition. It is displayed in Box 4.",
+      "content": "0",
+      "message": "",
+      "number": 4,
+      "visible": true
+     },
+     {
+      "caption": "Animation",
+      "content": "<i>uv</i><sup>0</sup><i>xy</i><sup>0</sup><i>z</i> = <i>a</i><sup>2</sup><i>b</i><sup>3</sup><i>c</i><sup>3</sup> = aabbbccc is NOT in the language.  Please try again.",
+      "message": "",
+      "number": 5,
+      "visible": true
+     }
+    ],
+    "cases": {
+     "add_replace_enabled": true,
+     "list_enabled": true,
+     "message": "",
+     "rows": [],
+     "selected": null,
+     "temp_decomposition": [
+      0,
+      1,
+      1,
+      0,
+      7
+     ],
+     "temp_i": 0,
+     "total": 11
+    },
+    "html_title": "L = {<i>a<sup>n</sup>b<sup>n</sup>c<sup>n</sup></i> : <i>n</i> &#8805; 0}",
+    "mode": "human_first",
+    "notice": "",
+    "objective": "Find a valid partition that can be pumped.",
+    "prompt": "Select decomposition of w into uvxyz.",
+    "pumped": "aabbbccc",
+    "result": {
+     "in_language": false,
+     "message": "<i>uv</i><sup>0</sup><i>xy</i><sup>0</sup><i>z</i> = <i>a</i><sup>2</sup><i>b</i><sup>3</sup><i>c</i><sup>3</sup> = aabbbccc is NOT in the language.  Please try again.",
+     "pumped": "aabbbccc",
+     "takeaway": "I WIN. Do you want to play again or concede that the language is not context-free?",
+     "user_wins": false
+    },
+    "title": "L = {a^n b^n c^n} Context-Free Pumping Lemma"
+   }
+  },
+  {
+   "conclusion": null,
+   "document": {
+    "cases": {
+     "add_replace_enabled": true,
+     "list_enabled": true,
+     "message": "Case added.",
+     "rows": [
+      "v is a non-empty string and y is an empty string"
+     ],
+     "selected": 0,
+     "temp_decomposition": [
+      0,
+      1,
+      1,
+      0,
+      7
+     ],
+     "temp_i": 0,
+     "total": 11
+    },
+    "lemma": {
+     "attempts": [
+      "U = λ;   V = a;   X = a;   Y = λ;   Z = abbbccc; I = 0; <i>Failed</i>"
+     ],
+     "case_state": [
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": -1,
+       "user_input": null
+      },
+      {
+       "i": 0,
+       "user_input": [
+        0,
+        1,
+        1,
+        0
+       ]
+      }
+     ],
+     "decomposition": [
+      0,
+      1,
+      1,
+      0,
+      7
+     ],
+     "done_cases": [
+      10
+     ],
+     "first_player": "Human",
+     "i": 0,
+     "language": {
+      "context_free": "an_bn_cn"
+     },
+     "m": 3,
+     "parts": [
+      "",
+      "a",
+      "a",
+      "",
+      "abbbccc"
+     ],
+     "random": {
+      "seed": 205723924636679
+     },
+     "w": "aaabbbccc"
+    },
+    "messages": [
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "mode": "human_first",
+    "pumped": "aabbbccc",
+    "result": {
+     "in_language": false,
+     "message": "<i>uv</i><sup>0</sup><i>xy</i><sup>0</sup><i>z</i> = <i>a</i><sup>2</sup><i>b</i><sup>3</sup><i>c</i><sup>3</sup> = aabbbccc is NOT in the language.  Please try again.",
+     "pumped": "aabbbccc",
+     "takeaway": "I WIN. Do you want to play again or concede that the language is not context-free?",
+     "user_wins": false
+    },
+    "type": "context_free_pumping_lemma",
+    "visible": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ]
+   },
+   "lemma": {
+    "attempts": [
+     "U = λ;   V = a;   X = a;   Y = λ;   Z = abbbccc; I = 0; <i>Failed</i>"
+    ],
+    "decomposition": [
+     0,
+     1,
+     1,
+     0,
+     7
+    ],
+    "i": 0,
+    "m": 3,
+    "u": "",
+    "v": "a",
+    "w": "aaabbbccc",
+    "x": "a",
+    "y": "",
+    "z": "abbbccc"
+   },
+   "reply": {
+    "accepted": true,
+    "message": "Case added."
+   },
+   "result": {
+    "in_language": false,
+    "message": "<i>uv</i><sup>0</sup><i>xy</i><sup>0</sup><i>z</i> = <i>a</i><sup>2</sup><i>b</i><sup>3</sup><i>c</i><sup>3</sup> = aabbbccc is NOT in the language.  Please try again.",
+    "pumped": "aabbbccc",
+    "takeaway": "I WIN. Do you want to play again or concede that the language is not context-free?",
+    "user_wins": false
+   },
+   "view": {
+    "attempts": [
+     "U = λ;   V = a;   X = a;   Y = λ;   Z = abbbccc; I = 0; <i>Failed</i>"
+    ],
+    "awaiting": "decomposition",
+    "boxes": [
+     {
+      "caption": "Please select a value for m in Box 1 and press \"Enter\".",
+      "content": "3",
+      "message": "",
+      "number": 1,
+      "visible": true
+     },
+     {
+      "caption": "I have selected w such that |w| >= m. It is displayed in Box 2.",
+      "content": "aaabbbccc",
+      "message": "",
+      "number": 2,
+      "visible": true
+     },
+     {
+      "caption": "Select decomposition of w into uvxyz.",
+      "content": "U = λ;   V = a;   X = a;   Y = λ;   Z = abbbccc",
+      "message": "",
+      "number": 3,
+      "visible": true
+     },
+     {
+      "caption": "I have selected i to give a contradition. It is displayed in Box 4.",
+      "content": "0",
+      "message": "",
+      "number": 4,
+      "visible": true
+     },
+     {
+      "caption": "Animation",
+      "content": "<i>uv</i><sup>0</sup><i>xy</i><sup>0</sup><i>z</i> = <i>a</i><sup>2</sup><i>b</i><sup>3</sup><i>c</i><sup>3</sup> = aabbbccc is NOT in the language.  Please try again.",
+      "message": "",
+      "number": 5,
+      "visible": true
+     }
+    ],
+    "cases": {
+     "add_replace_enabled": true,
+     "list_enabled": true,
+     "message": "Case added.",
+     "rows": [
+      "v is a non-empty string and y is an empty string"
+     ],
+     "selected": 0,
+     "temp_decomposition": [
+      0,
+      1,
+      1,
+      0,
+      7
+     ],
+     "temp_i": 0,
+     "total": 11
+    },
+    "html_title": "L = {<i>a<sup>n</sup>b<sup>n</sup>c<sup>n</sup></i> : <i>n</i> &#8805; 0}",
+    "mode": "human_first",
+    "notice": "",
+    "objective": "Find a valid partition that can be pumped.",
+    "prompt": "Select decomposition of w into uvxyz.",
+    "pumped": "aabbbccc",
+    "result": {
+     "in_language": false,
+     "message": "<i>uv</i><sup>0</sup><i>xy</i><sup>0</sup><i>z</i> = <i>a</i><sup>2</sup><i>b</i><sup>3</sup><i>c</i><sup>3</sup> = aabbbccc is NOT in the language.  Please try again.",
+     "pumped": "aabbbccc",
+     "takeaway": "I WIN. Do you want to play again or concede that the language is not context-free?",
+     "user_wins": false
+    },
+    "title": "L = {a^n b^n c^n} Context-Free Pumping Lemma"
+   }
+  }
+ ]
+}

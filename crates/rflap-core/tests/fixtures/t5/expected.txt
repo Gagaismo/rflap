@@ -1,0 +1,50 @@
+LAMBDA set {A B C S}
+LAMBDA out S->A ; S->AB ; S->ABC ; S->AC ; S->B ; S->BC ; S->C ; A->a ; A->aA ; B->b ; B->bB ; C->c ;
+UNIT out S->bb ; A->a ; B->c ; A->c ; B->a ; S->a ; S->c ; C->a ; C->c ;
+UNIT2 out S->PQ ; S->a ; A->b ; Z->z ; P->p ; P->b ; Q->p ; Q->b ; A->p ; Z->p ; Z->b ; M->p ; M->b ; M->z ;
+LAMBDA2 set {M P Z}
+LAMBDA2 out S->PQ ; S->PQZ ; S->Q ; S->QZ ; Q->Q ; Q->QP ; Q->q ; Z->M ; Z->Z ; Z->ZM ; M->m ;
+USELESS out S->a ;
+CNF pre S->B(a)D(1) ; D(1)->SB(b) ; S->B(a)B(b) ; B(a)->a ; B(b)->b ;
+CNF out S->AC ; C->SB ; S->AB ; A->a ; B->b ;
+CNF pre S->AD(2) ; D(2)->SB(b) ; S->AB(b) ; S->AD(1) ; D(1)->SD(3) ; D(3)->BB(c) ; B(c)->c ; A->a ; B->B(b)B(b) ; B(b)->b ;
+CNF out S->AF ; F->SC ; S->AC ; S->AE ; E->SG ; G->BD ; D->c ; A->a ; B->CC ; C->b ;
+FIRST E {( a} FOLLOW {$ )}
+FIRST X {! +} FOLLOW {$ )}
+FIRST T {( a} FOLLOW {$ ) +}
+FIRST Y {! *} FOLLOW {$ ) +}
+FIRST F {( a} FOLLOW {$ ) * +}
+LL E ( {TX}
+LL E a {TX}
+LL X ) {!}
+LL X + {+TX}
+LL X $ {!}
+LL T ( {FY}
+LL T a {FY}
+LL Y ) {!}
+LL Y * {*FY}
+LL Y + {!}
+LL Y $ {!}
+LL F ( {(E)}
+LL F a {a}
+LL1 true
+LL1 left-recursive false
+SLR states 12
+SLR 0: (=s1 a=s5 E=2 F=3 T=4
+SLR 1: (=s1 a=s5 E=6 F=3 T=4
+SLR 2: +=s7 $=acc
+SLR 3: )=r4 *=r4 +=r4 $=r4
+SLR 4: )=r2 *=s8 +=r2 $=r2
+SLR 5: )=r6 *=r6 +=r6 $=r6
+SLR 6: )=s9 +=s7
+SLR 7: (=s1 a=s5 F=3 T=10
+SLR 8: (=s1 a=s5 F=11
+SLR 9: )=r5 *=r5 +=r5 $=r5
+SLR 10: )=r1 *=s8 +=r1 $=r1
+SLR 11: )=r3 *=r3 +=r3 $=r3
+BRUTE 'aabb' -> true | aabb <- S-> ; | aaSbb <- S->aSb ; | aSb <- S->aSb ; | S <- 
+BRUTE 'aab' -> false
+BRUTE '' -> true |  <- S-> ; | S <- 
+CYK baaba true
+CYK aaa true
+CYK b false

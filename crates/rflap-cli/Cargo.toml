@@ -1,0 +1,20 @@
+[package]
+name = "rflap-cli"
+description = "The `rflap` command-line tool: JFLAP 7.1 in Rust for terminals and AI agents"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "rflap"
+path = "src/main.rs"
+
+[dependencies]
+rflap-api = { path = "../rflap-api" }
+rflap-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+clap = { version = "4", default-features = false, features = ["std", "derive", "help", "usage", "error-context", "suggestions"] }
+tiny_http = "0.12"
