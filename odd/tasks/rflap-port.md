@@ -32,13 +32,13 @@ Referencia: `reference/src/` (JFLAP descompilado con CFR 0.152, ignorado por git
 | T5 | S2.6 | Gramáticas: modelo, tipo, transformaciones, FNC, parsers (fuerza bruta, LL(1), SLR(1), CYK, usuario), corridas múltiples | inline | 4db0565 |
 | T6 | S2.3 | PDA: modelo y simulación (estado final y pila vacía) | inline | 9149702 |
 | T7 | S2.4, S2.5 | MT de una y varias cintas, filtros de aceptación, bloques; Mealy y Moore | inline | 84dede2 |
-| T8 | S2.8, S2.9 | L-systems y lema de bombeo | inline | |
+| T8 | S2.8, S2.9 | L-systems y lema de bombeo | inline | a0c5ec3 |
 | T9 | S2.10 | Layouts y render SVG | inline | ce2277e |
-| T10 | S4 | Motor de diseño: lenguaje (ER, gramática o especificación declarativa) → autómata mínimo verificado con ejemplos | inline | |
+| T10 | S4 | Motor de diseño: lenguaje (ER, gramática o especificación declarativa) → autómata mínimo verificado con ejemplos | inline | 463afd1 |
 | T11 | S1, S2 | CLI `rflap` | inline | |
 | T12 | S2, S3 | API WASM + editor web interactivo (editar, simular, convertir) | inline | |
 | T13 | S3, S4 | Servidor MCP (stdio + HTTP) con herramientas y widget MCP Apps; guías para ChatGPT, Codex, Claude, Claude Code | inline | |
-| T15 | S2.2, S2.3, S2.4, S2.6, S2.10 | Conversiones cruzadas: FA↔gramática regular, PDA→CFG, CFG→PDA (LL y LR), MT→gramática irrestricta; `.jff` de PDA, MT, Mealy, Moore, gramática, ER, L-system y lema de bombeo | inline | |
+| T15 | S2.2, S2.3, S2.4, S2.6, S2.10 | Conversiones cruzadas: FA↔gramática regular, PDA→CFG, CFG→PDA (LL y LR), MT→gramática irrestricta; `.jff` de PDA, MT, Mealy, Moore, gramática, ER, L-system y lema de bombeo | inline | f40d2b1, 4218fe4 |
 | T16 | S2, S3, S4 | Crate `rflap-api`: `Document` JSON de todos los tipos (con .jff), operaciones (simular, convertir, analizar, layout, render, diseñar) como capa común para CLI, WASM y MCP | inline | |
 | T14 | S1-S5 | Verificación diferencial contra JFLAP (arnés Java), docs finales, push | inline | |
 
@@ -55,3 +55,4 @@ Referencia: `reference/src/` (JFLAP descompilado con CFR 0.152, ignorado por git
 - **L5** (plan): la equivalencia de FA pasa de T2 a T4 porque depende de NFA→DFA y de minimizar. Desvío de JFLAP: en el simulador con clausura, una transición con rango `[x-y]` toma la clausura λ del destino (JFLAP no lo hace); un rango solo se reconoce con la forma exacta `[x-y]`.
 - **L6** (plan): olas. Ola 1 en paralelo con worktrees aislados en `.worktrees/` y un `CARGO_TARGET_DIR` por worker: T3, T4, T5, T6, T7 y T9. Ola 2: T8 y T15 (nueva: conversiones que cruzan modelos y el `.jff` de los demás tipos). Ola 3: T10 a T13; al final, T14. Cada worker es dueño de su archivo de módulo, ya declarado en `lib.rs`.
 - **L7** (evidencia y plan): ola 1 integrada en `feat/rflap-port`: 224 tests en verde y clippy limpio. T5 coincide con el JAR real en λ, unitarias, inútiles, FNC, FIRST/FOLLOW, LL y SLR. Ola 2: T8, T10, T15a (conversiones cruzadas en `src/convert/`) y T15b (`.jff` de PDA, MT, Mealy, Moore, gramática y ER). Ola 3: T16 (`rflap-api`). Ola 4: T11, T12 y T13 en paralelo sobre `rflap-api`. Al final, T14.
+- **L8** (evidencia): ola 2 integrada, 385 tests en verde. Contra el JAR real coinciden: L-systems (expansiones, colores, archivos byte a byte), los 26 lenguajes del lema de bombeo, las 5 conversiones cruzadas y la carga en JFLAP de los `.jff` de todos los tipos. Hallazgo: JFLAP 7.1 no recarga sus propios archivos con bloques de MT anidados que usan los tags por defecto (`StackOverflowError`); Rflap escribe tags únicos.
