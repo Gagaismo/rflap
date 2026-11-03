@@ -66,7 +66,7 @@ test('the full document form comes back from normalize with the shapes doc.js ex
   const api = createApi(() => localTransport(makeWasmCaller(wasmExports)));
   const { document: tm } = await api({ op: 'normalize', document: { type: 'turing', initial: 'q0', finals: ['q1'], transitions: [['q0', 'a;b,R|_;x,S', 'q1']] } });
   assert.equal(tm.tapes, 2);
-  assert.deepEqual(tm.automaton.transitions[0].label, { actions: [{ direction: 'Right', read: 'a', write: 'b' }, { direction: 'Stay', read: '□', write: 'x' }] });
+  assert.deepEqual(tm.automaton.transitions[0].label, { actions: [{ direction: 'right', read: 'a', write: 'b' }, { direction: 'stay', read: '□', write: 'x' }] });
   const { document: pda } = await api({ op: 'normalize', document: { type: 'pda', initial: 'q0', transitions: [['q0', 'a,Z;AZ', 'q0']] } });
   assert.deepEqual(pda.transitions[0].label, { input: 'a', pop: 'Z', push: 'AZ' });
   const { document: blank } = await api({ op: 'normalize', document: { type: 'turing', tapes: 3 } });

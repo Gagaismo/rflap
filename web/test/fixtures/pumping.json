@@ -69,7 +69,7 @@
      "first_player": "Computer",
      "i": -1,
      "language": {
-      "Regular": "AnBn"
+      "regular": "an_bn"
      },
      "m": 4,
      "parts": [
@@ -182,7 +182,7 @@
      "first_player": "Computer",
      "i": -1,
      "language": {
-      "Regular": "AnBn"
+      "regular": "an_bn"
      },
      "m": 4,
      "parts": [
@@ -304,7 +304,7 @@
      "first_player": "Computer",
      "i": 2,
      "language": {
-      "Regular": "AnBn"
+      "regular": "an_bn"
      },
      "m": 4,
      "parts": [
@@ -445,7 +445,7 @@
      "first_player": "Human",
      "i": -1,
      "language": {
-      "Regular": "AnBn"
+      "regular": "an_bn"
      },
      "m": -1,
      "parts": [
@@ -555,7 +555,7 @@
      "first_player": "Human",
      "i": -1,
      "language": {
-      "Regular": "AnBn"
+      "regular": "an_bn"
      },
      "m": 4,
      "parts": [
@@ -725,7 +725,7 @@
      "first_player": "Human",
      "i": -1,
      "language": {
-      "ContextFree": "AnBnCn"
+      "context_free": "an_bn_cn"
      },
      "m": -1,
      "parts": [
@@ -900,7 +900,7 @@
      "first_player": "Human",
      "i": -1,
      "language": {
-      "ContextFree": "AnBnCn"
+      "context_free": "an_bn_cn"
      },
      "m": 3,
      "parts": [
@@ -1093,7 +1093,7 @@
      "first_player": "Human",
      "i": 0,
      "language": {
-      "ContextFree": "AnBnCn"
+      "context_free": "an_bn_cn"
      },
      "m": 3,
      "parts": [
@@ -1329,7 +1329,7 @@
      "first_player": "Human",
      "i": 0,
      "language": {
-      "ContextFree": "AnBnCn"
+      "context_free": "an_bn_cn"
      },
      "m": 3,
      "parts": [

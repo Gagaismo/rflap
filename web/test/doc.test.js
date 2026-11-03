@@ -20,7 +20,7 @@ function fakeApi(log = []) {
         moore: text,
         pda: { input: 'a', pop: 'Z', push: 'AZ' },
         mealy: { input: 'a', output: '1' },
-        turing: { actions: [{ read: 'a', write: 'b', direction: 'Right' }] },
+        turing: { actions: [{ read: 'a', write: 'b', direction: 'right' }] },
       }[d.type];
       const body = { finals: [], initial: 0, notes: [], states: { 0: { id: 0, name: 'a', label: null, output: null, point: { x: 0, y: 0 } } }, transitions: [{ from: 0, to: 0, control: null, label }] };
       return { document: d.type === 'turing' ? { type: 'turing', tapes: d.tapes, automaton: body, blocks: {} } : { type: d.type, ...body } };
@@ -138,7 +138,7 @@ test('label text uses the compact syntax of every type', () => {
   assert.equal(labelToText('pda', { input: '', pop: 'A', push: '' }), 'λ,A;λ');
   assert.equal(labelToText('mealy', { input: 'a', output: '1' }), 'a;1');
   assert.equal(
-    labelToText('turing', { actions: [{ read: 'a', write: 'b', direction: 'Right' }, { read: '□', write: 'x', direction: 'Stay' }] }),
+    labelToText('turing', { actions: [{ read: 'a', write: 'b', direction: 'right' }, { read: '□', write: 'x', direction: 'stay' }] }),
     'a;b,R|_;x,S',
   );
 });
@@ -148,7 +148,7 @@ test('labelFromText asks the engine with a one-transition probe and returns the 
   const api = fakeApi(log);
   assert.equal(await labelFromText(api, 'fa', 'λ'), '');
   assert.deepEqual(await labelFromText(api, 'pda', 'a,Z;AZ'), { input: 'a', pop: 'Z', push: 'AZ' });
-  assert.deepEqual(await labelFromText(api, 'turing', 'a;b,R|a;b,R', 2), { actions: [{ read: 'a', write: 'b', direction: 'Right' }] });
+  assert.deepEqual(await labelFromText(api, 'turing', 'a;b,R|a;b,R', 2), { actions: [{ read: 'a', write: 'b', direction: 'right' }] });
   assert.deepEqual(log[2].document, { type: 'turing', initial: 'a', transitions: [['a', 'a;b,R|a;b,R', 'a']], tapes: 2 });
   assert.deepEqual(log[1].document, { type: 'pda', initial: 'a', transitions: [['a', 'a,Z;AZ', 'a']] });
 });

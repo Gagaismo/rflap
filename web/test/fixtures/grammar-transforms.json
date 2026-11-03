@@ -67,7 +67,7 @@
    "start_derives_lambda": true,
    "steps": [
     {
-     "DerivesLambda": {
+     "derives_lambda": {
       "production": {
        "lhs": "S",
        "rhs": ""
@@ -76,7 +76,7 @@
      }
     },
     {
-     "RemoveLambda": {
+     "remove_lambda": {
       "production": {
        "lhs": "S",
        "rhs": ""
@@ -84,7 +84,7 @@
      }
     },
     {
-     "Expand": {
+     "expand": {
       "added": [
        {
         "lhs": "S",
@@ -102,7 +102,7 @@
      }
     },
     {
-     "Expand": {
+     "expand": {
       "added": [
        {
         "lhs": "S",
@@ -116,7 +116,7 @@
      }
     },
     {
-     "Expand": {
+     "expand": {
       "added": [
        {
         "lhs": "A",
@@ -130,7 +130,7 @@
      }
     },
     {
-     "Expand": {
+     "expand": {
       "added": [
        {
         "lhs": "A",
@@ -144,7 +144,7 @@
      }
     },
     {
-     "Expand": {
+     "expand": {
       "added": [
        {
         "lhs": "C",
@@ -231,7 +231,7 @@
    ],
    "steps": [
     {
-     "Edge": {
+     "edge": {
       "from": "S",
       "production": {
        "lhs": "S",
@@ -241,7 +241,7 @@
      }
     },
     {
-     "Edge": {
+     "edge": {
       "from": "A",
       "production": {
        "lhs": "A",
@@ -251,7 +251,7 @@
      }
     },
     {
-     "Reach": {
+     "reach": {
       "reachable": [
        "B"
       ],
@@ -259,7 +259,7 @@
      }
     },
     {
-     "Reach": {
+     "reach": {
       "reachable": [
        "A",
        "B"
@@ -268,7 +268,7 @@
      }
     },
     {
-     "RemoveUnit": {
+     "remove_unit": {
       "production": {
        "lhs": "S",
        "rhs": "A"
@@ -276,7 +276,7 @@
      }
     },
     {
-     "RemoveUnit": {
+     "remove_unit": {
       "production": {
        "lhs": "A",
        "rhs": "B"
@@ -284,7 +284,7 @@
      }
     },
     {
-     "Add": {
+     "add": {
       "production": {
        "lhs": "S",
        "rhs": "a"
@@ -376,7 +376,7 @@
    "start_useless": false,
    "steps": [
     {
-     "DerivesTerminals": {
+     "derives_terminals": {
       "production": {
        "lhs": "A",
        "rhs": "a"
@@ -385,7 +385,7 @@
      }
     },
     {
-     "DerivesTerminals": {
+     "derives_terminals": {
       "production": {
        "lhs": "S",
        "rhs": "A"
@@ -394,7 +394,7 @@
      }
     },
     {
-     "DerivesTerminals": {
+     "derives_terminals": {
       "production": {
        "lhs": "C",
        "rhs": "c"
@@ -403,7 +403,7 @@
      }
     },
     {
-     "RemoveNonDeriving": {
+     "remove_non_deriving": {
       "production": {
        "lhs": "A",
        "rhs": "B"
@@ -411,19 +411,19 @@
      }
     },
     {
-     "Reachable": {
+     "reachable": {
       "from": null,
       "variable": "S"
      }
     },
     {
-     "Reachable": {
+     "reachable": {
       "from": "S",
       "variable": "A"
      }
     },
     {
-     "RemoveUnreachable": {
+     "remove_unreachable": {
       "production": {
        "lhs": "C",
        "rhs": "c"
@@ -586,7 +586,7 @@
      ],
      "steps": [
       {
-       "kind": "Terminals",
+       "kind": "terminals",
        "production": {
         "lhs": "S",
         "rhs": "ab"
@@ -608,7 +608,7 @@
        "round": 1
       },
       {
-       "kind": "Terminals",
+       "kind": "terminals",
        "production": {
         "lhs": "S",
         "rhs": "aSb"
@@ -622,7 +622,7 @@
        "round": 1
       },
       {
-       "kind": "Split",
+       "kind": "split",
        "production": {
         "lhs": "S",
         "rhs": "B(a)SB(b)"
@@ -677,7 +677,7 @@
      "start_derives_lambda": true,
      "steps": [
       {
-       "DerivesLambda": {
+       "derives_lambda": {
         "production": {
          "lhs": "S",
          "rhs": ""
@@ -686,7 +686,7 @@
        }
       },
       {
-       "RemoveLambda": {
+       "remove_lambda": {
         "production": {
          "lhs": "S",
          "rhs": ""
@@ -694,7 +694,7 @@
        }
       },
       {
-       "Expand": {
+       "expand": {
         "added": [
          {
           "lhs": "S",
@@ -712,7 +712,7 @@
        }
       },
       {
-       "Expand": {
+       "expand": {
         "added": [
          {
           "lhs": "S",
@@ -726,7 +726,7 @@
        }
       },
       {
-       "Expand": {
+       "expand": {
         "added": [
          {
           "lhs": "A",
@@ -740,7 +740,7 @@
        }
       },
       {
-       "Expand": {
+       "expand": {
         "added": [
          {
           "lhs": "A",
@@ -754,7 +754,7 @@
        }
       },
       {
-       "Expand": {
+       "expand": {
         "added": [
          {
           "lhs": "C",
@@ -807,7 +807,7 @@
      },
      "steps": [
       {
-       "Edge": {
+       "edge": {
         "from": "S",
         "production": {
          "lhs": "S",
@@ -817,7 +817,7 @@
        }
       },
       {
-       "Edge": {
+       "edge": {
         "from": "A",
         "production": {
          "lhs": "A",
@@ -827,7 +827,7 @@
        }
       },
       {
-       "Reach": {
+       "reach": {
         "reachable": [
          "B"
         ],
@@ -835,7 +835,7 @@
        }
       },
       {
-       "Reach": {
+       "reach": {
         "reachable": [
          "A",
          "B"
@@ -844,7 +844,7 @@
        }
       },
       {
-       "RemoveUnit": {
+       "remove_unit": {
         "production": {
          "lhs": "S",
          "rhs": "A"
@@ -852,7 +852,7 @@
        }
       },
       {
-       "RemoveUnit": {
+       "remove_unit": {
         "production": {
          "lhs": "A",
          "rhs": "B"
@@ -860,7 +860,7 @@
        }
       },
       {
-       "Add": {
+       "add": {
         "production": {
          "lhs": "S",
          "rhs": "a"
@@ -913,7 +913,7 @@
      "start_useless": false,
      "steps": [
       {
-       "DerivesTerminals": {
+       "derives_terminals": {
         "production": {
          "lhs": "A",
          "rhs": "a"
@@ -922,7 +922,7 @@
        }
       },
       {
-       "DerivesTerminals": {
+       "derives_terminals": {
         "production": {
          "lhs": "S",
          "rhs": "ab"
@@ -931,7 +931,7 @@
        }
       },
       {
-       "DerivesTerminals": {
+       "derives_terminals": {
         "production": {
          "lhs": "C",
          "rhs": "c"
@@ -940,13 +940,13 @@
        }
       },
       {
-       "Reachable": {
+       "reachable": {
         "from": null,
         "variable": "S"
        }
       },
       {
-       "RemoveUnreachable": {
+       "remove_unreachable": {
         "production": {
          "lhs": "A",
          "rhs": "a"
@@ -954,7 +954,7 @@
        }
       },
       {
-       "RemoveUnreachable": {
+       "remove_unreachable": {
         "production": {
          "lhs": "C",
          "rhs": "c"
@@ -1053,7 +1053,7 @@
    "start_derives_lambda": true,
    "steps": [
     {
-     "DerivesLambda": {
+     "derives_lambda": {
       "production": {
        "lhs": "A",
        "rhs": ""
@@ -1062,7 +1062,7 @@
      }
     },
     {
-     "DerivesLambda": {
+     "derives_lambda": {
       "production": {
        "lhs": "B",
        "rhs": ""
@@ -1071,7 +1071,7 @@
      }
     },
     {
-     "DerivesLambda": {
+     "derives_lambda": {
       "production": {
        "lhs": "S",
        "rhs": "ABA"
@@ -1080,7 +1080,7 @@
      }
     },
     {
-     "RemoveLambda": {
+     "remove_lambda": {
       "production": {
        "lhs": "A",
        "rhs": ""
@@ -1088,7 +1088,7 @@
      }
     },
     {
-     "RemoveLambda": {
+     "remove_lambda": {
       "production": {
        "lhs": "B",
        "rhs": ""
@@ -1096,7 +1096,7 @@
      }
     },
     {
-     "Expand": {
+     "expand": {
       "added": [
        {
         "lhs": "S",
@@ -1130,7 +1130,7 @@
      }
     },
     {
-     "Expand": {
+     "expand": {
       "added": [
        {
         "lhs": "S",
@@ -1144,7 +1144,7 @@
      }
     },
     {
-     "Expand": {
+     "expand": {
       "added": [
        {
         "lhs": "A",
@@ -1158,7 +1158,7 @@
      }
     },
     {
-     "Expand": {
+     "expand": {
       "added": [
        {
         "lhs": "B",
@@ -1322,7 +1322,7 @@
    "start_useless": false,
    "steps": [
     {
-     "DerivesTerminals": {
+     "derives_terminals": {
       "production": {
        "lhs": "A",
        "rhs": "a"
@@ -1331,7 +1331,7 @@
      }
     },
     {
-     "DerivesTerminals": {
+     "derives_terminals": {
       "production": {
        "lhs": "B",
        "rhs": ""
@@ -1340,7 +1340,7 @@
      }
     },
     {
-     "DerivesTerminals": {
+     "derives_terminals": {
       "production": {
        "lhs": "S",
        "rhs": "ABA"
@@ -1349,19 +1349,19 @@
      }
     },
     {
-     "Reachable": {
+     "reachable": {
       "from": null,
       "variable": "S"
      }
     },
     {
-     "Reachable": {
+     "reachable": {
       "from": "S",
       "variable": "A"
      }
     },
     {
-     "Reachable": {
+     "reachable": {
       "from": "S",
       "variable": "B"
      }
@@ -1618,7 +1618,7 @@
      ],
      "steps": [
       {
-       "kind": "Terminals",
+       "kind": "terminals",
        "production": {
         "lhs": "S",
         "rhs": "bB"
@@ -1636,7 +1636,7 @@
        "round": 1
       },
       {
-       "kind": "Terminals",
+       "kind": "terminals",
        "production": {
         "lhs": "B",
         "rhs": "bB"
@@ -1650,7 +1650,7 @@
        "round": 1
       },
       {
-       "kind": "Split",
+       "kind": "split",
        "production": {
         "lhs": "S",
         "rhs": "ABA"
@@ -1723,7 +1723,7 @@
      "start_derives_lambda": true,
      "steps": [
       {
-       "DerivesLambda": {
+       "derives_lambda": {
         "production": {
          "lhs": "A",
          "rhs": ""
@@ -1732,7 +1732,7 @@
        }
       },
       {
-       "DerivesLambda": {
+       "derives_lambda": {
         "production": {
          "lhs": "B",
          "rhs": ""
@@ -1741,7 +1741,7 @@
        }
       },
       {
-       "DerivesLambda": {
+       "derives_lambda": {
         "production": {
          "lhs": "S",
          "rhs": "ABA"
@@ -1750,7 +1750,7 @@
        }
       },
       {
-       "RemoveLambda": {
+       "remove_lambda": {
         "production": {
          "lhs": "A",
          "rhs": ""
@@ -1758,7 +1758,7 @@
        }
       },
       {
-       "RemoveLambda": {
+       "remove_lambda": {
         "production": {
          "lhs": "B",
          "rhs": ""
@@ -1766,7 +1766,7 @@
        }
       },
       {
-       "Expand": {
+       "expand": {
         "added": [
          {
           "lhs": "S",
@@ -1800,7 +1800,7 @@
        }
       },
       {
-       "Expand": {
+       "expand": {
         "added": [
          {
           "lhs": "S",
@@ -1814,7 +1814,7 @@
        }
       },
       {
-       "Expand": {
+       "expand": {
         "added": [
          {
           "lhs": "A",
@@ -1828,7 +1828,7 @@
        }
       },
       {
-       "Expand": {
+       "expand": {
         "added": [
          {
           "lhs": "B",
@@ -1905,7 +1905,7 @@
      },
      "steps": [
       {
-       "Edge": {
+       "edge": {
         "from": "S",
         "production": {
          "lhs": "S",
@@ -1915,7 +1915,7 @@
        }
       },
       {
-       "Edge": {
+       "edge": {
         "from": "S",
         "production": {
          "lhs": "S",
@@ -1925,7 +1925,7 @@
        }
       },
       {
-       "Reach": {
+       "reach": {
         "reachable": [
          "A",
          "B"
@@ -1934,7 +1934,7 @@
        }
       },
       {
-       "RemoveUnit": {
+       "remove_unit": {
         "production": {
          "lhs": "S",
          "rhs": "A"
@@ -1942,7 +1942,7 @@
        }
       },
       {
-       "RemoveUnit": {
+       "remove_unit": {
         "production": {
          "lhs": "S",
          "rhs": "B"
@@ -1950,7 +1950,7 @@
        }
       },
       {
-       "Add": {
+       "add": {
         "production": {
          "lhs": "S",
          "rhs": "a"
@@ -1959,7 +1959,7 @@
        }
       },
       {
-       "Add": {
+       "add": {
         "production": {
          "lhs": "S",
          "rhs": "bB"

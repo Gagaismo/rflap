@@ -8,19 +8,19 @@ registerStrings({
   en: {
     'grammar.err.no_arrow': 'Line {line}: write productions as "A -> aB | b" ("{text}" has no arrow).',
     'grammar.err.no_left': 'Line {line}: the production has no left side.',
-    'grammar.step.DerivesLambda': '{variable} derives λ ({production}).',
-    'grammar.step.RemoveLambda': 'Remove {production}.',
-    'grammar.step.Expand': 'Replace {production} by: {added}.',
-    'grammar.step.Edge': 'Unit production {production}: edge {from} → {to}.',
-    'grammar.step.Reach': '{variable} reaches by unit productions: {list}.',
-    'grammar.step.RemoveUnit': 'Remove the unit production {production}.',
-    'grammar.step.Add': 'Add {production} (through {via}).',
-    'grammar.step.DerivesTerminals': '{variable} derives a string of terminals ({production}).',
-    'grammar.step.RemoveNonDeriving': 'Remove {production}: it uses a variable that derives no string.',
-    'grammar.step.Reachable': '{variable} is reachable from the start variable.',
-    'grammar.step.RemoveUnreachable': 'Remove {production}: its variable is unreachable.',
-    'grammar.step.Terminals': 'Round {round}: replace the terminals of {production}; gives {added}.',
-    'grammar.step.Split': 'Round {round}: split {production} into {added}.',
+    'grammar.step.derives_lambda': '{variable} derives λ ({production}).',
+    'grammar.step.remove_lambda': 'Remove {production}.',
+    'grammar.step.expand': 'Replace {production} by: {added}.',
+    'grammar.step.edge': 'Unit production {production}: edge {from} → {to}.',
+    'grammar.step.reach': '{variable} reaches by unit productions: {list}.',
+    'grammar.step.remove_unit': 'Remove the unit production {production}.',
+    'grammar.step.add': 'Add {production} (through {via}).',
+    'grammar.step.derives_terminals': '{variable} derives a string of terminals ({production}).',
+    'grammar.step.remove_non_deriving': 'Remove {production}: it uses a variable that derives no string.',
+    'grammar.step.reachable': '{variable} is reachable from the start variable.',
+    'grammar.step.remove_unreachable': 'Remove {production}: its variable is unreachable.',
+    'grammar.step.terminals': 'Round {round}: replace the terminals of {production}; gives {added}.',
+    'grammar.step.split': 'Round {round}: split {production} into {added}.',
     'parse.action.replace': 'Replace {production}',
     'parse.action.match': 'Match {symbol}',
     'parse.action.accept': 'Accept',
@@ -33,19 +33,19 @@ registerStrings({
   es: {
     'grammar.err.no_arrow': 'Línea {line}: escribí las producciones como "A -> aB | b" ("{text}" no tiene flecha).',
     'grammar.err.no_left': 'Línea {line}: la producción no tiene lado izquierdo.',
-    'grammar.step.DerivesLambda': '{variable} deriva λ ({production}).',
-    'grammar.step.RemoveLambda': 'Se quita {production}.',
-    'grammar.step.Expand': 'Se reemplaza {production} por: {added}.',
-    'grammar.step.Edge': 'Producción unitaria {production}: arista {from} → {to}.',
-    'grammar.step.Reach': '{variable} alcanza por producciones unitarias: {list}.',
-    'grammar.step.RemoveUnit': 'Se quita la producción unitaria {production}.',
-    'grammar.step.Add': 'Se agrega {production} (a través de {via}).',
-    'grammar.step.DerivesTerminals': '{variable} deriva una cadena de terminales ({production}).',
-    'grammar.step.RemoveNonDeriving': 'Se quita {production}: usa una variable que no deriva ninguna cadena.',
-    'grammar.step.Reachable': '{variable} es alcanzable desde la variable inicial.',
-    'grammar.step.RemoveUnreachable': 'Se quita {production}: su variable es inalcanzable.',
-    'grammar.step.Terminals': 'Ronda {round}: se reemplazan los terminales de {production}; queda {added}.',
-    'grammar.step.Split': 'Ronda {round}: se divide {production} en {added}.',
+    'grammar.step.derives_lambda': '{variable} deriva λ ({production}).',
+    'grammar.step.remove_lambda': 'Se quita {production}.',
+    'grammar.step.expand': 'Se reemplaza {production} por: {added}.',
+    'grammar.step.edge': 'Producción unitaria {production}: arista {from} → {to}.',
+    'grammar.step.reach': '{variable} alcanza por producciones unitarias: {list}.',
+    'grammar.step.remove_unit': 'Se quita la producción unitaria {production}.',
+    'grammar.step.add': 'Se agrega {production} (a través de {via}).',
+    'grammar.step.derives_terminals': '{variable} deriva una cadena de terminales ({production}).',
+    'grammar.step.remove_non_deriving': 'Se quita {production}: usa una variable que no deriva ninguna cadena.',
+    'grammar.step.reachable': '{variable} es alcanzable desde la variable inicial.',
+    'grammar.step.remove_unreachable': 'Se quita {production}: su variable es inalcanzable.',
+    'grammar.step.terminals': 'Ronda {round}: se reemplazan los terminales de {production}; queda {added}.',
+    'grammar.step.split': 'Ronda {round}: se divide {production} en {added}.',
     'parse.action.replace': 'Reemplazar {production}',
     'parse.action.match': 'Coincide {symbol}',
     'parse.action.accept': 'Aceptar',
@@ -142,13 +142,18 @@ const keyOf = (p) => `${p.lhs}\u0000${p.rhs}`;
 
 /** A serde-tagged step (`{"Edge": {...}}`, `"Accept"`) as `{kind, ...fields}`; steps that carry `kind` already are kept. */
 function flatStep(step) {
-  if (step && typeof step === 'object' && 'kind' in step) return step;
-  if (typeof step === 'string') return { kind: step };
+  if (step && typeof step === 'object' && 'kind' in step) return { ...step, kind: snakeKind(step.kind) };
+  if (typeof step === 'string') return { kind: snakeKind(step) };
   const [kind] = Object.keys(step || {});
-  return kind === undefined ? { kind: '?' } : { kind, ...step[kind] };
+  return kind === undefined ? { kind: '?' } : { kind: snakeKind(kind), ...step[kind] };
 }
 
-const REMOVING = new Set(['RemoveLambda', 'RemoveUnit', 'RemoveNonDeriving', 'RemoveUnreachable']);
+/** Engine enum names are snake_case (`remove_lambda`); older recordings used CamelCase (`RemoveLambda`). */
+export function snakeKind(kind) {
+  return String(kind).replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
+}
+
+const REMOVING = new Set(['remove_lambda', 'remove_unit', 'remove_non_deriving', 'remove_unreachable']);
 
 /** Applies one step to a list of productions: what it removes, what it adds, what it points at. */
 function applyStep(list, step) {
@@ -169,11 +174,11 @@ function applyStep(list, step) {
     }
   };
   if (REMOVING.has(step.kind)) take(step.production);
-  else if (step.kind === 'Expand') {
+  else if (step.kind === 'expand') {
     take(step.production);
     step.added.forEach(put);
-  } else if (step.kind === 'Add') put(step.production);
-  else if (step.kind === 'Terminals' || step.kind === 'Split') {
+  } else if (step.kind === 'add') put(step.production);
+  else if (step.kind === 'terminals' || step.kind === 'split') {
     take(step.production);
     step.replacement.forEach(put);
   }
@@ -299,29 +304,29 @@ export function tablesModel(result) {
 
 // ---------------------------------------------------------------- parser traces
 
-const TRACE_KINDS = { Replace: 'replace', Match: 'match', Accept: 'accept', Reject: 'reject', Shift: 'shift', Reduce: 'reduce' };
+const TRACE_KINDS = { replace: 'replace', match: 'match', accept: 'accept', reject: 'reject', shift: 'shift', reduce: 'reduce' };
 
 function actionParts(action) {
-  if (typeof action === 'string') return [action, {}];
+  if (typeof action === 'string') return [snakeKind(action), {}];
   const [kind] = Object.keys(action);
-  return [kind, action[kind] || {}];
+  return [snakeKind(kind), action[kind] || {}];
 }
 
 /** The action of a parser step in words ("Replace S → aSb", "Shift to state 2"). */
 export function describeParseAction(action) {
   const [kind, body] = actionParts(action);
   switch (kind) {
-    case 'Replace':
+    case 'replace':
       return t('parse.action.replace', { production: productionText(body.production) });
-    case 'Match':
+    case 'match':
       return t('parse.action.match', { symbol: body.symbol });
-    case 'Accept':
+    case 'accept':
       return t('parse.action.accept');
-    case 'Reject':
+    case 'reject':
       return body.reason ? t('parse.action.reject_reason', { reason: body.reason }) : t('parse.action.reject');
-    case 'Shift':
+    case 'shift':
       return t('parse.action.shift', { state: body.state });
-    case 'Reduce':
+    case 'reduce':
       return t('parse.action.reduce', { production: productionText(body.production) });
     default:
       return kind;

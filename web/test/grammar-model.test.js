@@ -78,10 +78,10 @@ test('grammar replay: frames mark what each step removed and added, and end with
   const frames = grammarFrames(result, input.productions);
   const phase = grammarPhases(result, input.productions)[0];
   assert.equal(frames.length, phase.steps.length + 1, 'one frame per step plus the result');
-  const expand = frames.find((f) => f.step && f.step.kind === 'Expand');
+  const expand = frames.find((f) => f.step && f.step.kind === 'expand');
   assert.equal(expand.removed.length, 1);
   assert.equal(expand.productions.filter((p) => p.mark === 'added').length, 6);
-  const remove = frames.find((f) => f.step && f.step.kind === 'RemoveLambda');
+  const remove = frames.find((f) => f.step && f.step.kind === 'remove_lambda');
   assert.deepEqual(remove.removed[0], { lhs: 'A', rhs: '' });
   assert.equal(remove.productions.some((p) => p.lhs === 'A' && p.rhs === ''), false);
   const last = frames.at(-1);
@@ -95,8 +95,8 @@ test('grammar replay: Chomsky normal form shows every phase and ends renamed', (
   const { input, result } = transforms['messy-cnf'];
   const frames = grammarFrames(result, input.productions);
   assert.deepEqual([...new Set(frames.map((f) => f.phase))], ['lambda', 'unit', 'useless', 'cnf']);
-  assert.equal(frames.some((f) => f.step && f.step.kind === 'Terminals'), true);
-  assert.equal(frames.some((f) => f.step && f.step.kind === 'Split'), true);
+  assert.equal(frames.some((f) => f.step && f.step.kind === 'terminals'), true);
+  assert.equal(frames.some((f) => f.step && f.step.kind === 'split'), true);
   assert.deepEqual(asSet(frames.at(-1).productions), asSet(result.document.productions));
   assert.equal(frames.filter((f) => f.step === null).length, 4, 'one result frame per phase');
 });

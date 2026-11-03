@@ -169,7 +169,7 @@ export function removeBlock(doc, id, path = []) {
 
 // ---------------------------------------------------------------- label text
 
-const DIRECTIONS = { Left: 'L', Right: 'R', Stay: 'S' };
+const DIRECTIONS = { left: 'L', right: 'R', stay: 'S', Left: 'L', Right: 'R', Stay: 'S' };
 const BLANK = '□';
 const lambdaOr = (s) => (s === '' || s == null ? 'λ' : s);
 const blankToUnderscore = (s) => (s === BLANK ? '_' : s);

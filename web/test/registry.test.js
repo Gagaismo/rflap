@@ -112,7 +112,7 @@ test('dynamic i18n keys exist: menus, types, tools, layouts, conversions, simula
     ...['lambda', 'unit', 'useless'].map((x) => `transform.${x}`),
     ...['lambda', 'unit', 'useless', 'cnf'].map((x) => `transform.phase.${x}`),
     ...['added', 'focus'].map((x) => `transform.mark.${x}`),
-    ...['DerivesLambda', 'RemoveLambda', 'Expand', 'Edge', 'Reach', 'RemoveUnit', 'Add', 'DerivesTerminals', 'RemoveNonDeriving', 'Reachable', 'RemoveUnreachable', 'Terminals', 'Split'].map((x) => `grammar.step.${x}`),
+    ...['derives_lambda', 'remove_lambda', 'expand', 'edge', 'reach', 'remove_unit', 'add', 'derives_terminals', 'remove_non_deriving', 'reachable', 'remove_unreachable', 'terminals', 'split'].map((x) => `grammar.step.${x}`),
     ...['accepted', 'rejected', 'error'].map((x) => `parse.outcome.${x}`),
     ...['brute', 'll1', 'slr1', 'cyk'].map((x) => `parse.parser.${x}`),
     ...['constraint_text', 'regex', 'regular_grammar', 'template'].flatMap((x) => [`design.mode.${x}`]),
