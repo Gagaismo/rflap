@@ -160,7 +160,7 @@ fragment, so it never leaves your machine. See [web/README.md](web/README.md).
 ## The MCP server
 
 `rflap-mcp` speaks MCP over stdio (and Streamable HTTP with `--http`). Tools, the widget resource and
-two prompts (`ssl_exercise`, `grammar_tables`) are described in [docs/mcp-tools.md](docs/mcp-tools.md).
+three prompts (`ssl_exercise`, `mt_catedra`, `grammar_tables`) are described in [docs/mcp-tools.md](docs/mcp-tools.md).
 
 | Client | Guide |
 |---|---|
@@ -176,6 +176,29 @@ For agents, [skills/rflap/SKILL.md](skills/rflap/SKILL.md) is a ready-made skill
 claude mcp add rflap -- /path/to/rflap-mcp --viewer-port 8787      # Claude Code
 codex mcp add rflap -- /path/to/rflap-mcp --viewer-port 8787       # Codex
 ```
+
+## Notación de la cátedra
+
+Las Máquinas de Turing y los ALL se escriben, se explican y se simulan con la notación de la
+bibliografía de la cátedra (definición `MT = ⟨Q, Σ_E, Σ_A, q0, F, f⟩`, etiquetas `(e,s,m)` con
+movimientos `I`/`N`/`D` y blanco `Δ`, tabla de transición, secuencias de configuraciones con `├─`
+terminadas en `final/acepta` o `bloqueo/rechazo`, chequeo de ALL con `⟨` `⟩`, composición de MT y
+pertenencia por los conjuntos Tk):
+
+```bash
+rflap catedra definition palindromo.json
+rflap catedra run palindromo.json aba ab        # Δ1abaΔ ├─ ΔΔ2baΔ ├─ … final/acepta
+rflap catedra all-check igual.json ab b
+rflap membership --grammar 'S -> T
+DB -> BD
+D -> c
+T -> aTBD
+T -> abD
+bB -> bb' abbc
+```
+
+En el chat, las herramientas `rflap_mt_catedra`, `rflap_compose_tm` y `rflap_membership` y el prompt
+`mt_catedra` hacen lo mismo. Guía completa: [docs/catedra.md](docs/catedra.md).
 
 ## The design engine
 

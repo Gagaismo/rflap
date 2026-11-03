@@ -45,7 +45,8 @@ Ask Codex:
 
 Codex should call `rflap_design_automaton` (regular languages) or the `an_bn` template
 (non-regular ones) and report the verification. For a ready-made workflow, copy
-`skills/rflap/SKILL.md` into your Codex skills folder.
+`skills/rflap/SKILL.md` into your Codex skills folder. For Turing machines and ALL in the notation of
+the course (definition, table, `├─` sequences, ALL check) see [../catedra.md](../catedra.md).
 
 ## Notes
 

@@ -21,6 +21,7 @@
 //! assert_eq!(answer.unwrap()["result"], serde_json::json!({}));
 //! ```
 
+mod catedra;
 mod content;
 mod docs;
 mod http;

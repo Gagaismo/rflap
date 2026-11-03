@@ -5,7 +5,7 @@ use serde_json::{Value, json};
 
 const EDITOR: &str = "ui://rflap/editor.html";
 
-const TOOLS: [&str; 18] = [
+const TOOLS: [&str; 21] = [
     "rflap_design_automaton",
     "rflap_show",
     "rflap_simulate",
@@ -24,9 +24,12 @@ const TOOLS: [&str; 18] = [
     "rflap_pumping",
     "rflap_capabilities",
     "rflap_call",
+    "rflap_mt_catedra",
+    "rflap_compose_tm",
+    "rflap_membership",
 ];
 
-const VISUAL: [&str; 13] = [
+const VISUAL: [&str; 16] = [
     "rflap_design_automaton",
     "rflap_show",
     "rflap_simulate",
@@ -40,6 +43,9 @@ const VISUAL: [&str; 13] = [
     "rflap_open_jff",
     "rflap_lsystem_render",
     "rflap_pumping",
+    "rflap_mt_catedra",
+    "rflap_compose_tm",
+    "rflap_membership",
 ];
 
 fn rpc(method: &str, params: Value) -> Value {
