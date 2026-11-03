@@ -1,3 +1,4 @@
 * text=auto eol=lf
 *.png binary
 *.wasm binary
+crates/rflap-core/tests/fixtures/jff/sample_crlf.jff -text
