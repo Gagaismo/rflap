@@ -23,6 +23,13 @@ documentation lists Claude and Claude Desktop among the hosts that support MCP A
 }
 ```
 
+   **Windows, installer from claude.ai (MSIX package):** this build does not read
+   `%APPDATA%\Claude\claude_desktop_config.json`. Its config file is
+   `%LOCALAPPDATA%\Claude-Data\claude_<id>\claude_desktop_config.json` (for example
+   `claude_pzs8sxrjxfjjc`); *Edit Config* opens the right one. Add `mcpServers` there, next to the
+   keys the app already keeps, and edit it only while Claude Desktop is closed (the app rewrites
+   the file on exit).
+
 4. Quit Claude Desktop completely and start it again. Ask: *"Design an automaton for the strings
    over {a,b} that end in ab"* and the widget should appear below the answer. Chats that cannot
    show it still get the Markdown table and the verification report.
@@ -61,3 +68,10 @@ accepted, others only with `--allow-origin https://example.com`.
   local servers" guide for `claude_desktop_config.json`, the MCP Apps client list.
   **UNVERIFIED** here: that this exact widget renders in each Claude host (needs a manual test
   once the web build `web/dist/rflap.html` is final).
+
+## Logs
+
+`rflap-mcp` writes one line to stderr per tool call (tool, `ok`/`error`, time, arguments and the
+first line of the answer; `--quiet` turns it off). Claude Desktop keeps it in
+`mcp-server-rflap.log`: `%LOCALAPPDATA%\Claude\Logs\` for the MSIX build on Windows,
+`%APPDATA%\Claude\logs\` for the classic one, `~/Library/Logs/Claude/` on macOS.
