@@ -6,7 +6,7 @@ use serde::Serialize;
 
 use super::{
     CatedraError, DELTA, LEFT_DELIMITER, Model, Notation, RIGHT_DELIMITER, check_supported,
-    format_label, show,
+    format_label, show, with_delimiter_aliases,
 };
 use crate::automaton::{Label, State};
 use crate::turing::{BLANK, ReadSymbol, TuringMachine};
@@ -195,13 +195,21 @@ pub(crate) fn transition_text(machine: &TuringMachine, index: usize) -> String {
 }
 
 /// The definition of a one-tape machine; `model` defaults to the one the transitions suggest
-/// (an ALL when they mention `⟨` or `⟩`).
+/// (an ALL when they mention `⟨` or `⟩`). With `Some(Model::All)` and no `⟨` or `⟩` in the
+/// machine, `<` and `>` are read as the delimiters.
 pub fn definition(
     machine: &TuringMachine,
     model: Option<Model>,
 ) -> Result<Definition, CatedraError> {
     check_supported(machine)?;
     let model = model.unwrap_or_else(|| Model::detect(machine));
+    let aliased;
+    let machine = if model == Model::All {
+        aliased = with_delimiter_aliases(machine);
+        &aliased
+    } else {
+        machine
+    };
     let a = machine.automaton();
     let alpha = alphabets(machine);
     let order = course_order(machine);

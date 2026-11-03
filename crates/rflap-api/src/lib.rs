@@ -53,10 +53,11 @@
 //! | `finals` | names of the final states |
 //! | `transitions` | `[from, label, to]` (or `{"from", "label", "to"}`); the label syntax depends on the type |
 //! | `states` | optional list of names; when present every name used elsewhere must be in it, otherwise `unknown_state` |
-//! | `points` | optional `{"q0": [x, y]}`; states without a point are laid out around the fixed ones |
-//! | `layout` | optional algorithm for the states without a point: `circle` (default), `gem`, `random`, `spiral`, `tree`, `tree-degree`, `two-circle` |
+//! | `points` | optional `{"q0": [x, y]}` (state name to coordinates); states without a point are laid out around the fixed ones |
+//! | `layout` | optional algorithm for the states without a point: `layered` (default: the initial state on the far left, the others in columns by BFS distance from it, unreachable ones last), `circle`, `gem`, `random`, `spiral`, `tree`, `tree-degree`, `two-circle` |
+//! | `title` | optional string (alias `name`), accepted by every compact type; it is metadata that the operations ignore |
 //!
-//! Unknown fields are errors. `λ` and `ε` mean the empty string in every label.
+//! Other unknown fields are errors. `λ` and `ε` mean the empty string in every label.
 //!
 //! ## Finite automaton
 //!

@@ -151,11 +151,21 @@ pub fn membership_tk(r: MembershipTk) -> Result<Value, ApiError> {
     Ok(Value::Object(out))
 }
 
-/// The cátedra warnings and multipista report that `analyze` adds to a Turing machine.
-pub fn analysis(tm: &TuringMachine) -> (Value, Vec<String>) {
-    let multipista = to_value(&catedra::multipista(tm));
-    let warnings = definition(tm, None)
-        .map(|d| d.issues.into_iter().map(|i| i.message).collect())
-        .unwrap_or_default();
-    (multipista, warnings)
+/// What `analyze` adds to a Turing machine: the multipista report, the cátedra warnings and,
+/// for a one-tape machine without blocks, Σ_E (`alphabet`) and Σ_A (`tape_alphabet`) as
+/// `catedra_definition` infers them.
+pub fn analysis(tm: &TuringMachine) -> Object {
+    let mut out = Object::new();
+    out.insert("multipista".into(), to_value(&catedra::multipista(tm)));
+    let definition = definition(tm, None).ok();
+    let warnings: Vec<String> = definition
+        .iter()
+        .flat_map(|d| d.issues.iter().map(|i| i.message.clone()))
+        .collect();
+    out.insert("catedra_warnings".into(), json!(warnings));
+    if let Some(d) = definition {
+        out.insert("alphabet".into(), json!(d.input_alphabet));
+        out.insert("tape_alphabet".into(), json!(d.auxiliary_alphabet));
+    }
+    out
 }
