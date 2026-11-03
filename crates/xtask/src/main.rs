@@ -27,8 +27,14 @@ fn main() {
     }
 }
 
+/// The workspace `cargo run` was called from. `cargo run` sets `CARGO_MANIFEST_DIR` at run time;
+/// the compile-time value is only a fallback, because worktrees sharing one target directory
+/// share one `xtask` binary, and its baked path may name another worktree.
 fn workspace_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
+    let manifest = std::env::var_os("CARGO_MANIFEST_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")));
+    manifest
         .join("../..")
         .canonicalize()
         .expect("workspace root")
