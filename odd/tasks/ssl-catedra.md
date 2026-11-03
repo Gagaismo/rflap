@@ -63,8 +63,8 @@ Fuentes: `C:\Users\lautaro\Downloads\CLASE 39 MT y ALL.pdf` y `CLASE 41 MT Espec
 
 | ID | Specs | Qué | Ruta | Commit |
 |----|-------|-----|------|--------|
-| T1 | S4, S5.1-S5.10 | Backend: notación de la cátedra en core y api (etiquetas, tabla, configuraciones, ALL, chequeo, composición, multipista, pertenencia Tk), CLI | worker (worktree) | |
-| T2 | S1, S2, S3 | Web: estilo JFLAP clásico fijo, zoom automático, español por defecto | worker (worktree) | |
+| T1 | S4, S5.1-S5.10 | Backend: notación de la cátedra en core y api (etiquetas, tabla, configuraciones, ALL, chequeo, composición, multipista, pertenencia Tk), CLI | worker (worktree) | 0f941c3 |
+| T2 | S1, S2, S3 | Web: estilo JFLAP clásico fijo, zoom automático, español por defecto | worker (worktree) | 30ea735 |
 | T3 | S4, S5, S5.11 | Web con la notación y el ALL nuevos; instrucciones MCP y skill | worker (después de T1/T2) | |
 | T4 | S6 | Integrar, release v0.2.0, actualizar `G:\rflap\bin` | inline | |
 
@@ -73,3 +73,4 @@ Fuentes: `C:\Users\lautaro\Downloads\CLASE 39 MT y ALL.pdf` y `CLASE 41 MT Espec
 - **L1** (pedido): "1. Si merge. 2. El de jflap clasico, ajustar zoom y poner español como idioma default, ok el chequeo. Tambien necesito que se adapte a esta bibliografia por lo menos la parte de Maquina de Turing: "C:\Users\lautaro\Downloads\CLASE 39 MT y ALL.pdf" "C:\Users\lautaro\Downloads\CLASE 41 MT Especiales-LRE-LR.pdf""
 - **L2** (contexto): las preguntas eran "¿mergeo el PR #2 y publico la v0.1.1, así actualizo tu G:\rflap\bin?" y "¿hago las mejoras del widget? un solo estilo (JFLAP clásico o tema), zoom automático, chequeo de 'es un ALL válido'". PR #2 mergeado (`9f808a5`).
 - **L3** (decisión): la notación de la cátedra es la que se usa por defecto. La notación JFLAP (`a;b,R`, □, L/S/R) queda como opción y se sigue aceptando al leer, porque la CLASE 41 muestra la MT multicinta en JFLAP. Una sola versión nueva (v0.2.0) junta el log y todo esto, así hay un solo reemplazo del `.exe`.
+- **L4** (evidencia): T1 y T2 integrados (`f0f900a`): 680 tests de Rust y 145 de JS en verde. T1 reproduce exactas las secuencias de la bibliografía (palíndromo e IGUAL), la tabla, la definición formal y T0..T4 de "abbc"; agrega las ops `catedra_definition`, `catedra_table`, `catedra_run`, `all_check`, `compose_tm` y `membership_tk`. T2: estilo clásico fijo, `fitView` con botón Ajustar, español por defecto con selector de idioma.
