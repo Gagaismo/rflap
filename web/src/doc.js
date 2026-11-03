@@ -9,6 +9,8 @@
 // All mutators work IN PLACE on the document they receive; callers clone first (`clone`) and commit the
 // clone to the history. `path` is the list of state ids walked into building blocks (Turing machines).
 
+import { t } from './i18n.js';
+
 export const AUTOMATA = ['fa', 'pda', 'turing', 'mealy', 'moore'];
 export const HISTORY_LIMIT = 50; // JFLAP's default undo depth
 
@@ -115,7 +117,7 @@ export function toggleFinal(doc, id, path = []) {
 export function renameState(doc, id, name, path = []) {
   const c = container(doc, path);
   const clash = Object.values(c.states).some((s) => s.id !== id && s.name === name);
-  if (!name.trim()) throw new Error('empty name');
+  if (!name.trim()) throw new Error(t('error.empty_name'));
   if (clash) throw new Error(`the name ${name} is already used`);
   c.states[id].name = name.trim();
 }

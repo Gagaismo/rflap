@@ -1,13 +1,17 @@
 // The app shell: menu bar, tabs (several documents open, like JFLAP windows), the canvas and the side panels.
 
 import { h, clear, debounce } from './dom.js';
-import { i18n, t, setLanguage, pickLocale } from './i18n.js';
+import { i18n, t, setLanguage } from './i18n.js';
 import { Tab } from './tab.js';
 import { Canvas } from './editor.js';
 import { panelsFor, actionsFor, allActions, appliesTo } from './registry.js';
 import { popupMenu, toast } from './dialogs.js';
 import { emptyDocument, normalizeDocument, compactOf, describe } from './doc.js';
 import { documentFromHash } from './share.js';
+
+const LANGUAGES = ['es', 'en'];
+/** The UI is Spanish unless English was chosen explicitly (an old 'auto' setting means Spanish). */
+const languageOf = (value) => (LANGUAGES.includes(value) ? value : 'es');
 
 const MENUS = ['file', 'edit', 'input', 'test', 'convert', 'layout', 'view', 'help'];
 const DOCUMENT_KEYS = ['document', 'automaton', 'machine'];
@@ -71,8 +75,7 @@ export class App {
     this.tabList = [];
     this.active = null;
     this.workspaces = new Map(); // tab -> { el, canvas, panels: Map(id -> {container, instance}), activePanel }
-    this.themeChoice = store.get('rflap.theme') || 'auto';
-    this.languageChoice = store.get('rflap.language') || 'auto';
+    this.languageChoice = languageOf(store.get('rflap.language'));
     this.hostContext = {};
     this.aiTab = null;
     this.viewerUrl = null;
@@ -82,40 +85,36 @@ export class App {
 
   // ------------------------------------------------------------ theme and language
 
+  /** Always the classic JFLAP look (white canvas, yellow states): neither the host theme nor prefers-color-scheme matter. */
   get dark() {
-    if (this.themeChoice === 'dark') return true;
-    if (this.themeChoice === 'light') return false;
-    if (this.hostContext.theme) return this.hostContext.theme === 'dark';
-    return typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches;
+    return false;
   }
 
   applyTheme() {
-    document.documentElement.dataset.theme = this.dark ? 'dark' : 'light';
-    for (const tab of this.tabList) tab.emit('theme');
+    document.documentElement.dataset.theme = 'light';
   }
 
-  setTheme(choice) {
-    this.themeChoice = choice;
-    store.set('rflap.theme', choice);
-    this.applyTheme();
-    this.renderChrome();
-  }
-
-  languageFromEnvironment() {
-    const candidates = [this.hostContext.locale, ...(typeof navigator !== 'undefined' ? navigator.languages || [navigator.language] : [])];
-    return pickLocale(candidates);
-  }
-
+  /** Spanish or English, remembered in localStorage and (in ChatGPT) in the widget state. */
   setLanguage(choice) {
-    this.languageChoice = choice;
-    store.set('rflap.language', choice);
+    this.languageChoice = languageOf(choice);
+    store.set('rflap.language', this.languageChoice);
     this.applyLanguageChoice();
-    this.rebuild();
+    if (this.mounted) this.rebuild();
+    this.saveLanguageToHost();
   }
 
   applyLanguageChoice() {
-    setLanguage(this.languageChoice === 'auto' ? this.languageFromEnvironment() : this.languageChoice);
+    setLanguage(this.languageChoice);
     document.documentElement.lang = i18n.locale;
+  }
+
+  saveLanguageToHost() {
+    if (!this.host || this.host.mode !== 'chatgpt') return;
+    if (this.active) {
+      this.pushModelContext(this.active);
+      return;
+    }
+    Promise.resolve(this.host.updateModelContext({ text: '', structured: { language: this.languageChoice } })).catch(() => {});
   }
 
   // ------------------------------------------------------------ boot and layout
@@ -136,7 +135,6 @@ export class App {
       if (e.dataTransfer && e.dataTransfer.files.length) this.openFiles([...e.dataTransfer.files]);
     });
     window.addEventListener('hashchange', () => this.openFromHash());
-    if (typeof matchMedia === 'function') matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => this.themeChoice === 'auto' && this.applyTheme());
     this.renderChrome();
   }
 
@@ -217,7 +215,7 @@ export class App {
     tab.emit('activate');
     const ws = this.workspaces.get(tab);
     if (ws) {
-      if (tab.canvas) tab.canvas.layoutViewBox();
+      if (tab.canvas) tab.canvas.resized();
       this.showPanel(tab, ws.activePanel || (panelsFor(tab.type, tab)[0] || {}).id, undefined, { focus: false });
     }
   }
@@ -372,7 +370,12 @@ export class App {
       ws.canvas = new Canvas(canvasArea, tab);
       tab.canvas = ws.canvas;
       const redraw = () => ws.canvas.render();
-      ws.offs.push(tab.on('doc', redraw), tab.on('overlay', redraw), tab.on('theme', redraw));
+      // a document that arrives from outside (tool result, file, link, conversion) is fitted when drawn
+      const loaded = (e) => {
+        if (e && ['host', 'replace', 'open'].includes(e.cause)) ws.canvas.requestFit();
+        redraw();
+      };
+      ws.offs.push(tab.on('doc', loaded), tab.on('overlay', redraw));
       redraw();
     }
     this.refreshWorkspace(tab);
@@ -542,7 +545,9 @@ export class App {
   async pushModelContext(tab) {
     if (!this.host.connected || !tab.isAutomaton || this.active !== tab) return;
     try {
-      await this.host.updateModelContext({ text: `${t('chat.context', { title: tab.title })} ${describe(tab.doc)}`, structured: { document: compactOf(tab.doc) } });
+      const structured = { document: compactOf(tab.doc) };
+      if (this.host.mode === 'chatgpt') structured.language = this.languageChoice; // setWidgetState replaces the whole state
+      await this.host.updateModelContext({ text: `${t('chat.context', { title: tab.title })} ${describe(tab.doc)}`, structured });
     } catch {
       /* the host may refuse context updates: the "Send to chat" button still works */
     }
@@ -601,10 +606,13 @@ export class App {
   handleContext(context) {
     this.hostContext = { ...this.hostContext, ...context };
     this.applyTheme();
-    if (this.languageChoice === 'auto' && this.mounted) {
+    // the host locale is ignored; the only host input is the language this widget saved in ChatGPT's widget state
+    const saved = context.widgetState && context.widgetState.language;
+    if (LANGUAGES.includes(saved) && saved !== this.languageChoice) {
+      this.languageChoice = saved;
       const before = i18n.locale;
       this.applyLanguageChoice();
-      if (before !== i18n.locale) this.rebuild();
+      if (this.mounted && before !== i18n.locale) this.rebuild();
     }
     if (context.containerDimensions && context.containerDimensions.maxHeight) {
       document.documentElement.style.setProperty('--embedded-height', `${Math.min(720, context.containerDimensions.maxHeight)}px`);

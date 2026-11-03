@@ -103,7 +103,7 @@ registerAction({
   appliesTo: GRAPH_TYPES,
   run: (tab) =>
     guarded(tab, async () => {
-      const r = await tab.api({ op: 'render', document: machineDocument(tab.doc, tab.path), format: 'svg', dark: false });
+      const r = await tab.api({ op: 'render', document: machineDocument(tab.doc, tab.path), format: 'svg' });
       saveFile(`${safeName(tab.title)}.svg`, r.content, 'image/svg+xml');
     }),
 });
@@ -288,23 +288,13 @@ layouts.forEach((algorithm, order) => {
 registerAction({ id: 'view.zoom_in', menu: 'view', label: 'view.zoom_in', order: 0, appliesTo: GRAPH_TYPES, shortcut: 'Ctrl+=', run: (tab) => tab.canvas && tab.canvas.setZoom(tab.canvas.zoom * 1.25) });
 registerAction({ id: 'view.zoom_out', menu: 'view', label: 'view.zoom_out', order: 1, appliesTo: GRAPH_TYPES, shortcut: 'Ctrl+-', run: (tab) => tab.canvas && tab.canvas.setZoom(tab.canvas.zoom / 1.25) });
 registerAction({ id: 'view.zoom_reset', menu: 'view', label: 'view.zoom_reset', order: 2, appliesTo: GRAPH_TYPES, shortcut: 'Ctrl+0', run: (tab) => tab.canvas && tab.canvas.setZoom(1) });
+registerAction({ id: 'view.zoom_fit', menu: 'view', label: 'view.zoom_fit', order: 2.5, appliesTo: GRAPH_TYPES, shortcut: 'Ctrl+9', run: (tab) => tab.canvas && tab.canvas.fit() });
 registerAction({ id: 'view.exit_block', menu: 'view', label: 'block.exit', order: 3, separator: true, appliesTo: ['turing'], enabled: (tab) => tab.path.length > 0, run: (tab) => tab.exitBlock() });
-for (const [index, mode] of ['auto', 'light', 'dark'].entries()) {
-  registerAction({
-    id: `view.theme.${mode}`,
-    menu: 'view',
-    label: `view.theme_${mode}`,
-    order: 10 + index,
-    separator: index === 0,
-    checked: (tab) => tab.app.themeChoice === mode,
-    run: (tab) => tab.app.setTheme(mode),
-  });
-}
-for (const [index, [code, name]] of [['auto', 'view.language_auto'], ['en', 'English'], ['es', 'Español']].entries()) {
+for (const [index, code] of ['es', 'en'].entries()) {
   registerAction({
     id: `view.language.${code}`,
     menu: 'view',
-    label: name,
+    label: `view.language_${code}`,
     order: 20 + index,
     separator: index === 0,
     checked: (tab) => tab.app.languageChoice === code,

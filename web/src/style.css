@@ -21,25 +21,6 @@
   color-scheme: light;
 }
 
-:root[data-theme='dark'] {
-  --bg: #161615;
-  --surface: #202020;
-  --surface-2: #2a2a28;
-  --ink: #ececea;
-  --muted: #a3a39b;
-  --border: #44443f;
-  --accent: #6aaeff;
-  --accent-ink: #0b1a2b;
-  --danger: #ff8a80;
-  --ok: #7fd18f;
-  --warn: #f0c060;
-  --canvas-bg: #1e1e1e;
-  --canvas-ink: #e6e6e6;
-  --focus: #8fc1ff;
-  --shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
-  color-scheme: dark;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -301,6 +282,11 @@ button.tool {
   min-width: 34px;
   font-size: 16px;
   line-height: 1.2;
+}
+
+button.tool.tool-text {
+  font-size: 13px;
+  padding: 0 8px;
 }
 
 button.tool[aria-pressed='true'] {
@@ -1020,10 +1006,6 @@ img.engine-svg {
   background: var(--canvas-bg);
   border: 1px solid var(--border);
   border-radius: 6px;
-}
-
-[data-theme='dark'] img.engine-svg {
-  background: #fff;
 }
 
 .marker mark {

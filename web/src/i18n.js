@@ -1,4 +1,4 @@
-// English and Spanish. The language comes from the host locale / navigator.language (or the View menu).
+// Spanish (the default) and English. The language is the user's choice (View menu), never the host locale or navigator.language.
 // A missing key falls back to English, then to the key itself. T12b panels add their own strings with
 // `registerStrings({ en: {...}, es: {...} })`.
 
@@ -95,10 +95,9 @@ export const dictionaries = {
     'view.zoom_in': 'Zoom in',
     'view.zoom_out': 'Zoom out',
     'view.zoom_reset': 'Actual size',
-    'view.theme_auto': 'Theme: automatic',
-    'view.theme_light': 'Theme: light',
-    'view.theme_dark': 'Theme: dark',
-    'view.language_auto': 'Language: automatic',
+    'view.language_es': 'Language: Español',
+    'view.language_en': 'Language: English',
+    'view.zoom_fit': 'Fit to window',
 
     'help.shortcuts': 'Keyboard shortcuts',
     'help.about': 'About Rflap',
@@ -303,6 +302,10 @@ export const dictionaries = {
 
     'fatal.title': 'The engine could not start',
     'remote.fallback': 'WebAssembly is not allowed here: using the engine of the connected server.',
+    'error.empty_name': 'The name cannot be empty.',
+    'error.no_result': 'The server answered without a result.',
+    'error.no_host': 'There is no host to call tools on.',
+    'error.no_wasm': 'The page has no embedded engine (wasm).',
   },
 
   es: {
@@ -397,10 +400,9 @@ export const dictionaries = {
     'view.zoom_in': 'Acercar',
     'view.zoom_out': 'Alejar',
     'view.zoom_reset': 'Tamaño real',
-    'view.theme_auto': 'Tema: automático',
-    'view.theme_light': 'Tema: claro',
-    'view.theme_dark': 'Tema: oscuro',
-    'view.language_auto': 'Idioma: automático',
+    'view.language_es': 'Idioma: Español',
+    'view.language_en': 'Idioma: English',
+    'view.zoom_fit': 'Ajustar',
 
     'help.shortcuts': 'Atajos de teclado',
     'help.about': 'Acerca de Rflap',
@@ -605,6 +607,10 @@ export const dictionaries = {
 
     'fatal.title': 'No se pudo iniciar el motor',
     'remote.fallback': 'Acá no se permite WebAssembly: se usa el motor del servidor conectado.',
+    'error.empty_name': 'El nombre no puede estar vacío.',
+    'error.no_result': 'El servidor respondió sin resultado.',
+    'error.no_host': 'No hay un anfitrión al que pedirle herramientas.',
+    'error.no_wasm': 'La página no trae el motor embebido (wasm).',
   },
 };
 
@@ -642,6 +648,6 @@ export function createI18n(locale = 'en') {
 }
 
 /** The app-wide instance. */
-export const i18n = createI18n('en');
+export const i18n = createI18n('es');
 export const t = (key, params) => i18n.t(key, params);
 export const setLanguage = (locale) => i18n.setLocale(locale);

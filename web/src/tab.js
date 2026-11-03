@@ -7,7 +7,7 @@ let nextTabId = 1;
 
 export class Tab {
   /**
-   * @param {object} app    the shell services: { api, host, t, dark, openTab(doc, options), notify(message, kind), tabs() }
+   * @param {object} app    the shell services: { api, host, t, openTab(doc, options), notify(message, kind), tabs() }
    * @param {object} options { doc, title, steps, extras }
    */
   constructor(app, { doc, title, steps = null, extras = null }) {
@@ -38,10 +38,6 @@ export class Tab {
 
   get t() {
     return this.app.t;
-  }
-
-  get dark() {
-    return this.app.dark;
   }
 
   get type() {
