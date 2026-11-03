@@ -26,18 +26,19 @@ Referencia: `reference/src/` (JFLAP descompilado con CFR 0.152, ignorado por git
 | ID | Specs | Qué | Ruta | Commit |
 |----|-------|-----|------|--------|
 | T1 | S1, S5 | Workspace Cargo, LICENSE de JFLAP + atribución y contacto, README, .gitignore, CI; crear repo y pushear | inline | 3573968, 0b33d15 |
-| T2 | S2.1 | Núcleo FA: modelo, etiquetas con rangos, simulación (paso a paso, clausura, rápida, múltiple), análisis (no determinismo, λ, inalcanzables, inútiles), estado trampa, combinar | inline | |
-| T3 | S2.10 | E/S `.jff` para todos los tipos (ida y vuelta) | inline | |
+| T2 | S2.1 | Núcleo FA: modelo, etiquetas con rangos, simulación (paso a paso, clausura, rápida, múltiple), análisis (no determinismo, λ, inalcanzables, inútiles), estado trampa, combinar | inline | d47fa68 |
+| T3 | S2.10 | Infraestructura `.jff` (leer/escribir) + autómatas finitos, ida y vuelta | inline | |
 | T4 | S2.1, S2.2, S2.7 | ER (parser), NFA→DFA, minimizar, FA→ER, ER→FA, FA↔gramática regular, equivalencia de FA | inline | |
 | T5 | S2.6 | Gramáticas: modelo, tipo, transformaciones, FNC, parsers (fuerza bruta, LL(1), SLR(1), CYK, usuario), corridas múltiples | inline | |
-| T6 | S2.3, S2.6 | PDA: modelo, simulación, PDA→CFG, CFG→PDA (LL y LR) | inline | |
-| T7 | S2.4, S2.5 | MT de una y varias cintas, bloques, MT→gramática; Mealy y Moore | inline | |
+| T6 | S2.3 | PDA: modelo y simulación (estado final y pila vacía) | inline | |
+| T7 | S2.4, S2.5 | MT de una y varias cintas, filtros de aceptación, bloques; Mealy y Moore | inline | |
 | T8 | S2.8, S2.9 | L-systems y lema de bombeo | inline | |
 | T9 | S2.10 | Layouts y render SVG | inline | |
 | T10 | S4 | Motor de diseño: lenguaje (ER, gramática o especificación declarativa) → autómata mínimo verificado con ejemplos | inline | |
 | T11 | S1, S2 | CLI `rflap` | inline | |
 | T12 | S2, S3 | API WASM + editor web interactivo (editar, simular, convertir) | inline | |
 | T13 | S3, S4 | Servidor MCP (stdio + HTTP) con herramientas y widget MCP Apps; guías para ChatGPT, Codex, Claude, Claude Code | inline | |
+| T15 | S2.2, S2.3, S2.4, S2.6, S2.10 | Conversiones cruzadas: FA↔gramática regular, PDA→CFG, CFG→PDA (LL y LR), MT→gramática irrestricta; `.jff` de PDA, MT, Mealy, Moore, gramática, ER, L-system y lema de bombeo | inline | |
 | T14 | S1-S5 | Verificación diferencial contra JFLAP (arnés Java), docs finales, push | inline | |
 
 ## Log
@@ -51,3 +52,4 @@ Referencia: `reference/src/` (JFLAP descompilado con CFR 0.152, ignorado por git
   - S4: la IA traduce el lenguaje natural a una especificación formal (ER, gramática o especificación declarativa con ejemplos) y Rflap construye, minimiza, dibuja y verifica.
   - La interfaz gráfica es web (WASM), y la misma sirve como widget del chat y como app de escritorio (`rflap gui`).
 - **L5** (plan): la equivalencia de FA pasa de T2 a T4 porque depende de NFA→DFA y de minimizar. Desvío de JFLAP: en el simulador con clausura, una transición con rango `[x-y]` toma la clausura λ del destino (JFLAP no lo hace); un rango solo se reconoce con la forma exacta `[x-y]`.
+- **L6** (plan): olas. Ola 1 en paralelo con worktrees aislados en `.worktrees/` y un `CARGO_TARGET_DIR` por worker: T3, T4, T5, T6, T7 y T9. Ola 2: T8 y T15 (nueva: conversiones que cruzan modelos y el `.jff` de los demás tipos). Ola 3: T10 a T13; al final, T14. Cada worker es dueño de su archivo de módulo, ya declarado en `lib.rs`.
