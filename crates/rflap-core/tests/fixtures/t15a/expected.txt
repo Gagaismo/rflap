@@ -1,0 +1,22 @@
+FA2G dfa A->aA ; S->bS ; S->aA ; A->bS ; A-> ;
+FA2G ids A->bB ; S->aA ; B->cS ; A-> ;
+FA2G lambda S->A ; A->abB ; S->aS ; B-> ;
+RL2FA states 0=A 1=S(initial) 2=null(final)
+RL2FA transitions 1>1[a] ; 1>0[b] ; 0>2[b] ; 0>2[] ;
+LL 1>1 [a,a;] ; 1>1 [b,b;] ; 1>1 [,S;aSb] ; 1>1 [,S;] ; 1>2 [,Z;] ; 0>1 [,Z;SZ] ;
+LR 1>2 [,Z;] ; 0>0 [a,;a] ; 0>0 [b,;b] ; 0>0 [,bSa;S] ; 0>1 [,S;] ; 0>0 [,;S] ;
+PDA1 raw 21 kept 5
+PDA1 out S->aCJ ; C->aCN ; C->b ; N->b ; J-> ;
+PDA2 raw 10 kept 4
+PDA2 out S->aBS ; B->aBB ; B->b ; S-> ;
+PDA3 raw 36 kept 6
+PDA3 out S->aER ; E->aEA ; E->b ; A->b ; R-> ; S->c ;
+TM1 init S->V(==)S ; S->SV(==) ; S->T ; T->TV(aa) ; T->V(a0a) ; =-> ;
+TM1 trans 1>2 V(aa)V(a1a)->V(a2a)V(aa) ; V(a2a)->a ; aV(aa)->aa ; V(aa)a->aa ; V(ab)V(a1a)->V(a2b)V(aa) ; V(a2b)->a ; aV(ab)->aa ; V(ab)a->aa ; V(aa)V(=1a)->V(a2a)V(=a) ; V(a2a)->a ; aV(=a)->a= ; V(=a)a->=a ; V(ab)V(=1a)->V(a2b)V(=a) ; V(a2b)->a ; aV(=b)->a= ; V(=b)a->=a ; V(=a)V(a1a)->V(=2a)V(aa) ; V(=2a)->= ; =V(aa)->=a ; V(aa)=->a= ; V(=b)V(a1a)->V(=2b)V(aa) ; V(=2b)->= ; =V(ab)->=a ; V(ab)=->a= ; V(=a)V(=1a)->V(=2a)V(=a) ; V(=2a)->= ; =V(=a)->== ; V(=a)=->== ; V(=b)V(=1a)->V(=2b)V(=a) ; V(=2b)->= ; =V(=b)->== ; V(=b)=->== ;
+TM1 trans 0>1 V(a0a)V(aa)->V(ab)V(a1a) ; V(a0a)V(ab)->V(ab)V(a1b) ; V(=0a)V(aa)->V(=b)V(a1a) ; V(=0a)V(ab)->V(=b)V(a1b) ; V(a0a)V(=a)->V(ab)V(=1a) ; V(a0a)V(=b)->V(ab)V(=1b) ; V(=0a)V(=a)->V(=b)V(=1a) ; V(=0a)V(=b)->V(=b)V(=1b) ;
+TM2 init S->V(==)S ; S->SV(==) ; S->T ; T->TV(aa) ; T->V(a0a) ; T->TV(bb) ; T->V(b0b) ; =-> ;
+TM2 trans 0>0 V(a0a)V(aa)->V(aa)V(a0a) ; V(a0a)V(ab)->V(aa)V(a0b) ; V(b0a)V(aa)->V(ba)V(a0a) ; V(b0a)V(ab)->V(ba)V(a0b) ; V(=0a)V(aa)->V(=a)V(a0a) ; V(=0a)V(ab)->V(=a)V(a0b) ; V(a0a)V(ba)->V(aa)V(b0a) ; V(a0a)V(bb)->V(aa)V(b0b) ; V(b0a)V(ba)->V(ba)V(b0a) ; V(b0a)V(bb)->V(ba)V(b0b) ; V(=0a)V(ba)->V(=a)V(b0a) ; V(=0a)V(bb)->V(=a)V(b0b) ; V(a0a)V(=a)->V(aa)V(=0a) ; V(a0a)V(=b)->V(aa)V(=0b) ; V(b0a)V(=a)->V(ba)V(=0a) ; V(b0a)V(=b)->V(ba)V(=0b) ; V(=0a)V(=a)->V(=a)V(=0a) ; V(=0a)V(=b)->V(=a)V(=0b) ;
+TM2 trans 0>1 V(a0b)V(aa)->V(ab)V(a1a) ; V(a1a)->a ; V(aa)a->aa ; aV(aa)->aa ; V(a0b)V(ab)->V(ab)V(a1b) ; V(a1b)->a ; V(ab)a->aa ; aV(ab)->aa ; V(b0b)V(aa)->V(bb)V(a1a) ; V(a1a)->a ; V(ba)a->ba ; aV(ba)->ab ; V(b0b)V(ab)->V(bb)V(a1b) ; V(a1b)->a ; V(bb)a->ba ; aV(bb)->ab ; V(=0b)V(aa)->V(=b)V(a1a) ; V(a1a)->a ; V(=a)a->=a ; aV(=a)->a= ; V(=0b)V(ab)->V(=b)V(a1b) ; V(a1b)->a ; V(=b)a->=a ; aV(=b)->a= ; V(a0b)V(ba)->V(ab)V(b1a) ; V(b1a)->b ; V(aa)b->ab ; bV(aa)->ba ; V(a0b)V(bb)->V(ab)V(b1b) ; V(b1b)->b ; V(ab)b->ab ; bV(ab)->ba ; V(b0b)V(ba)->V(bb)V(b1a) ; V(b1a)->b ; V(ba)b->bb ; bV(ba)->bb ; V(b0b)V(bb)->V(bb)V(b1b) ; V(b1b)->b ; V(bb)b->bb ; bV(bb)->bb ; V(=0b)V(ba)->V(=b)V(b1a) ; V(b1a)->b ; V(=a)b->=b ; bV(=a)->b= ; V(=0b)V(bb)->V(=b)V(b1b) ; V(b1b)->b ; V(=b)b->=b ; bV(=b)->b= ; V(a0b)V(=a)->V(ab)V(=1a) ; V(=1a)->= ; V(aa)=->a= ; =V(aa)->=a ; V(a0b)V(=b)->V(ab)V(=1b) ; V(=1b)->= ; V(ab)=->a= ; =V(ab)->=a ; V(b0b)V(=a)->V(bb)V(=1a) ; V(=1a)->= ; V(ba)=->b= ; =V(ba)->=b ; V(b0b)V(=b)->V(bb)V(=1b) ; V(=1b)->= ; V(bb)=->b= ; =V(bb)->=b ; V(=0b)V(=a)->V(=b)V(=1a) ; V(=1a)->= ; V(=a)=->== ; =V(=a)->== ; V(=0b)V(=b)->V(=b)V(=1b) ; V(=1b)->= ; V(=b)=->== ; =V(=b)->== ;
+TM3 init S->V(==)S ; S->SV(==) ; S->T ; T->TV(aa) ; T->V(a0a) ; =-> ;
+TM3 trans 0>1 V(a0a)V(aa)->V(a=)V(a1a) ; V(a0a)V(a=)->V(a=)V(a1=) ; V(=0a)V(aa)->V(==)V(a1a) ; V(=0a)V(a=)->V(==)V(a1=) ; V(a0a)V(=a)->V(a=)V(=1a) ; V(a0a)V(==)->V(a=)V(=1=) ; V(=0a)V(=a)->V(==)V(=1a) ; V(=0a)V(==)->V(==)V(=1=) ;
+TM3 trans 1>2 V(aa)V(a1=)->V(a2a)V(aa) ; V(a2a)->a ; aV(aa)->aa ; V(aa)a->aa ; V(a=)V(a1=)->V(a2=)V(aa) ; V(a2=)->a ; aV(a=)->aa ; V(a=)a->aa ; V(aa)V(=1=)->V(a2a)V(=a) ; V(a2a)->a ; aV(=a)->a= ; V(=a)a->=a ; V(a=)V(=1=)->V(a2=)V(=a) ; V(a2=)->a ; aV(==)->a= ; V(==)a->=a ; V(=a)V(a1=)->V(=2a)V(aa) ; V(=2a)->= ; =V(aa)->=a ; V(aa)=->a= ; V(==)V(a1=)->V(=2=)V(aa) ; V(=2=)->= ; =V(a=)->=a ; V(a=)=->a= ; V(=a)V(=1=)->V(=2a)V(=a) ; V(=2a)->= ; =V(=a)->== ; V(=a)=->== ; V(==)V(=1=)->V(=2=)V(=a) ; V(=2=)->= ; =V(==)->== ; V(==)=->== ;
