@@ -4,6 +4,9 @@ import { pumpingView, decompositionParts, clampLengths, pumpingLanguages, length
 import { lsystemForm, lsystemCompact, LSYSTEM_EXAMPLE } from '../src/lsystem-model.js';
 import { fixture } from './fixtures.js';
 import { loadApi } from './engine.js';
+import { setLanguage } from '../src/i18n.js';
+
+setLanguage('en'); // these tests assert the English messages; the app default is Spanish
 
 const pumping = fixture('pumping');
 

@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import { designDefaults, designRequest, designView, designErrorView, constraintMarker, parseExampleLines } from '../src/design-model.js';
 import { fixture } from './fixtures.js';
 import { loadApi } from './engine.js';
+import { setLanguage } from '../src/i18n.js';
+
+setLanguage('en'); // these tests assert the English messages; the app default is Spanish
 
 const design = fixture('design');
 const form = (extra = {}) => ({ ...designDefaults(), ...extra });

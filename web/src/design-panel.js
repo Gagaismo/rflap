@@ -282,7 +282,7 @@ registerPanel({
       output.append(h('p', { class: view.crossCheck.mismatches ? 'status-bad' : 'muted' }, t('design.cross', { n: view.crossCheck.checked, len: view.crossCheck.maxLen, mismatches: view.crossCheck.mismatches })));
       if (view.accepted.length) output.append(h('h4', {}, t('design.accepted')), h('p', { class: 'mono' }, view.accepted.map((w) => (w === '' ? 'λ' : w)).join('   ')));
       try {
-        const drawn = await tab.api({ op: 'render', document: result.document, format: 'svg', dark: Boolean(tab.dark) });
+        const drawn = await tab.api({ op: 'render', document: result.document, format: 'svg' });
         picture.append(svgImage(drawn.content, t('design.preview')));
       } catch {
         /* the report stands on its own */

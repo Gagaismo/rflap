@@ -22,14 +22,15 @@ bundled JS and the wasm as base64; the build fails if it would reference any ext
 
 | file (`web/src/`) | what |
 |---|---|
-| `index.html`, `style.css` | template (the xtask fills three markers) and styles (light/dark, responsive) |
+| `index.html`, `style.css` | template (the xtask fills three markers) and styles (the classic JFLAP look only, responsive) |
 | `main.js` | entry: host, engine (wasm or remote), app shell |
 | `wasm.js` | wasm loader: `decodeBase64`, `loadWasm(bytes) -> call(text) -> text` over the C ABI of `rflap-wasm` |
 | `api.js` | `createApi(getTransport)` -> `api(request) -> result` (throws `ApiError` with the engine's `code`); `localTransport`, `remoteTransport` |
 | `doc.js` | helpers over the FULL document JSON (add/remove state/transition, blocks, labels, compact form, `History`) |
 | `share.js` | `#doc=<base64url JSON>` links |
 | `host.js` | host bridge: `createHost(window, handlers)` for standalone, MCP Apps and ChatGPT |
-| `i18n.js` | English and Spanish; `t(key, params)`, `registerStrings`, `pickLocale` |
+| `i18n.js` | Spanish (default) and English; `t(key, params)`, `registerStrings`, `pickLocale` |
+| `fit.js` | pure "fit to window": `fitView(box, viewport, options) -> {scale, offsetX, offsetY}` |
 | `registry.js` | **panel and action registries** (below) |
 | `tab.js` | `Tab`: a document with undo history, flags, overlays; it is the `ctx` of panels and actions |
 | `app.js` | shell: menu bar, tabs, workspaces, files, host integration |
@@ -71,7 +72,7 @@ Documents are handled in the **full form** (what `normalize` returns). Anything 
 | detection | no parent frame | iframe, no `window.openai` | `window.openai` |
 | document in | `#doc=` hash, empty FA | `ui/notifications/tool-result` → `structuredContent.document` (also `result.document` or the document itself); `tool-input.arguments.document` as a preview | `toolOutput` (same shapes) and `widgetState.document` |
 | extras shown (panel "Assistant") | – | `svg`, `analysis`, `simulation`, `verification`, `steps`, anything else | same |
-| theme / language | `prefers-color-scheme`, `navigator.languages` | `hostContext.theme`, `hostContext.locale` (+ `host-context-changed`) | `theme`, `locale` |
+| theme / language | ignored: always the classic look, Spanish by default | `hostContext.theme` and `locale` are ignored | `theme` and `locale` are ignored; the chosen language is kept in `widgetState.language` |
 | "Send to chat" | – | `ui/message` with a short text and the compact JSON | `sendFollowUpMessage` |
 | model sees edits | – | `ui/update-model-context` (debounced) | `setWidgetState` |
 | size | – | `ui/notifications/size-changed` (ResizeObserver) | `notifyIntrinsicHeight` |
@@ -135,7 +136,7 @@ the fallback panel "Document"; automata get the canvas plus the panels.
 | `ctx.extras`, `ctx.setExtras(obj)` | what the assistant sent (panel "Assistant") |
 | `ctx.openTab(doc, {title, steps, extras})` | open a document (any form after `normalizeDocument`) in a new tab |
 | `ctx.notify(message, kind)` | toast (`'info'` or `'error'`) |
-| `ctx.app` | the shell: `tabs()`, `openTab`, `closeTab`, `showPanel(tab, id, method?)`, `host`, `dark`, `openText(text, title)`, `sendToChat(tab)` |
+| `ctx.app` | the shell: `tabs()`, `openTab`, `closeTab`, `showPanel(tab, id, method?)`, `host`, `languageChoice`, `openText(text, title)`, `sendToChat(tab)` |
 | `ctx.host` | host bridge (`mode`, `connected`, `sendMessage`, `callTool`, ...) |
 
 Reusable pieces: `convertToTab(ctx, to, i18nKey)` (actions.js: runs `convert`, opens the result with its steps),
@@ -146,10 +147,24 @@ Reusable pieces: `convertToTab(ctx, to, i18nKey)` (actions.js: runs `convert`, o
 
 ## Keyboard
 
-Canvas focused: `1 2 3 4` tools, `Del` delete, `F2`/`Enter` rename or edit, arrows move (Shift = 1 px), `+ − 0` zoom,
+Canvas focused: `1 2 3 4` tools, `Del` delete, `F2`/`Enter` rename or edit, arrows move (Shift = 1 px), `+ − 0` zoom, `9` fit,
 `Shift+F10` context menu, `Esc` clear selection. Everywhere: `Ctrl+Z`, `Ctrl+Y`/`Ctrl+Shift+Z`, `Ctrl+O`, `Ctrl+S`,
-`Ctrl+A`, `Ctrl+W`, `Ctrl+= / − / 0`. The "Structure" panel offers everything the mouse does as plain tables and
+`Ctrl+A`, `Ctrl+W`, `Ctrl+= / − / 0` zoom, `Ctrl+9` fit to window. The "Structure" panel offers everything the mouse does as plain tables and
 forms (keyboard and screen readers).
+
+## Look, zoom and language
+
+* **One look.** The editor, the panels and the assistant image always use the classic JFLAP style (white canvas,
+  yellow states, black strokes). The host theme (`hostContext.theme`, ChatGPT's `theme`) and
+  `prefers-color-scheme` are ignored on purpose; there is no dark mode and `render` is always called without `dark`.
+* **Fit.** A document that is loaded (tool result, file, link, new tab, conversion result) is fitted when it is drawn
+  and again when the canvas first gets a real size or resizes (iframes start small), until the user zooms, clicks or
+  edits. The fit shows the whole drawing (measured with `getBBox`: circles, labels, loops, initial triangle, notes)
+  with a margin and never above 100%. The "Ajustar" button, View > Fit to window and `Ctrl+9` / `9` do it on demand.
+  The arithmetic is `fitView` in `fit.js` (tested).
+* **Language.** Always Spanish at start; `navigator.language` and the host locale are ignored. View > Language
+  switches to English; the choice is kept in `localStorage` (`rflap.language`) and, in ChatGPT, in
+  `widgetState.language`. Every string must exist in both dictionaries (`web/test/i18n.test.js`).
 
 ## Environments (T12b)
 
