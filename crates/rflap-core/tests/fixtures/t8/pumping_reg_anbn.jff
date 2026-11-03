@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--Created with JFLAP 6.4.--><structure>
+	<type>regular pumping lemma</type>
+	<name>a^n b^n : n &gt;= 0</name>
+	<first_player>Computer</first_player>
+	<m>5</m>
+	<w>aaaaabbbbb</w>
+	<i>0</i>
+	<xLength>1</xLength>
+	<yLength>2</yLength>
+	<attempt>X = a;   Y = aa;   Z = aaabbbbb; I = 0; &lt;i&gt;Won&lt;/i&gt;</attempt>
+	<attempt>X = λ;   Y = a;   Z = aaaabbbbb; I = 2; &lt;i&gt;Won&lt;/i&gt;</attempt>
+</structure>

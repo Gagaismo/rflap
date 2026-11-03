@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--Created with JFLAP 6.4.--><structure>
+	<type>lsystem</type>
+	<!--The L-system axiom.-->
+	<axiom>g color=red lineWidth=3 g [ color(0,0,255) ! g ] g # g ## g polygonColor=forestGreen { g + g + g } g</axiom>
+	<!--The drawing parameters.-->
+	<parameter>
+		<name>distance</name>
+		<value>10</value>
+	</parameter>
+	<parameter>
+		<name>angle</name>
+		<value>90</value>
+	</parameter>
+	<parameter>
+		<name>hueChange</name>
+		<value>60</value>
+	</parameter>
+</structure>
