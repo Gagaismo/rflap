@@ -26,6 +26,7 @@ pub enum Algorithm {
     /// Hierarchical tree following the direction of the transitions (`TREE_HIERARCHY`).
     Tree,
     /// Tree ordered by vertex degree, ignoring direction (`TREE_DEGREE`).
+    #[serde(rename = "tree-degree", alias = "tree-by-degree")]
     TreeByDegree,
     TwoCircle,
 }

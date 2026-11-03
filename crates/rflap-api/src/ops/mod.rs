@@ -72,22 +72,6 @@ macro_rules! with_automaton {
 }
 pub(crate) use with_automaton;
 
-/// `CamelCase` to `snake_case` (core enums serialize with their variant names).
-pub(crate) fn snake(name: &str) -> String {
-    let mut out = String::new();
-    for (i, c) in name.chars().enumerate() {
-        if c.is_uppercase() {
-            if i > 0 {
-                out.push('_');
-            }
-            out.extend(c.to_lowercase());
-        } else {
-            out.push(c);
-        }
-    }
-    out
-}
-
 /// The value of a core result as a JSON object.
 pub(crate) fn object<T: Serialize>(value: &T) -> Object {
     match serde_json::to_value(value) {

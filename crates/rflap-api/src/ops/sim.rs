@@ -5,7 +5,7 @@ use rflap_core::fa::{FaConfig, FaStepByState, FaWithClosure};
 use rflap_core::mealy::{MealyConfig, MealyStepByState, MooreStepByState};
 use rflap_core::pda::{Acceptance as PdaAcceptance, PdaConfig, PdaStepByState, PdaWithClosure};
 use rflap_core::sim::{Machine, RunOutcome, StepRun, fast_run};
-use rflap_core::turing::{AcceptanceFilters, TmConfig, TmSimulator, TuringMachine, tape_outputs};
+use rflap_core::turing::{AcceptanceFilters, TmConfig, TmSimulator, TuringMachine, tape_contents};
 use serde_json::{Map, Value, json};
 
 use super::{Object, no_initial_state, state_name};
@@ -278,7 +278,7 @@ fn build<'a>(
                 })
             };
             let extra = |outcome: &RunOutcome<TmConfig>, out: &mut Object| {
-                if let Some(outputs) = tape_outputs(outcome) {
+                if let Some(outputs) = tape_contents(outcome) {
                     out.insert("tape_outputs".into(), json!(outputs));
                 }
             };

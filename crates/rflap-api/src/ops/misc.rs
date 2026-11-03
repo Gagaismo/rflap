@@ -4,7 +4,7 @@ use rflap_core::design::{self, DesignAutomaton};
 use rflap_core::pumping::{Game, Kind, Language, Mode, catalogue};
 use serde_json::{Value, json};
 
-use super::{object, snake, to_value, wrong_type};
+use super::{object, to_value, wrong_type};
 use crate::document::Document;
 use crate::error::{ApiError, code};
 use crate::request::{LanguageRef, LsystemRender, PumpKind, PumpingMove, PumpingNew};
@@ -118,8 +118,7 @@ fn state_of(game: &Game, document: Document) -> serde_json::Map<String, Value> {
     out.insert("result".into(), to_value(&game.result()));
     out.insert(
         "conclusion".into(),
-        game.conclusion()
-            .map_or(Value::Null, |c| json!(snake(&format!("{c:?}")))),
+        game.conclusion().map_or(Value::Null, |c| to_value(&c)),
     );
     out
 }

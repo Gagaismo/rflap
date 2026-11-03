@@ -142,7 +142,7 @@
 //! | `open_jff` | `{"op": "open_jff", "xml": "<?xml ...>"}` | `document` (any `.jff` type, L-systems and pumping games included) |
 //! | `save_jff` | `{"op": "save_jff", "document": {...}}` | `xml`, `type` |
 //! | `normalize` | `{"op": "normalize", "document": {...}}` | `document` (full form) |
-//! | `simulate` | `{"op": "simulate", "document": {...}, "input": "abb", "mode": "closure", "acceptance": "empty_stack", "max_configs": 10000}` | `outcome` (`accepted`/`rejected`/`undecided`), `accepted`, `trace`, `output` (Mealy/Moore), `tape_outputs` (Turing) |
+//! | `simulate` | `{"op": "simulate", "document": {...}, "input": "abb", "mode": "closure", "acceptance": "empty_stack", "max_configs": 10000}` | `outcome` (`accepted`/`rejected`/`undecided`), `accepted`, `trace`, `output` (Mealy/Moore), `tape_outputs` (Turing: the final content of each tape, blanks around it trimmed) |
 //! | `step` | `{"op": "step", "document": {...}, "input": "abb", "steps": 2}` | `steps_done`, `finished`, `truncated`, `frontier`, `accepted` (`config`, `trace`), `rejected` |
 //! | `multiple_run` | `{"op": "multiple_run", "document": {...}, "inputs": ["ab", "ba"]}` | `results`: `input`, `outcome`, `accepted`, `output`/`tape_outputs` |
 //! | `analyze` | `{"op": "analyze", "document": {...}}` | `type`, `kind` (`dfa`, `nfa`, `dpda`, `npda`, `turing`, `mealy`, `moore`), `alphabet`, `states`, `initial`, `finals`, `deterministic`, `nondeterministic_states`, `lambda_transitions`, `unreachable_states`, `useless_states`, `complete` (fa) |
@@ -164,7 +164,9 @@
 //!
 //! `convert` targets (`to`): `dfa`, `minimal_dfa` (from a fa, a regex or a regular grammar),
 //! `regex` and `regular_grammar` (from a fa), `nfa` (from a regex), `fa` (from a right-linear
-//! grammar), `pda_ll` and `pda_lr` (from a grammar), `cfg` (from a pda),
+//! grammar), `pda_ll` and `pda_lr` (from a grammar), `cfg` (from a pda; one that is not in JFLAP's form is
+//! rewritten first and `steps` starts with a `pda_to_jflap_form` entry), `pda_jflap_form` (that rewriting
+//! alone),
 //! `unrestricted_grammar` (from a one-tape Turing machine), `remove_lambda`, `remove_unit`,
 //! `remove_useless`, `cnf` (grammars), `complete` (adds the trap state), `split_labels` and
 //! `remove_useless_states`.

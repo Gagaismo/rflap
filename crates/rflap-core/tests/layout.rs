@@ -238,3 +238,18 @@ fn larger_pseudo_random_graphs_still_fit_and_stay_apart() {
         }
     }
 }
+
+#[test]
+fn algorithm_names_agree_between_serde_and_from_str() {
+    for algorithm in Algorithm::ALL {
+        let json = serde_json::to_string(&algorithm).unwrap();
+        assert_eq!(json, format!("\"{}\"", algorithm.name()));
+        assert_eq!(algorithm.name().parse::<Algorithm>(), Ok(algorithm));
+        assert_eq!(serde_json::from_str::<Algorithm>(&json).unwrap(), algorithm);
+    }
+    // The old serde spelling is still accepted on input.
+    assert_eq!(
+        serde_json::from_str::<Algorithm>("\"tree-by-degree\"").unwrap(),
+        Algorithm::TreeByDegree
+    );
+}

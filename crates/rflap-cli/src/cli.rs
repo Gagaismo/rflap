@@ -192,8 +192,9 @@ Example:
     /// Convert a document: NFA to DFA, minimize, FA to regex, regex to FA, grammars, PDA, ...
     #[command(after_help = "\
 Targets: dfa, minimal-dfa, regex, nfa, regular-grammar, fa, pda-ll, pda-lr, cfg,
-unrestricted-grammar, remove-lambda, remove-unit, remove-useless, cnf, complete,
-split-labels, remove-useless-states. See `rflap capabilities` for what each accepts.
+pda-jflap-form, unrestricted-grammar, remove-lambda, remove-unit, remove-useless, cnf,
+complete, split-labels, remove-useless-states. `cfg` rewrites a PDA that is not in JFLAP's
+form first (`pda-jflap-form` does only that). See `rflap capabilities` for what each accepts.
 -o writes a .jff, .json (normalized) or .svg file; without it the result is printed.
 
 Example:

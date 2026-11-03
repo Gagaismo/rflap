@@ -12,9 +12,10 @@ use rflap_core::grammar::Grammar;
 use rflap_core::layout::{self, Algorithm, LayoutOptions};
 use rflap_core::regex::Regex;
 use rflap_core::render::{self, SvgOptions};
+use rflap_core::turing::TuringMachine;
 use serde_json::{Value, json};
 
-use super::{Object, snake, state_name, to_value, with_automaton, wrong_type};
+use super::{Object, state_name, to_value, with_automaton, wrong_type};
 use crate::compact::parse_algorithm;
 use crate::document::Document;
 use crate::error::{ApiError, code};
@@ -204,10 +205,7 @@ pub fn analyze(doc: &Document) -> Result<Value, ApiError> {
                 ),
             );
             out.insert("productions".into(), json!(g.productions().len()));
-            out.insert(
-                "classification".into(),
-                json!(snake(&format!("{:?}", report.classification))),
-            );
+            out.insert("classification".into(), to_value(&report.classification));
             out.insert("message".into(), json!(report.classification.message()));
         }
         Document::Regex(r) => {
@@ -530,18 +528,44 @@ pub fn layout(r: LayoutArgs) -> Result<Value, ApiError> {
 // combine
 // ---------------------------------------------------------------------------------------------
 
+/// Appends `y` below `x`; the building blocks of `y` follow their states.
+fn combine_turing(x: &TuringMachine, y: &TuringMachine) -> Result<TuringMachine, ApiError> {
+    if x.tapes() != y.tapes() {
+        return Err(ApiError::new(
+            code::INVALID_ARGUMENT,
+            format!(
+                "`combine` needs turing machines with the same number of tapes, got {} and {}",
+                x.tapes(),
+                y.tapes()
+            ),
+        ));
+    }
+    let combined = fa::combine(x.automaton(), y.automaton());
+    let old: BTreeSet<StateId> = x.automaton().states().map(|s| s.id).collect();
+    // `fa::combine` creates the states of `y` in order, after those of `x`.
+    let new_ids: Vec<StateId> = combined
+        .states()
+        .map(|s| s.id)
+        .filter(|id| !old.contains(id))
+        .collect();
+    let mut out = x.clone();
+    *out.automaton_mut() = combined;
+    for (from, to) in y.automaton().states().map(|s| s.id).zip(new_ids) {
+        if let Some(inner) = y.block(from) {
+            out.set_block(to, inner.clone())
+                .map_err(|e| ApiError::new(code::INVALID_ARGUMENT, e.to_string()))?;
+        }
+    }
+    Ok(out)
+}
+
 pub fn combine(a: &Document, b: &Document) -> Result<Value, ApiError> {
     let document = match (a, b) {
         (Document::Fa(x), Document::Fa(y)) => Document::Fa(fa::combine(x, y)),
         (Document::Pda(x), Document::Pda(y)) => Document::Pda(fa::combine(x, y)),
         (Document::Mealy(x), Document::Mealy(y)) => Document::Mealy(fa::combine(x, y)),
         (Document::Moore(x), Document::Moore(y)) => Document::Moore(fa::combine(x, y)),
-        (Document::Turing(_), Document::Turing(_)) => {
-            return Err(ApiError::new(
-                code::UNSUPPORTED_OPTION,
-                "`combine` does not support turing machines",
-            ));
-        }
+        (Document::Turing(x), Document::Turing(y)) => Document::Turing(combine_turing(x, y)?),
         (x, y) if x.is_automaton() && y.is_automaton() => {
             return Err(ApiError::new(
                 code::WRONG_DOCUMENT_TYPE,
@@ -555,7 +579,7 @@ pub fn combine(a: &Document, b: &Document) -> Result<Value, ApiError> {
         (x, _) => {
             return Err(wrong_type(
                 "combine",
-                "two fa, pda, mealy or moore documents",
+                "two fa, pda, turing, mealy or moore documents",
                 x,
             ));
         }

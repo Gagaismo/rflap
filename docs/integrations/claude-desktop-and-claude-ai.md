@@ -15,7 +15,7 @@ documentation lists Claude and Claude Desktop among the hosts that support MCP A
 {
   "mcpServers": {
     "rflap": {
-      "command": "C:\path\to\rflap-mcp.exe",
+      "command": "C:\\path\\to\\rflap-mcp.exe",
       "args": ["--viewer-port", "8787"]
     }
   }

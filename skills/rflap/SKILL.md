@@ -65,9 +65,10 @@ Reasoning: the machine must count the a's, unbounded memory, so no finite automa
 
 Tool: `rflap_design_automaton` returns a PDA document. Other templates: `an_bm` (n <= m, n >= m, n != m),
 `equal_count`, `balanced_brackets`, `wcwr`, `even_palindrome`, `palindrome`. To get the context-free
-grammar of a PDA use `rflap_convert` with `to: "cfg"` (JFLAP's construction needs one final state and
-transitions that pop one symbol and push none or two; otherwise the error says which transition
-breaks it); for the reverse, `to: "pda_ll"` or `"pda_lr"`.
+grammar of a PDA use `rflap_convert` with `to: "cfg"`. JFLAP's construction needs one final state
+reached on an empty stack and transitions that pop one symbol and push none or two; Rflap rewrites
+a PDA that is not in that form first (the `pda_to_jflap_form` entry of `steps` says so, and
+`to: "pda_jflap_form"` does only that rewriting). For the reverse, `to: "pda_ll"` or `"pda_lr"`.
 
 ## Example 3: grammar to LL(1) table
 
@@ -82,8 +83,9 @@ breaks it); for the reverse, `to: "pda_ll"` or `"pda_lr"`.
 3. `rflap_parse` with `parser: "ll1"` and `inputs: ["i+i*i", "i+"]` shows the accepted derivation
    and the rejected word.
 
-CLI: `rflap call '{"op":"parse_tables","grammar":"E -> TA\nA -> +TA | λ\nT -> FB\nB -> *FB | λ\nF -> (E) | i"}'`
-(run `rflap --help` for the dedicated subcommands).
+CLI: `rflap tables --grammar 'E -> TA\nA -> +TA | λ\nT -> FB\nB -> *FB | λ\nF -> (E) | i'`, then
+`rflap parse --grammar '...' 'i+i*i' --parser ll1`. `rflap --help` lists every subcommand and
+`rflap call` sends any raw API request.
 
 ## Other frequent requests
 
@@ -96,6 +98,8 @@ CLI: `rflap call '{"op":"parse_tables","grammar":"E -> TA\nA -> +TA | λ\nT -> F
 | Is the student's automaton right? | `rflap_equivalent` against a regex or a reference automaton; it returns a counterexample |
 | Trace a run | `rflap_simulate` (whole trace, or `inputs` for a table), `rflap_step` (one step at a time) |
 | Open or save a JFLAP file | `rflap_open_jff`, `rflap_save_jff` |
+| Turing machine run with its final tape | `rflap_simulate` (`tape_outputs` is the final content of each tape, blanks trimmed; `acceptance`: `final_state`, `halting`, `both`) |
+| Anything without a dedicated tool (layout, user-controlled parsing, ...) | `rflap_call` with `{"request": {"op": ...}}`; the answer is `{"ok": ..., "result" or "error"}` |
 
 ## Rules of thumb
 

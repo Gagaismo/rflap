@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 /// Regular expression AST. `Concat` and `Union` hold at least two operands when built by the parser.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Regex {
     /// The empty language (JFLAP `ø`).
     Empty,

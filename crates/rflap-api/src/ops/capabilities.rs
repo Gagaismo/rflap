@@ -66,7 +66,7 @@ fn op_entry(op: &str) -> Value {
             json!({"op": "normalize", "document": nfa()}),
         ),
         "simulate" => (
-            "Runs a machine on an input. Returns {outcome: accepted|rejected|undecided, accepted, trace, output?, tape_outputs?}. Options: mode step_by_state|closure (fa, pda), acceptance final_state|empty_stack (pda) or final_state|halting|both (turing), max_configs, inputs (one string per tape).",
+            "Runs a machine on an input. Returns {outcome: accepted|rejected|undecided, accepted, trace, output?, tape_outputs? (final content of each tape)}. Options: mode step_by_state|closure (fa, pda), acceptance final_state|empty_stack (pda) or final_state|halting|both (turing), max_configs, inputs (one string per tape).",
             "document, input | inputs, mode?, acceptance?, max_configs?",
             json!({"op": "simulate", "document": nfa(), "input": "abb"}),
         ),
@@ -259,11 +259,18 @@ fn convert_entry(to: ConvertTo) -> Value {
         ConvertTo::PdaLr => ("grammar", "CFG to PDA, LR construction.", grammar()),
         ConvertTo::Cfg => (
             "pda",
-            "PDA to CFG (one final state; transitions pop one symbol and push none or two; those into the final state pop only Z).",
+            "PDA to CFG. JFLAP needs one final state, transitions that pop one symbol and push none or two, and those into the final state popping only Z; a PDA that is not in that form is rewritten first (see pda_jflap_form) and the rewriting is reported in the steps.",
             json!({"type": "pda", "initial": "q0", "finals": ["qf"],
                    "transitions": [["q0", "a,Z;AZ", "q0"], ["q0", "a,A;AA", "q0"],
                                    ["q0", "b,A;λ", "q1"], ["q1", "b,A;λ", "q1"],
                                    ["q1", "λ,Z;λ", "qf"]]}),
+        ),
+        ConvertTo::PdaJflapForm => (
+            "pda",
+            "Rflap addition: rewrites a PDA that accepts by final state (a designed one, say) into the form `cfg` needs: one final state reached on an empty stack, every transition pops one symbol and pushes none or two. `cfg` applies it by itself when it is needed.",
+            json!({"type": "pda", "initial": "q0", "finals": ["q1"],
+                   "transitions": [["q0", "a,Z;AZ", "q0"], ["q0", "a,A;AA", "q0"],
+                                   ["q0", "b,A;λ", "q1"], ["q1", "b,A;λ", "q1"]]}),
         ),
         ConvertTo::UnrestrictedGrammar => (
             "turing",
@@ -295,7 +302,7 @@ fn convert_entry(to: ConvertTo) -> Value {
                    "transitions": [["a", "xyz", "b"]]}),
         ),
         ConvertTo::RemoveUselessStates => (
-            "fa, pda, mealy, moore",
+            "fa, pda, turing, mealy, moore",
             "Drops unreachable and useless states.",
             nfa(),
         ),

@@ -271,8 +271,11 @@ pub enum ConvertTo {
     PdaLl,
     /// CFG to PDA, LR construction.
     PdaLr,
-    /// PDA to CFG.
+    /// PDA to CFG. A PDA that is not in JFLAP's form is rewritten first (`pda_jflap_form`).
     Cfg,
+    /// Rflap addition: rewrites a PDA into the form `cfg` requires (one final state reached on
+    /// an empty stack, every transition pops one symbol and pushes zero or two).
+    PdaJflapForm,
     /// One-tape Turing machine to unrestricted grammar.
     UnrestrictedGrammar,
     RemoveLambda,
@@ -289,7 +292,7 @@ pub enum ConvertTo {
 }
 
 impl ConvertTo {
-    pub const ALL: [ConvertTo; 17] = [
+    pub const ALL: [ConvertTo; 18] = [
         ConvertTo::Dfa,
         ConvertTo::MinimalDfa,
         ConvertTo::Regex,
@@ -299,6 +302,7 @@ impl ConvertTo {
         ConvertTo::PdaLl,
         ConvertTo::PdaLr,
         ConvertTo::Cfg,
+        ConvertTo::PdaJflapForm,
         ConvertTo::UnrestrictedGrammar,
         ConvertTo::RemoveLambda,
         ConvertTo::RemoveUnit,

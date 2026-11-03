@@ -30,6 +30,7 @@ pub use user::{UserParseError, UserParser};
 
 /// Result of a parse attempt.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ParseOutcome {
     Accepted,
     Rejected,
@@ -39,6 +40,7 @@ pub enum ParseOutcome {
 
 /// Why an input could not even be attempted.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ParseError {
     /// The input has a symbol that is not a terminal of the grammar (JFLAP's "String to parse
     /// has nonterminal").

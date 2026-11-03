@@ -473,10 +473,54 @@ fn lsystem_pumping_capabilities_and_raw_call() {
         "rflap_call",
         json!({"request": {"op": "simulate", "document": nfa(), "input": "ab"}}),
     );
-    assert_eq!(raw["structuredContent"]["outcome"], "accepted");
+    assert_eq!(raw["structuredContent"]["ok"], true, "{raw}");
+    assert_eq!(raw["structuredContent"]["result"]["outcome"], "accepted");
     let bad = call("rflap_call", json!({"request": {"op": "nope"}}));
-    assert_eq!(bad["isError"], true);
+    assert_eq!(bad["structuredContent"]["ok"], false, "{bad}");
+    assert_eq!(bad["structuredContent"]["error"]["code"], "unknown_op");
     assert!(text(&bad).contains("unknown_op"));
+}
+
+/// The contract of `web/README.md` ("The engine"): the widget sends `{request: "<json>"}` and
+/// expects the `rflap_api::call` envelope as `structuredContent`.
+#[test]
+fn rflap_call_answers_the_widget_fallback_contract() {
+    let request = json!({"op": "simulate", "document": nfa(), "input": "ab"}).to_string();
+    let answer = call("rflap_call", json!({"request": request}));
+    assert_eq!(answer["isError"], false, "{answer}");
+    let envelope = &answer["structuredContent"];
+    assert_eq!(envelope["ok"], true, "{answer}");
+    assert_eq!(envelope["result"]["outcome"], "accepted");
+    // The same envelope is also readable as JSON text content (after the markdown fence).
+    let shown = text(&answer);
+    let json_text = shown
+        .trim()
+        .trim_start_matches("```json")
+        .trim_end_matches("```")
+        .trim();
+    assert_eq!(serde_json::from_str::<Value>(json_text).unwrap(), *envelope);
+
+    let bad = call("rflap_call", json!({"request": "{\"op\": \"nope\"}"}));
+    assert_eq!(bad["structuredContent"]["ok"], false, "{bad}");
+    assert_eq!(bad["structuredContent"]["error"]["code"], "unknown_op");
+
+    let garbage = call("rflap_call", json!({"request": "not json"}));
+    assert_eq!(garbage["structuredContent"]["ok"], false, "{garbage}");
+}
+
+#[test]
+fn rflap_call_is_callable_by_the_app() {
+    let list = rpc("tools/list", json!({}));
+    let tool = list["result"]["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|t| t["name"] == "rflap_call")
+        .unwrap()
+        .clone();
+    let visibility = tool["_meta"]["ui"]["visibility"].as_array().unwrap();
+    assert!(visibility.contains(&json!("app")), "{tool}");
+    assert!(tool["_meta"]["ui"]["resourceUri"].is_null(), "{tool}");
 }
 
 #[test]

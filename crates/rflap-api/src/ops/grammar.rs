@@ -8,7 +8,7 @@ use rflap_core::grammar::{
 };
 use serde_json::{Map, Value, json};
 
-use super::{Object, object, snake, to_value, wrong_type};
+use super::{Object, object, to_value, wrong_type};
 use crate::document::Document;
 use crate::error::{ApiError, code};
 use crate::request::{ParseArgs, Parser, UndoMove, UserMove, UserParse};
@@ -31,12 +31,9 @@ pub fn grammar_type(doc: &Document) -> Result<Value, ApiError> {
     let g = grammar_of(doc, "grammar_type")?;
     let report = g.type_report();
     let mut details = object(&report);
-    details.insert(
-        "classification".into(),
-        json!(snake(&format!("{:?}", report.classification))),
-    );
+    details.insert("classification".into(), to_value(&report.classification));
     Ok(json!({
-        "classification": snake(&format!("{:?}", report.classification)),
+        "classification": report.classification,
         "message": report.classification.message(),
         "report": details,
     }))
@@ -59,12 +56,6 @@ fn forms_of(derivation: &Value) -> Value {
 
 fn finish(mut result: Object, input: &str) -> Value {
     result.insert("input".into(), json!(input));
-    for key in ["outcome", "kind"] {
-        if let Some(Value::String(s)) = result.get(key) {
-            let lowered = snake(s);
-            result.insert(key.to_string(), json!(lowered));
-        }
-    }
     if let Some(derivation) = result.get("derivation") {
         let forms = forms_of(derivation);
         result.insert("derivation_forms".into(), forms);
