@@ -64,6 +64,8 @@ accepted, others only with `--allow-origin https://example.com`.
 ## Notes
 
 * Tool reference: [../mcp-tools.md](../mcp-tools.md).
+* Turing machines and ALL in the notation of the course (`rflap_mt_catedra`, prompt `mt_catedra`):
+  [../catedra.md](../catedra.md).
 * Verified: the Claude support article for custom connectors (steps above), the MCP "connect to
   local servers" guide for `claude_desktop_config.json`, the MCP Apps client list.
   **UNVERIFIED** here: that this exact widget renders in each Claude host (needs a manual test

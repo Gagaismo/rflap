@@ -2,12 +2,13 @@
 // The Tab IS the context handed to panels and actions (`ctx` in `mount(container, ctx)` / `run(ctx)`).
 
 import { History, clone, isAutomaton } from './doc.js';
+import { inferModel, modelOf } from './tm-model.js';
 
 let nextTabId = 1;
 
 export class Tab {
   /**
-   * @param {object} app    the shell services: { api, host, t, dark, openTab(doc, options), notify(message, kind), tabs() }
+   * @param {object} app    the shell services: { api, host, t, openTab(doc, options), notify(message, kind), tabs() }
    * @param {object} options { doc, title, steps, extras }
    */
   constructor(app, { doc, title, steps = null, extras = null }) {
@@ -16,6 +17,7 @@ export class Tab {
     this.doc = doc;
     this.title = title;
     this.path = []; // state ids walked into building blocks
+    this.model = inferModel(doc); // 'mt' or 'all': what a Turing machine is run as (⟨ and ⟩ in a label mean ALL)
     this.history = new History();
     this.flags = { nondeterminism: false, lambda: false };
     this.selection = { states: [], transition: null };
@@ -40,10 +42,6 @@ export class Tab {
     return this.app.t;
   }
 
-  get dark() {
-    return this.app.dark;
-  }
-
   get type() {
     return this.doc.type;
   }
@@ -60,7 +58,7 @@ export class Tab {
     this.app.notify(message, kind);
   }
 
-  // ---- events: 'doc' | 'selection' | 'overlay' | 'path' | 'flags' | 'activate' | 'title'
+  // ---- events: 'doc' | 'selection' | 'overlay' | 'path' | 'flags' | 'activate' | 'title' | 'notation' | 'model'
 
   on(event, fn) {
     if (!this.listeners.has(event)) this.listeners.set(event, new Set());
@@ -98,6 +96,7 @@ export class Tab {
   /** Replaces the document without recording history (opening, converting in place, host updates). */
   replace(next, cause = 'replace') {
     this.doc = next;
+    this.model = inferModel(next);
     this.path = [];
     this.history = new History();
     this.overlays.clear();
@@ -139,6 +138,12 @@ export class Tab {
 
   snapshot() {
     return clone(this.doc);
+  }
+
+  /** Runs the Turing machine of this tab as an MT or as an ALL (the choice is remembered with the tab). */
+  setModel(model) {
+    this.model = modelOf(model);
+    this.emit('model', this.model);
   }
 
   setSteps(steps) {

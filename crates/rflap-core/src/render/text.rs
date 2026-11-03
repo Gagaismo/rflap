@@ -20,17 +20,25 @@ fn md_cell(s: &str) -> String {
 /// states), one column per distinct transition label (λ last), each cell listing the target
 /// states or `∅`.
 pub fn transition_table<L: Label>(automaton: &Automaton<L>) -> String {
+    transition_table_with(automaton, |l: &L| l.description())
+}
+
+/// [`transition_table`] with the column headings given by `label`.
+pub fn transition_table_with<L: Label>(
+    automaton: &Automaton<L>,
+    label: impl Fn(&L) -> String,
+) -> String {
     let mut columns: Vec<(bool, String)> = automaton
         .transitions()
         .iter()
-        .map(|t| (t.label.is_lambda(), t.label.description()))
+        .map(|t| (t.label.is_lambda(), label(&t.label)))
         .collect::<BTreeSet<_>>()
         .into_iter()
         .collect();
     columns.sort();
     let mut out = String::from("| State |");
-    for (_, label) in &columns {
-        out.push_str(&format!(" {} |", md_cell(label)));
+    for (_, column) in &columns {
+        out.push_str(&format!(" {} |", md_cell(column)));
     }
     out.push_str("\n|---|");
     for _ in &columns {
@@ -45,10 +53,10 @@ pub fn transition_table<L: Label>(automaton: &Automaton<L>) -> String {
             (false, false) => "",
         };
         out.push_str(&format!("| {mark}{} |", md_cell(&display_name(s))));
-        for (_, label) in &columns {
+        for (_, column) in &columns {
             let targets: BTreeSet<StateId> = automaton
                 .transitions_from(s.id)
-                .filter(|t| &t.label.description() == label)
+                .filter(|t| &label(&t.label) == column)
                 .map(|t| t.to)
                 .collect();
             let cell = if targets.is_empty() {
@@ -77,6 +85,11 @@ fn dot_escape(s: &str) -> String {
 /// Graphviz DOT source: left-to-right, final states as double circles, the initial state
 /// reached from an invisible-label point, parallel transitions merged into one edge.
 pub fn to_dot<L: Label>(automaton: &Automaton<L>) -> String {
+    to_dot_with(automaton, |l: &L| l.description())
+}
+
+/// [`to_dot`] with the text of each transition given by `label`.
+pub fn to_dot_with<L: Label>(automaton: &Automaton<L>, label: impl Fn(&L) -> String) -> String {
     let mut out = String::from("digraph automaton {\n  rankdir=LR;\n  node [shape=circle];\n");
     if automaton.initial().is_some() {
         out.push_str("  __start [shape=point];\n");
@@ -98,7 +111,7 @@ pub fn to_dot<L: Label>(automaton: &Automaton<L>) -> String {
     }
     let mut pairs: Vec<(StateId, StateId, Vec<String>)> = Vec::new();
     for t in automaton.transitions() {
-        let label = t.label.description();
+        let label = label(&t.label);
         match pairs
             .iter_mut()
             .find(|(f, to, _)| *f == t.from && *to == t.to)

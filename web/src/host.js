@@ -13,6 +13,8 @@
 //   callTool(name, args), openLink(url), notifySize(width, height)
 // handlers: { onToolInput(args), onToolResult(callToolResult), onContext(context), onTeardown() }
 
+import { t } from './i18n.js';
+
 export const MCP_PROTOCOL_VERSION = '2026-01-26';
 export const APP_INFO = { name: 'rflap', version: '0.1.0' };
 
@@ -51,7 +53,7 @@ class StandaloneHost {
   }
 
   async callTool() {
-    throw new Error('there is no host to call tools on');
+    throw new Error(t('error.no_host'));
   }
 
   async openLink(url) {

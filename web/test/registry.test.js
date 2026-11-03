@@ -15,6 +15,8 @@ import '../src/grammar-editor.js';
 import '../src/grammar-transform.js';
 import '../src/grammar-tables.js';
 import '../src/grammar-parse.js';
+import '../src/grammar-membership.js';
+import '../src/catedra-panels.js';
 import '../src/regex-panel.js';
 import '../src/design-panel.js';
 import '../src/lsystem-panel.js';
@@ -27,12 +29,12 @@ const src = path.join(path.dirname(fileURLToPath(import.meta.url)), '../src');
 test('the built-in panels apply to the right document types, in order', () => {
   assert.deepEqual(panelsFor('fa').map((p) => p.id), ['simulate', 'multiple', 'structure', 'analysis', 'design', 'document']);
   const tab = { steps: { steps: [{}] }, extras: { svg: '<svg/>' } };
-  assert.deepEqual(panelsFor('turing', tab).map((p) => p.id), ['assistant', 'simulate', 'multiple', 'structure', 'analysis', 'steps', 'design', 'document']);
+  assert.deepEqual(panelsFor('turing', tab).map((p) => p.id), ['assistant', 'simulate', 'multiple', 'structure', 'catedra-definition', 'catedra-table', 'catedra-run', 'catedra-all', 'analysis', 'steps', 'design', 'document']);
 });
 
 test('every JFLAP environment has its own panels (T12b)', () => {
   const ids = (type, tab) => panelsFor(type, tab).map((p) => p.id);
-  assert.deepEqual(ids('grammar'), ['grammar-editor', 'grammar-transform', 'grammar-tables', 'grammar-parse', 'grammar-user', 'design', 'document']);
+  assert.deepEqual(ids('grammar'), ['grammar-editor', 'grammar-transform', 'grammar-tables', 'grammar-parse', 'grammar-membership', 'grammar-user', 'design', 'document']);
   assert.deepEqual(ids('regex'), ['regex-editor', 'design', 'document']);
   assert.deepEqual(ids('lsystem'), ['lsystem-editor', 'design', 'document']);
   assert.deepEqual(ids('regular_pumping_lemma'), ['pumping-game', 'design', 'document']);
@@ -52,11 +54,23 @@ test('the menus of a grammar: transformations, parsers and conversions; automata
   const ids = (menu, type) => actionsFor(menu, type).map((a) => a.id);
   assert.deepEqual(ids('convert', 'grammar').filter((id) => id.startsWith('convert.step.')), ['convert.step.remove_lambda', 'convert.step.remove_unit', 'convert.step.remove_useless', 'convert.step.cnf']);
   for (const to of ['minimal_dfa', 'fa', 'pda_ll', 'pda_lr']) assert.ok(ids('convert', 'grammar').some((id) => id.startsWith(`convert.${to}.`)), to);
-  assert.deepEqual(ids('input', 'grammar'), ['input.tables', 'input.parse.brute', 'input.parse.ll1', 'input.parse.slr1', 'input.parse.cyk', 'input.parse.user']);
+  assert.deepEqual(ids('input', 'grammar'), ['input.tables', 'input.parse.brute', 'input.parse.ll1', 'input.parse.slr1', 'input.parse.cyk', 'input.parse.user', 'input.membership_tk']);
   assert.ok(ids('convert', 'regex').includes('convert.equivalent.regex'));
   assert.equal(ids('input', 'regex').length, 0, 'a regular expression has no Input menu');
   assert.ok(ids('input', 'fa').includes('input.run'));
   assert.equal(ids('convert', 'grammar').includes('convert.cnf.grammar'), false, 'the Chomsky entry opens the replay instead');
+});
+
+test('Turing machines get the cátedra panels and menu entries; other machines do not', () => {
+  const ids = (menu, type) => actionsFor(menu, type).map((a) => a.id);
+  assert.ok(ids('file', 'fa').includes('file.new.all') && ids('file', 'fa').includes('file.new.turing'), 'MT and ALL are in File > New');
+  assert.ok(ids('file', 'fa').indexOf('file.new.all') < ids('file', 'fa').indexOf('file.open'));
+  assert.deepEqual(ids('view', 'turing').filter((id) => id.startsWith('view.notation.')), ['view.notation.catedra', 'view.notation.jflap']);
+  assert.equal(ids('view', 'fa').some((id) => id.startsWith('view.notation.')), false);
+  assert.ok(ids('test', 'turing').includes('test.all_check') && !ids('test', 'fa').includes('test.all_check'));
+  assert.ok(ids('convert', 'turing').includes('convert.compose_tm') && !ids('convert', 'fa').includes('convert.compose_tm'));
+  assert.ok(ids('input', 'turing').includes('input.catedra_run'));
+  for (const id of ['catedra-definition', 'catedra-table', 'catedra-run', 'catedra-all']) assert.equal(panelsFor('fa').some((p) => p.id === id), false, id);
 });
 
 test('T12b can register panels and actions for new types', () => {

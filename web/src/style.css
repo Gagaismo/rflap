@@ -21,25 +21,6 @@
   color-scheme: light;
 }
 
-:root[data-theme='dark'] {
-  --bg: #161615;
-  --surface: #202020;
-  --surface-2: #2a2a28;
-  --ink: #ececea;
-  --muted: #a3a39b;
-  --border: #44443f;
-  --accent: #6aaeff;
-  --accent-ink: #0b1a2b;
-  --danger: #ff8a80;
-  --ok: #7fd18f;
-  --warn: #f0c060;
-  --canvas-bg: #1e1e1e;
-  --canvas-ink: #e6e6e6;
-  --focus: #8fc1ff;
-  --shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
-  color-scheme: dark;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -301,6 +282,11 @@ button.tool {
   min-width: 34px;
   font-size: 16px;
   line-height: 1.2;
+}
+
+button.tool.tool-text {
+  font-size: 13px;
+  padding: 0 8px;
 }
 
 button.tool[aria-pressed='true'] {
@@ -1022,10 +1008,6 @@ img.engine-svg {
   border-radius: 6px;
 }
 
-[data-theme='dark'] img.engine-svg {
-  background: #fff;
-}
-
 .marker mark {
   background: color-mix(in srgb, var(--danger) 35%, transparent);
   color: inherit;
@@ -1104,4 +1086,116 @@ pre.expansion {
 
 .conclusion {
   font-weight: 700;
+}
+
+/* ---------------------------------------------------------------- Turing machines in the cátedra notation */
+
+.catedra-row {
+  display: flex;
+  gap: 4px;
+  margin: 2px 0;
+}
+
+.catedra-row input {
+  flex: 1;
+}
+
+.catedra-result {
+  margin: 8px 0;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.catedra-result h4 {
+  margin: 0 0 4px;
+}
+
+.catedra-result.result-accept {
+  border-left-color: var(--ok);
+}
+
+.catedra-result.result-reject,
+.catedra-result.result-violation {
+  border-left-color: var(--danger);
+}
+
+.catedra-result.result-nohalt {
+  border-left-color: var(--warn);
+}
+
+.sequence {
+  margin: 4px 0;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+.sequence .cfg {
+  display: inline;
+  padding: 0 3px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+}
+
+.sequence .cfg.current {
+  background: var(--state);
+  border-color: var(--ink);
+}
+
+.seq-tail {
+  font-weight: 700;
+}
+
+.seq-accept {
+  color: var(--ok);
+}
+
+.seq-reject,
+.seq-violation {
+  color: var(--danger);
+}
+
+.seq-nohalt {
+  color: var(--warn);
+}
+
+.badge.verdict-accept {
+  color: var(--ok);
+}
+
+.badge.verdict-reject,
+.badge.verdict-violation {
+  color: var(--danger);
+}
+
+.badge.verdict-nohalt {
+  color: var(--warn);
+}
+
+ul.issues {
+  padding-left: 18px;
+  margin: 4px 0;
+}
+
+ul.issues li {
+  margin: 3px 0;
+}
+
+ul.issues button {
+  margin-left: 6px;
+}
+
+h3.formal {
+  font-family: var(--mono);
+}
+
+.catedra-table td,
+.catedra-table th,
+.tk-table td {
+  font-family: var(--mono);
 }

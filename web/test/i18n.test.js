@@ -39,3 +39,23 @@ test('an unknown locale behaves as English and the locale can change', () => {
   assert.equal(i18n.locale, 'es');
   assert.equal(i18n.t('menu.file'), 'Archivo');
 });
+
+test('the app-wide instance starts in Spanish', async () => {
+  const { i18n } = await import('../src/i18n.js');
+  assert.equal(i18n.locale, 'es');
+  assert.equal(i18n.t('menu.file'), 'Archivo');
+});
+
+test('every English string has a real Spanish translation (identical text only for names, symbols and cognates)', async () => {
+  // load every panel so that their registerStrings() are in the dictionaries
+  for (const file of ['actions', 'sim', 'structure', 'analysis', 'steps', 'assistant', 'info', 'grammar-editor', 'grammar-transform', 'grammar-tables', 'grammar-parse', 'grammar-membership', 'catedra-panels', 'regex-panel', 'design-panel', 'lsystem-panel', 'pumping-panel']) {
+    await import(`../src/${file}.js`);
+  }
+  const SAME_ON_PURPOSE = new Set([
+    'convert.combined', 'layout.gem', 'word.final', 'word.no', 'state.final', 'multi.paste_hint', 'tables.col.variable',
+    'parse.parser.ll1', 'parse.parser.slr1', 'tk.bound', 'tk.error', 'convert.composed_tm', 'catedra.empty_word', 'catedra.error', 'parse.col.n', 'parse.error', 'pumping.enter', 'pumping.m', 'pumping.w', 'pumping.i',
+  ]);
+  const same = Object.keys(dictionaries.en).filter((k) => !k.startsWith('test.') && dictionaries.es[k] === dictionaries.en[k]);
+  const untranslated = same.filter((k) => !SAME_ON_PURPOSE.has(k) && !/^(help\.sc\..*\.keys|design\.template\.|.*\.keys)/.test(k));
+  assert.deepEqual(untranslated, []);
+});

@@ -3,6 +3,8 @@
 // The wasm is embedded in the page as base64 in the element with id rflap-wasm (type application/octet-stream).
 // Tests (node) pass the bytes directly. Everything here is synchronous after `loadWasm`.
 
+import { t } from './i18n.js';
+
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 /** Standard base64 -> bytes (no dependency on atob, which is slow for megabytes). */
@@ -27,7 +29,7 @@ export function decodeBase64(text) {
 /** Bytes of the wasm embedded in the page. */
 export function embeddedWasmBytes(doc) {
   const node = doc.getElementById('rflap-wasm');
-  if (!node || !node.textContent.trim()) throw new Error('the page has no embedded wasm');
+  if (!node || !node.textContent.trim()) throw new Error(t('error.no_wasm'));
   return decodeBase64(node.textContent);
 }
 

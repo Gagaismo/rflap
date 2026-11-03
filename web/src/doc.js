@@ -9,6 +9,9 @@
 // All mutators work IN PLACE on the document they receive; callers clone first (`clone`) and commit the
 // clone to the history. `path` is the list of state ids walked into building blocks (Turing machines).
 
+import { t } from './i18n.js';
+import { labelText } from './tm-model.js';
+
 export const AUTOMATA = ['fa', 'pda', 'turing', 'mealy', 'moore'];
 export const HISTORY_LIMIT = 50; // JFLAP's default undo depth
 
@@ -115,7 +118,7 @@ export function toggleFinal(doc, id, path = []) {
 export function renameState(doc, id, name, path = []) {
   const c = container(doc, path);
   const clash = Object.values(c.states).some((s) => s.id !== id && s.name === name);
-  if (!name.trim()) throw new Error('empty name');
+  if (!name.trim()) throw new Error(t('error.empty_name'));
   if (clash) throw new Error(`the name ${name} is already used`);
   c.states[id].name = name.trim();
 }
@@ -174,8 +177,12 @@ const BLANK = '□';
 const lambdaOr = (s) => (s === '' || s == null ? 'λ' : s);
 const blankToUnderscore = (s) => (s === BLANK ? '_' : s);
 
-/** The editable text of a label (the compact syntax of rflap-api, which `labelFromText` parses back). */
-export function labelToText(type, label) {
+/**
+ * The editable text of a label (the compact syntax of rflap-api, which `labelFromText` parses back). A Turing
+ * machine label is written in `notation` (`'catedra'` or `'jflap'`) when one is given, otherwise in the JFLAP form.
+ */
+export function labelToText(type, label, notation) {
+  if (type === 'turing' && notation) return labelText(label, notation);
   switch (type) {
     case 'pda':
       return `${lambdaOr(label.input)},${lambdaOr(label.pop)};${lambdaOr(label.push)}`;

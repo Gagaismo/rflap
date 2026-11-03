@@ -118,7 +118,7 @@ dependencies = [
 
 [[package]]
 name = "rflap-api"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "rflap-core",
  "serde",
@@ -127,7 +127,7 @@ dependencies = [
 
 [[package]]
 name = "rflap-cli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "clap",
  "rflap-api",
@@ -139,7 +139,7 @@ dependencies = [
 
 [[package]]
 name = "rflap-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "quick-xml",
  "serde",
@@ -148,7 +148,7 @@ dependencies = [
 
 [[package]]
 name = "rflap-mcp"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "rflap-api",
  "serde_json",
@@ -157,7 +157,7 @@ dependencies = [
 
 [[package]]
 name = "rflap-wasm"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "rflap-api",
  "serde_json",
@@ -243,7 +243,7 @@ checksum = "a2c754d6c33795a1c324727428e5a7dedb5b06195f9890bdbcba760d3e246563"
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "0.2.0"
 
 [[package]]
 name = "zmij"

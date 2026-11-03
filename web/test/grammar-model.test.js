@@ -7,6 +7,9 @@ import {
 } from '../src/grammar-model.js';
 import { fixture } from './fixtures.js';
 import { loadApi } from './engine.js';
+import { setLanguage } from '../src/i18n.js';
+
+setLanguage('en'); // these tests assert the English messages; the app default is Spanish
 
 const parse = fixture('parse');
 const transforms = fixture('grammar-transforms');

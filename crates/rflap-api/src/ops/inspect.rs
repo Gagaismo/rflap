@@ -12,7 +12,8 @@ use rflap_core::grammar::Grammar;
 use rflap_core::layout::{self, Algorithm, LayoutOptions};
 use rflap_core::regex::Regex;
 use rflap_core::render::{self, SvgOptions};
-use rflap_core::turing::TuringMachine;
+use rflap_core::turing::catedra::{Notation, format_label};
+use rflap_core::turing::{TmLabel, TuringMachine};
 use serde_json::{Value, json};
 
 use super::{Object, state_name, to_value, with_automaton, wrong_type};
@@ -164,6 +165,9 @@ pub fn analyze(doc: &Document) -> Result<Value, ApiError> {
             out.insert("kind".into(), json!("turing"));
             out.insert("tapes".into(), json!(t.tapes()));
             out.insert("blocks".into(), json!(t.blocks().len()));
+            let (multipista, warnings) = super::catedra::analysis(t);
+            out.insert("multipista".into(), multipista);
+            out.insert("catedra_warnings".into(), json!(warnings));
         }
         Document::Mealy(a) => {
             out.extend(automaton_report(a));
@@ -385,36 +389,16 @@ pub fn render(r: RenderArgs) -> Result<Value, ApiError> {
     let format = r.format.unwrap_or(Format::Svg);
     let doc = &r.document;
     let name = to_value(&format);
-    let content = if doc.is_automaton() {
-        with_automaton!(doc, a => {
-            match format {
-                Format::Svg => {
-                    let mut options = SvgOptions {
-                        dark_mode: r.dark,
-                        ..SvgOptions::default()
-                    };
-                    for state in &r.highlight_states {
-                        options.highlight_states.insert(resolve_state(a, state)?);
-                    }
-                    for &index in &r.highlight_transitions {
-                        if index >= a.transitions().len() {
-                            return Err(ApiError::new(
-                                code::INVALID_ARGUMENT,
-                                format!(
-                                    "transition index {index} is out of range: the document has {} transitions",
-                                    a.transitions().len()
-                                ),
-                            ));
-                        }
-                        options.highlight_transitions.insert(index);
-                    }
-                    render::to_svg(a, &options)
-                }
-                Format::Markdown => render::transition_table(a),
-                Format::Dot => render::to_dot(a),
-                Format::Text => text_listing(automaton_title(doc), a),
-            }
-        }, _ => unreachable!("is_automaton() checked"))
+    let catedra = Notation::Catedra;
+    let content = if let Document::Turing(t) = doc
+        && r.notation.unwrap_or(catedra) == catedra
+    {
+        automaton_content(&r, format, doc, t.automaton(), |l: &TmLabel| {
+            format_label(l, catedra)
+        })?
+    } else if doc.is_automaton() {
+        with_automaton!(doc, a => automaton_content(&r, format, doc, a, |l| l.description())?,
+            _ => unreachable!("is_automaton() checked"))
     } else {
         match (doc, format) {
             (Document::Lsystem(l), Format::Svg) => l.to_svg(r.depth.unwrap_or(3).min(12)),
@@ -445,6 +429,44 @@ pub fn render(r: RenderArgs) -> Result<Value, ApiError> {
         }
     };
     Ok(json!({"format": name, "content": content}))
+}
+
+/// The drawing of a machine in `format`, with the text of each transition given by `label`.
+fn automaton_content<L: Label>(
+    r: &RenderArgs,
+    format: Format,
+    doc: &Document,
+    a: &Automaton<L>,
+    label: impl Fn(&L) -> String,
+) -> Result<String, ApiError> {
+    Ok(match format {
+        Format::Svg => {
+            let mut options = SvgOptions {
+                dark_mode: r.dark,
+                join_labels: r.join_labels,
+                ..SvgOptions::default()
+            };
+            for state in &r.highlight_states {
+                options.highlight_states.insert(resolve_state(a, state)?);
+            }
+            for &index in &r.highlight_transitions {
+                if index >= a.transitions().len() {
+                    return Err(ApiError::new(
+                        code::INVALID_ARGUMENT,
+                        format!(
+                            "transition index {index} is out of range: the document has {} transitions",
+                            a.transitions().len()
+                        ),
+                    ));
+                }
+                options.highlight_transitions.insert(index);
+            }
+            render::to_svg_with(a, &options, label)
+        }
+        Format::Markdown => render::transition_table_with(a, label),
+        Format::Dot => render::to_dot_with(a, label),
+        Format::Text => text_listing(automaton_title(doc), a),
+    })
 }
 
 fn grammar_text(g: &Grammar, format: Format) -> String {

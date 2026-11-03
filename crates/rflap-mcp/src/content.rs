@@ -463,8 +463,18 @@ pub fn document(doc: &Value, table: Option<&str>) -> String {
             str_of(&doc["start"])
         ),
         "fa" | "pda" | "turing" | "mealy" | "moore" => {
-            let states = doc["states"].as_object().map_or(0, |s| s.len());
-            let transitions = doc["transitions"].as_array().map_or(0, Vec::len);
+            // The full form of a Turing machine nests its graph under `automaton`.
+            let graph = if doc["automaton"].is_object() {
+                &doc["automaton"]
+            } else {
+                doc
+            };
+            let states = match &graph["states"] {
+                Value::Object(map) => map.len(),
+                Value::Array(list) => list.len(),
+                _ => 0,
+            };
+            let transitions = graph["transitions"].as_array().map_or(0, Vec::len);
             format!(
                 "{} with {states} states and {transitions} transitions",
                 machine_name(kind)

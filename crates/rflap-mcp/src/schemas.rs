@@ -151,6 +151,9 @@ pub fn tools() -> Vec<ToolDef> {
         pumping(),
         capabilities(),
         call(),
+        mt_catedra(),
+        compose_tm(),
+        membership(),
     ]
 }
 
@@ -622,6 +625,17 @@ fn render() -> ToolDef {
                 ),
                 ("dark", boolean("Dark theme.")),
                 (
+                    "notation",
+                    choice(
+                        "Turing machine labels: catedra `(e,s,m)` with Δ and I/N/D (default) or jflap `e;s,m` with □ and L/S/R.",
+                        &["catedra", "jflap"],
+                    ),
+                ),
+                (
+                    "join_labels",
+                    boolean("Join parallel labels with \" / \" instead of stacking them."),
+                ),
+                (
                     "depth",
                     integer("Rewrite level when drawing an L-system (default 3)."),
                 ),
@@ -808,5 +822,147 @@ fn call() -> ToolDef {
         read_only: true,
         invoking: "Calling Rflap…",
         invoked: "Rflap answered",
+    }
+}
+
+fn mt_catedra() -> ToolDef {
+    ToolDef {
+        name: "rflap_mt_catedra",
+        title: "Turing machine / ALL in the course notation",
+        description: "A one-tape Turing machine (MT) or linear bounded automaton (ALL) in the \
+            notation of the course \"Sintaxis y Semántica de los Lenguajes\" (UTN FRT). `action`: \
+            \"definition\" = the formal definition MT = ⟨Q, Σ_E, Σ_A, q0, F, f⟩ with its sets; \
+            \"table\" = the transition table (Estado Actual | Símbolo Entrada | Estado Nuevo | \
+            Símbolo Salida | Movimiento Cabezal); \"run\" = the configuration sequences \
+            (Δ1abaΔ ├─ ΔΔ2baΔ … final/acepta or bloqueo/rechazo) for `inputs`; \"all_check\" = \
+            whether the machine obeys the rules of an ALL (reads ⟨ moving D, reads ⟩ moving I, \
+            never reads or writes Δ, the head never leaves ⟨…⟩) and lists every violation. Write \
+            the machine as a compact turing document with cátedra labels (e,s,m): move I left, N \
+            stay, D right, Δ the blank, several labels on one edge joined with \" / \"; final \
+            states halt. Example: {\"document\":{\"type\":\"turing\",\"initial\":\"1\",\
+            \"finals\":[\"8\"],\"transitions\":[[\"1\",\"(a,Δ,D)\",\"2\"],\
+            [\"2\",\"(a,a,D) / (b,b,D)\",\"2\"],[\"2\",\"(Δ,Δ,D)\",\"8\"]]},\"action\":\"run\",\
+            \"inputs\":[\"aa\"]}."
+            .to_string(),
+        input: schema(
+            vec![
+                ("document", document("The one-tape Turing machine or ALL.")),
+                (
+                    "action",
+                    choice(
+                        "definition, table, run (needs `inputs`) or all_check (static check, plus \
+                         a dynamic one on `inputs`).",
+                        &["definition", "table", "run", "all_check"],
+                    ),
+                ),
+                (
+                    "inputs",
+                    strings(
+                        "Words to run (\"\" is the empty word). Needed by `run`; optional for `all_check`.",
+                    ),
+                ),
+                (
+                    "model",
+                    choice(
+                        "mt (Turing machine) or all (linear bounded automaton, the tape is delimited by ⟨ and ⟩). Default: all when a transition mentions ⟨ or ⟩, otherwise mt.",
+                        &["mt", "all"],
+                    ),
+                ),
+                (
+                    "max_steps",
+                    integer(
+                        "Steps before a run is reported as not halting (default 1000, at most 100000).",
+                    ),
+                ),
+                (
+                    "input_alphabet",
+                    json!({"anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}],
+                           "description": "Declares Σ_E, such as \"ab\" or [\"a\",\"b\"]; if missing it is inferred."}),
+                ),
+            ],
+            &["document", "action"],
+        ),
+        output: Some(output(json!({
+            "document": {"type": "object"},
+            "action": {"type": "string"},
+            "model": {"type": "string"},
+            "text": {"type": "string"},
+            "results": {"type": "array"},
+            "ok": {"type": "boolean"},
+            "violations": {"type": "array"},
+        }))),
+        visual: true,
+        read_only: true,
+        invoking: "Applying the course notation…",
+        invoked: "Course notation ready",
+    }
+}
+
+fn compose_tm() -> ToolDef {
+    ToolDef {
+        name: "rflap_compose_tm",
+        title: "Compose two Turing machines",
+        description: "Composition of two one-tape Turing machines as in the course (CLASE 41): \
+            MT3 = ⟨Q1∪Q2, Σ_E, Σ_A, q01, F2, f3⟩; f3 follows f1 in Q1 except that a transition of \
+            f1 into a state of F1 goes to q02 instead, and follows f2 in Q2 (states of the second \
+            machine get a prime). Returns the composite machine, its definition and its table. \
+            Example: {\"a\":{\"type\":\"turing\",\"initial\":\"s0\",\"finals\":[\"s1\"],\
+            \"transitions\":[[\"s0\",\"(a,a,D)\",\"s1\"]]},\"b\":{\"type\":\"turing\",\
+            \"initial\":\"s0\",\"finals\":[\"s1\"],\"transitions\":[[\"s0\",\"(b,b,D)\",\"s1\"]]}}."
+            .to_string(),
+        input: schema(
+            vec![
+                ("a", document("The first machine, MT1.")),
+                (
+                    "b",
+                    document("The second machine, MT2, run after MT1 halts in a final state."),
+                ),
+            ],
+            &["a", "b"],
+        ),
+        output: Some(output(json!({
+            "document": {"type": "object"},
+            "definition": {"type": "object"},
+        }))),
+        visual: true,
+        read_only: true,
+        invoking: "Composing…",
+        invoked: "Composed",
+    }
+}
+
+fn membership() -> ToolDef {
+    ToolDef {
+        name: "rflap_membership",
+        title: "Membership by the sets Tk",
+        description: "Membership of a word in the language of a non-contracting (non-compressing) \
+            grammar by the algorithm of the course: T0 = { S }, Tk = Tk-1 ∪ { β / |β| ≤ N ∧ \
+            α ∈ Tk-1 ∧ α ⇒ β } with N = |word|, repeated until Tk = Tk-1 or the word is in Tk. \
+            Returns every set and the verdict. A grammar with contracting productions is \
+            rejected. Example: {\"grammar\":\"S -> T\nDB -> BD\nD -> c\nT -> aTBD\nT -> abD\nbB -> bb\",\
+            \"input\":\"abbc\"}."
+            .to_string(),
+        input: schema(
+            vec![
+                ("grammar", grammar("The grammar (it may have several symbols on the left).")),
+                ("input", string("The word to test (\"\" is the empty word).")),
+                (
+                    "max_forms",
+                    integer("Sentential forms the sets may hold before giving up (default 100000)."),
+                ),
+            ],
+            &["grammar", "input"],
+        ),
+        output: Some(output(json!({
+            "document": {"type": "object"},
+            "member": {"type": "boolean"},
+            "bound": {"type": "integer"},
+            "sets": {"type": "array"},
+            "text": {"type": "string"},
+        }))),
+        visual: true,
+        read_only: true,
+        invoking: "Building the sets Tk…",
+        invoked: "Membership decided",
     }
 }

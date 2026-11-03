@@ -57,15 +57,41 @@ fn request(
         .unwrap()
         .parse()
         .unwrap();
-    let headers = lines
+    let headers: Vec<(String, String)> = lines
         .filter_map(|l| l.split_once(':'))
         .map(|(k, v)| (k.trim().to_string(), v.trim().to_string()))
         .collect();
+    let chunked = headers.iter().any(|(k, v)| {
+        k.eq_ignore_ascii_case("transfer-encoding") && v.eq_ignore_ascii_case("chunked")
+    });
     Reply {
         status,
         headers,
-        body: body.to_string(),
+        body: if chunked {
+            dechunk(body)
+        } else {
+            body.to_string()
+        },
     }
+}
+
+/// The body of a `Transfer-Encoding: chunked` response (the server chunks big answers).
+fn dechunk(mut rest: &str) -> String {
+    let mut out = String::new();
+    while let Some((size, tail)) = rest.split_once(
+        "
+",
+    ) {
+        let size = usize::from_str_radix(size.trim(), 16).expect("a chunk size");
+        if size == 0 {
+            break;
+        }
+        // the size counts bytes, so cut on bytes and rejoin
+        let bytes = tail.as_bytes();
+        out.push_str(&String::from_utf8_lossy(&bytes[..size]));
+        rest = &tail[size + 2..];
+    }
+    out
 }
 
 fn start(allow_origins: Vec<String>) -> SocketAddr {

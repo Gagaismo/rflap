@@ -10,6 +10,7 @@ import { h, svgEl, clear } from './dom.js';
 import { t } from './i18n.js';
 import { toast, popupMenu, formDialog } from './dialogs.js';
 import { askLabel } from './labels.js';
+import { fitView, MIN_ZOOM, MAX_ZOOM, FIT_MARGIN } from './fit.js';
 import {
   clone, container, machineDocument, realMachine, bounds, labelToText, stateById,
   addState, removeState, moveState, setInitial, toggleFinal, renameState, setStateLabel, setStateOutput,
@@ -19,8 +20,6 @@ import {
 export const TOOLS = ['select', 'state', 'transition', 'delete'];
 const TOOL_KEYS = { 1: 'select', 2: 'state', 3: 'transition', 4: 'delete' };
 const DRAG_THRESHOLD = 4; // pixels before a press becomes a drag
-const MIN_ZOOM = 0.25;
-const MAX_ZOOM = 4;
 
 const idOf = (el) => {
   const node = el && el.closest && el.closest('[data-state-id]');
@@ -32,12 +31,16 @@ const indexOf = (el) => {
 };
 
 export class Canvas {
-  /** `ctx` is the tab context (see app.js): doc, path, api, commit, overlay(), flags, dark, enterBlock, ... */
+  /** `ctx` is the tab context (see app.js): doc, path, api, commit, overlay(), flags, enterBlock, ... */
   constructor(container_, ctx) {
     this.ctx = ctx;
     this.root = container_;
     this.tool = 'select';
     this.zoom = 1;
+    this.needFit = true; // fit the automaton as soon as it is drawn and the stage has a real size
+    this.autoFit = true; // keep fitting when the stage resizes (iframes start small) until the user takes over
+    this.fitOrigin = null; // document point at the top-left of the last fit
+    this.contentBox = null; // bounding box of everything drawn, in document units
     this.seq = 0;
     this.draft = null;
     this.svg = null;
@@ -50,7 +53,10 @@ export class Canvas {
     this.toolbar = this.buildToolbar();
     this.root.append(this.toolbar, this.stage, this.status);
 
-    this.stage.addEventListener('pointerdown', (e) => this.onPointerDown(e));
+    this.stage.addEventListener('pointerdown', (e) => {
+      this.autoFit = false;
+      this.onPointerDown(e);
+    });
     this.stage.addEventListener('dblclick', (e) => this.onDoubleClick(e));
     this.stage.addEventListener('contextmenu', (e) => this.onContextMenu(e));
     this.stage.addEventListener('keydown', (e) => this.onKeyDown(e));
@@ -63,7 +69,7 @@ export class Canvas {
       },
       { passive: false },
     );
-    this.resizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(() => this.layoutViewBox()) : null;
+    this.resizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(() => this.resized()) : null;
     if (this.resizeObserver) this.resizeObserver.observe(this.stage);
     this.setTool('select');
   }
@@ -99,6 +105,7 @@ export class Canvas {
       h('button', { type: 'button', class: 'tool', title: t('view.zoom_in'), 'aria-label': t('view.zoom_in'), onclick: () => this.setZoom(this.zoom * 1.25) }, '+'),
       h('button', { type: 'button', class: 'tool', title: t('view.zoom_out'), 'aria-label': t('view.zoom_out'), onclick: () => this.setZoom(this.zoom / 1.25) }, '−'),
       h('button', { type: 'button', class: 'tool', title: t('view.zoom_reset'), 'aria-label': t('view.zoom_reset'), onclick: () => this.setZoom(1) }, '1:1'),
+      h('button', { type: 'button', class: 'tool tool-text', title: `${t('view.zoom_fit')} (9)`, 'aria-label': t('view.zoom_fit'), onclick: () => this.fit() }, t('view.zoom_fit')),
     );
   }
 
@@ -110,8 +117,44 @@ export class Canvas {
   }
 
   setZoom(zoom) {
+    this.autoFit = false;
+    this.needFit = false;
     this.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom));
     this.layoutViewBox();
+  }
+
+  /** A new document was loaded into this canvas: fit it when it is drawn. */
+  requestFit() {
+    this.needFit = true;
+    this.autoFit = true;
+    this.fitOrigin = null;
+  }
+
+  /** "Ajustar": the whole automaton in the viewport with a margin, never above 100%. */
+  fit() {
+    this.requestFit();
+    this.applyFit();
+  }
+
+  /** The stage changed size or was shown: lay out again and, if a fit is wanted, redo it. */
+  resized() {
+    if (this.needFit || this.autoFit) this.applyFit();
+    else this.layoutViewBox();
+  }
+
+  applyFit() {
+    const svg = this.svg;
+    const width = this.stage.clientWidth - 2;
+    const height = this.stage.clientHeight - 2;
+    if (!svg || width <= 0 || height <= 0) return; // not shown yet: the resize observer calls back
+    const empty = Object.keys(container(this.doc, this.path).states).length === 0;
+    const result = fitView(empty ? null : this.contentBox, { width, height }, { margin: FIT_MARGIN });
+    this.needFit = false;
+    this.zoom = result.scale;
+    this.fitOrigin = empty ? null : { x: result.offsetX, y: result.offsetY };
+    this.layoutViewBox();
+    this.stage.scrollLeft = Math.max(0, (result.offsetX - this.viewX) * this.zoom);
+    this.stage.scrollTop = Math.max(0, (result.offsetY - this.viewY) * this.zoom);
   }
 
   announce(message) {
@@ -134,6 +177,11 @@ export class Canvas {
 
   get type() {
     return this.ctx.doc.type;
+  }
+
+  /** How a Turing machine writes its labels: the choice of View > Notation (cátedra by default). */
+  get notation() {
+    return (this.ctx.app && this.ctx.app.notation) || 'catedra';
   }
 
   get tapes() {
@@ -176,7 +224,7 @@ export class Canvas {
         format: 'svg',
         highlight_states: [...states].filter((s) => s !== undefined),
         highlight_transitions: [...transitions],
-        dark: ctx.dark,
+        ...(this.type === 'turing' ? { notation: this.notation } : {}),
       });
       if (seq !== this.seq) return;
       this.show(result.content);
@@ -209,12 +257,26 @@ export class Canvas {
     this.originalViewBox = svg.getAttribute('viewBox');
     this.svg = svg;
     this.stage.replaceChildren(svg);
+    this.contentBox = this.measure(svg);
     this.layoutViewBox();
+    if (this.needFit) this.applyFit();
     this.paintSelection();
     for (const id of this.blockStates()) {
       const node = svg.querySelector(`g.state[data-state-id="${id}"]`);
       if (node) node.classList.add('block');
     }
+  }
+
+  /** The box of everything the engine drew (circles, labels, loops, initial triangle, notes), in document units. */
+  measure(svg) {
+    try {
+      const box = svg.getBBox();
+      if (box.width > 0 || box.height > 0) return { minX: box.x, minY: box.y, maxX: box.x + box.width, maxY: box.y + box.height };
+    } catch {
+      /* not laid out */
+    }
+    const b = bounds(this.doc, this.path);
+    return b ? { minX: b.minX - 40, minY: b.minY - 40, maxX: b.maxX + 40, maxY: b.maxY + 40 } : null;
   }
 
   blockStates() {
@@ -233,13 +295,27 @@ export class Canvas {
     const svg = this.svg;
     if (!svg) return;
     const b = bounds(this.doc, this.path);
-    const pad = 90;
-    const x0 = b ? Math.min(0, b.minX - pad) : 0;
-    const y0 = b ? Math.min(0, b.minY - pad) : 0;
-    const needW = b ? b.maxX + pad - x0 : 0;
-    const needH = b ? b.maxY + pad - y0 : 0;
-    const w = Math.max(needW, (this.stage.clientWidth - 2) / this.zoom, 200);
-    const h_ = Math.max(needH, (this.stage.clientHeight - 2) / this.zoom, 200);
+    const pad = this.fitOrigin ? FIT_MARGIN : 90;
+    const c = this.contentBox;
+    let x0 = b ? Math.min(0, b.minX - pad) : 0;
+    let y0 = b ? Math.min(0, b.minY - pad) : 0;
+    let right = b ? b.maxX + pad : 0;
+    let bottom = b ? b.maxY + pad : 0;
+    if (c) {
+      x0 = Math.min(x0, c.minX - 8);
+      y0 = Math.min(y0, c.minY - 8);
+      right = Math.max(right, c.maxX + 8);
+      bottom = Math.max(bottom, c.maxY + 8);
+    }
+    if (this.fitOrigin) {
+      x0 = Math.min(x0, this.fitOrigin.x);
+      y0 = Math.min(y0, this.fitOrigin.y);
+    }
+    const minSize = this.fitOrigin ? 1 : 200;
+    const w = Math.max(right - x0, (this.stage.clientWidth - 2) / this.zoom, minSize);
+    const h_ = Math.max(bottom - y0, (this.stage.clientHeight - 2) / this.zoom, minSize);
+    this.viewX = x0;
+    this.viewY = y0;
     svg.setAttribute('viewBox', `${x0} ${y0} ${w} ${h_}`);
     svg.setAttribute('width', String(Math.ceil(w * this.zoom)));
     svg.setAttribute('height', String(Math.ceil(h_ * this.zoom)));
@@ -268,6 +344,7 @@ export class Canvas {
 
   /** Applies `change` to a clone of the document and commits it. Returns false (and toasts) on error. */
   async edit(change, message) {
+    this.autoFit = false;
     const next = clone(this.ctx.doc);
     try {
       await change(next, this.path);
@@ -286,7 +363,7 @@ export class Canvas {
   }
 
   async createTransition(from, to) {
-    const label = await askLabel({ api: this.ctx.api, type: this.type, tapes: this.tapes, title: t('label.new_transition', { from: this.stateName(from), to: this.stateName(to) }) });
+    const label = await askLabel({ api: this.ctx.api, type: this.type, tapes: this.tapes, notation: this.notation, title: t('label.new_transition', { from: this.stateName(from), to: this.stateName(to) }) });
     if (!label) return;
     await this.edit((d, path) => addTransition(d, from, to, label, path), t('canvas.transition_added', { from: this.stateName(from), to: this.stateName(to) }));
   }
@@ -298,7 +375,8 @@ export class Canvas {
       api: this.ctx.api,
       type: this.type,
       tapes: this.tapes,
-      text: labelToText(this.type, transition.label),
+      notation: this.notation,
+      text: labelToText(this.type, transition.label, this.notation),
       title: t('label.edit_transition', { from: this.stateName(transition.from), to: this.stateName(transition.to) }),
     });
     if (label) await this.edit((d, path) => setTransitionLabel(d, index, label, path));
@@ -555,6 +633,8 @@ export class Canvas {
       this.setZoom(this.zoom / 1.25);
     } else if (key === '0') {
       this.setZoom(1);
+    } else if (key === '9') {
+      this.fit();
     }
   }
 }

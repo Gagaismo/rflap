@@ -25,6 +25,20 @@ fn turing() -> Value {
                            ["q1", "b;b,L", "q1"], ["q1", "_;_,R", "q2"]]})
 }
 
+/// A one-tape machine in the cátedra notation: accepts the words that start with a.
+fn cat_tm() -> Value {
+    json!({"type": "turing", "states": ["1", "2", "3"], "initial": "1", "finals": ["3"],
+           "transitions": [["1", "(a,a,D)", "2"], ["2", "(a,a,D) / (b,b,D)", "2"],
+                           ["2", "(Δ,Δ,N)", "3"]]})
+}
+
+/// The ALL that accepts words ending in b: a cátedra example in compact form.
+fn cat_all() -> Value {
+    json!({"type": "turing", "states": ["I", "D", "F"], "initial": "I", "finals": ["F"],
+           "transitions": [["I", "(a,a,D) / (b,b,D)", "I"], ["I", "(⟩,⟩,I)", "D"],
+                           ["D", "(b,b,I)", "F"]]})
+}
+
 fn grammar() -> Value {
     json!({"type": "grammar", "text": "S -> aSb | λ"})
 }
@@ -129,8 +143,8 @@ fn op_entry(op: &str) -> Value {
             json!({"op": "layout", "document": nfa(), "algorithm": "circle"}),
         ),
         "render" => (
-            "Draws a document. format svg (machines, lsystems), markdown (transition table), dot (Graphviz) or text. Highlights states (names or ids) and transitions (indices).",
-            "document, format?, highlight_states?, highlight_transitions?, dark?, depth?",
+            "Draws a document. format svg (machines, lsystems), markdown (transition table), dot (Graphviz) or text. Highlights states (names or ids) and transitions (indices). Turing machine labels are drawn in the notation of the cátedra by default, (a,X,D) with Δ and I/N/D; notation jflap draws a ; X , R with □. join_labels writes the labels of parallel transitions on one line as (a,a,D) / (b,b,D) instead of stacking them.",
+            "document, format?, highlight_states?, highlight_transitions?, dark?, depth?, notation? (catedra|jflap), join_labels?",
             json!({"op": "render", "document": nfa(), "format": "svg",
                    "highlight_states": ["q1"], "highlight_transitions": [2]}),
         ),
@@ -170,6 +184,42 @@ fn op_entry(op: &str) -> Value {
                    "game": {"type": "regular_pumping_lemma", "language": 0},
                    "move": {"move": "choose_w", "w": "ab"}}),
         ),
+        "catedra_definition" => (
+            "Cátedra notation (Sintaxis y Semántica de los Lenguajes, UTN FRT): the formal definition MT = ⟨Q, Σ_E, Σ_A, q0, F, f⟩ (or ALL) of a one-tape machine. Σ_E is the document's \"input_alphabet\" or is inferred (uppercase letters, Δ, ⟨, ⟩ and symbols the machine writes that are not letters or digits are auxiliary). Returns {model: mt|all, states, input_alphabet, auxiliary_alphabet, initial, finals, input_alphabet_inferred, deterministic, issues: [{kind: no_determinista|dominio_incluye_final|sin_estado_inicial|alfabeto_entrada_invalido, message, transitions}], text}.",
+            "document, model? (mt|all; default detected: all when ⟨ or ⟩ appear)",
+            json!({"op": "catedra_definition", "document": cat_tm()}),
+        ),
+        "catedra_table" => (
+            "Cátedra transition table: columns Estado Actual | Símbolo Entrada | Estado Nuevo | Símbolo Salida | Movimiento Cabezal, → on the initial state, * on finals (one row of dashes each), rows grouped by state in state order and symbols ordered input, auxiliary, ⟨, ⟩, Δ. Returns {header, rows, markdown, text}.",
+            "document",
+            json!({"op": "catedra_table", "document": cat_tm()}),
+        ),
+        "catedra_run" => (
+            "Deterministic run in the cátedra's configuration notation, e.g. Δ1abaΔ ├─ ΔΔ2baΔ ... final/acepta. Entering a final state is final/acepta; no transition is bloqueo/rechazo (rechaza for an ALL); max_steps transitions without halting is no se detiene (límite de N pasos). model mt: tape of Δ, head on the first symbol, window of cells -1..n plus those visited. model all: tape ⟨w⟩, whole tape shown, a violation stops the run. Returns {model, max_steps, results: [{input, model, verdict: accepted|rejected|no_halt|violation, accepted, steps, configurations, sequence, violation?}]}.",
+            "document, input | inputs, model? (mt|all), max_steps? (default 1000, at most 100000)",
+            json!({"op": "catedra_run", "document": cat_tm(), "inputs": ["ab", "ba", ""], "model": "mt"}),
+        ),
+        "all_check" => (
+            "Checks that a one-tape machine follows the rules of an ALL: statically (reading ⟨ writes ⟨ and moves D; reading ⟩ writes ⟩ and moves I; no Δ read or written; ⟨ and ⟩ only written over themselves) and, for each input, dynamically (the head never leaves ⟨…⟩). Returns {ok, violations: [{kind, message, transition, transition_text, step?, input?}], runs}.",
+            "document, inputs?, max_steps?",
+            json!({"op": "all_check", "document": cat_all(), "inputs": ["ab"]}),
+        ),
+        "compose_tm" => (
+            "Composition of Turing machines MT3 = ⟨Q1∪Q2, Σ_E, Σ_A, q01, F2, f3⟩: transitions of MT1 into F1 go to the initial state of MT2 (its states are renamed with primes when names clash) and MT2 is laid out to the right. Returns {document, definition}.",
+            "a, b",
+            json!({"op": "compose_tm", "a": cat_tm(), "b": cat_tm()}),
+        ),
+        "membership_tk" => (
+            "Membership of a word by the sets Tk (T0 = {S}, Tk = Tk-1 ∪ {β : |β| ≤ |w|, α ⇒ β}) for non-contracting grammars; a contracting one is refused with contracting_grammar. Returns {member, bound, sets (T0, T1, ... as lists of forms, λ is the empty form), text}.",
+            "grammar, input, max_forms?",
+            json!({"op": "membership_tk", "input": "abbc",
+                   "grammar": "S -> T
+DB -> BD
+D -> c
+T -> aTBD
+T -> abD
+bB -> bb"}),
+        ),
         _ => ("", "", Value::Null),
     };
     json!({"op": op, "summary": summary, "params": params, "example": example})
@@ -190,7 +240,7 @@ fn type_entry(kind: &str) -> Value {
         ),
         "turing" => (
             "Turing machine, one or more tapes, with building blocks.",
-            "Like fa; labels are \"read;write,direction\" per tape joined by \"|\", e.g. \"a;b,R\" or \"a;a,R|_;x,S\" (direction L, R or S; _ is the blank; a read can be ~ any, !x not x, or a,b}v to remember in variable v). \"tapes\" is inferred from the first label. \"blocks\":{\"state\": <compact turing document>} makes a state run an inner machine.",
+            "Like fa; a one-tape label can be written in the cátedra notation \"(read,write,move)\", e.g. \"(a,X,D)\" or \"a,X,D\" (move I left, N stay, D right; Δ is the blank), and several labels of one edge are joined with \" / \", e.g. \"(a,a,D) / (b,b,D)\". The JFLAP form \"read;write,direction\" per tape joined by \"|\" is always accepted, e.g. \"a;b,R\" or \"a;a,R|_;x,S\" (direction L, R or S; _ or Δ is the blank; a read can be ~ any, !x not x, or a,b}v to remember in variable v). \"input_alphabet\" (\"ab\" or [\"a\",\"b\"]) optionally declares Σ_E. \"tapes\" is inferred from the first label. \"blocks\":{\"state\": <compact turing document>} makes a state run an inner machine.",
             turing(),
         ),
         "mealy" => (
@@ -333,7 +383,7 @@ pub fn capabilities() -> Value {
             "unknown_document_type", "unknown_state", "invalid_label", "invalid_grammar",
             "invalid_regex", "wrong_document_type", "unsupported_option", "invalid_argument",
             "no_initial_state", "jff_error", "conversion_failed", "design_error", "parse_error",
-            "invalid_move", "limit_exceeded", "internal"
+            "invalid_move", "limit_exceeded", "contracting_grammar", "internal"
         ],
         "notes": [
             "A document is accepted in compact form (see document_types) or in the full form that operations return; send either wherever a document is expected.",

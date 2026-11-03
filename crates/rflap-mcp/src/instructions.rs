@@ -26,6 +26,22 @@ why the transitions are what they are. rflap_simulate / rflap_step walk through 
 CNF…), rflap_equivalent (is the student's automaton equal to a regex?), rflap_grammar, rflap_parse and \
 rflap_parse_tables (FIRST/FOLLOW, LL(1), SLR(1)).
 
+Turing machines (MT) and linear bounded automata (ALL) follow the notation of the course \
+bibliography (CLASE 39 and 41), not JFLAP's. Reason first about what the machine does to the tape. \
+Write it as a compact turing document with cátedra labels (e,s,m): move I left, N stay, D right, Δ \
+is the blank, several labels on one edge joined with \" / \", e.g. [\"2\",\"(a,a,D) / (b,b,D)\",\"2\"], \
+and name the states as the student expects (1, 2, … or I, A, B, …). Then call rflap_mt_catedra with \
+action \"definition\" (MT = ⟨Q, Σ_E, Σ_A, q0, F, f⟩ with its sets), \"table\" (Estado Actual | Símbolo \
+Entrada | Estado Nuevo | Símbolo Salida | Movimiento Cabezal) and \"run\" on accepted and rejected \
+sample words (configuration sequences with ├─ ending in final/acepta or bloqueo/rechazo). For an ALL \
+(the tape is ⟨w⟩, the head starts on the first symbol, f(q,⟨) = (q′,⟨,D), f(q,⟩) = (q′,⟩,I), Δ is \
+never read or written) always call action \"all_check\" with sample inputs (static + dynamic) before \
+presenting it. Present the 6-tuple, the table, the graph (widget) and the sequences. Remember: final \
+states halt (f is defined on Q-F); a missing transition is a bloqueo, which rejects; an MT may never \
+halt, an ALL always accepts or rejects. Multitape machines use JFLAP notation (multipista: all heads \
+move together). rflap_compose_tm composes MT1 and MT2; rflap_membership builds the sets T0..Tk of a \
+non-contracting grammar.
+
 Write documents in the compact form, e.g. {\"type\":\"fa\",\"initial\":\"q0\",\"finals\":[\"q2\"],\
 \"transitions\":[[\"q0\",\"a\",\"q1\"],[\"q1\",\"b\",\"q2\"]]}; \"\" or λ is the empty string. A grammar \
 is plain text, one production per line (\"S -> aSb | λ\"), uppercase letters are variables. Call \
@@ -40,6 +56,12 @@ pub fn prompt_list() -> Value {
             "title": "Solve a Sintaxis y Semántica exercise",
             "description": "Helps with an exercise on automata, grammars or regular expressions: reason, design with Rflap, verify and explain.",
             "arguments": [{"name": "exercise", "description": "The exercise statement, as the student wrote it.", "required": true}],
+        },
+        {
+            "name": "mt_catedra",
+            "title": "Turing machine or ALL in the notation of the course",
+            "description": "Solves an exercise on Turing machines or linear bounded automata (ALL) with the notation of the course bibliography: definition, table, graph and configuration sequences, verified with Rflap.",
+            "arguments": [{"name": "enunciado", "description": "The exercise statement, as the student wrote it.", "required": true}],
         },
         {
             "name": "grammar_tables",
@@ -72,7 +94,29 @@ pub fn prompt(name: &str, arguments: &Value) -> Result<Value, String> {
                      rflap_design_automaton (or rflap_convert / rflap_grammar / rflap_parse_tables if the \
                      exercise is about conversions or grammars). If the verification reports a failing \
                      example, fix the spec and design again. Show the result with the Rflap widget and \
-                     finish by explaining what each state or production does, in the language I wrote in."
+                     finish by explaining what each state or production does, in the language I wrote in. \
+                     If the exercise is about a Turing machine or an ALL, use rflap_mt_catedra and the \
+                     notation of the course (see the mt_catedra prompt)."
+                ),
+            )
+        }
+        "mt_catedra" => {
+            let enunciado = required(arguments, "enunciado")?;
+            (
+                "Solve a Turing machine / ALL exercise in the notation of the course",
+                format!(
+                    "Resolvé este ejercicio de Máquinas de Turing / ALL de \"Sintaxis y Semántica de los \
+                     Lenguajes\" con la notación de la bibliografía de la cátedra:\n\n{enunciado}\n\n\
+                     Primero razoná qué hace la máquina sobre la cinta (¿MT o ALL?). Escribila como documento \
+                     turing compacto con etiquetas (e,s,m) (movimientos I, N, D; blanco Δ; varias etiquetas de \
+                     una arista unidas con \" / \") y los estados nombrados como en la cátedra. Llamá a \
+                     rflap_mt_catedra con action \"definition\", \"table\" y \"run\" sobre palabras que acepta y \
+                     que rechaza; si es un ALL, llamá siempre a action \"all_check\" (estático y dinámico) antes \
+                     de presentarlo y corregí lo que informe. Presentá la definición \
+                     MT = ⟨Q, Σ_E, Σ_A, q0, F, f⟩, la tabla de transición, el grafo (widget) y las secuencias de \
+                     configuraciones con ├─ terminadas en final/acepta o bloqueo/rechazo. Recordá que los \
+                     estados finales son de parada y que una MT puede no detenerse mientras que un ALL siempre \
+                     decide. Respondé en español."
                 ),
             )
         }
@@ -90,7 +134,7 @@ pub fn prompt(name: &str, arguments: &Value) -> Result<Value, String> {
         }
         other => {
             return Err(format!(
-                "unknown prompt `{other}`; the prompts are ssl_exercise and grammar_tables"
+                "unknown prompt `{other}`; the prompts are ssl_exercise, mt_catedra and grammar_tables"
             ));
         }
     };

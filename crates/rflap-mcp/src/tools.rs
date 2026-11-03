@@ -6,7 +6,7 @@ use std::path::Path;
 use serde_json::{Map, Value, json};
 
 use crate::schemas::{self, ToolDef};
-use crate::{Config, content, viewer};
+use crate::{Config, catedra, content, viewer};
 
 /// What a tool produced; becomes the `CallToolResult`.
 pub struct ToolOutput {
@@ -230,8 +230,17 @@ fn dispatch(config: &Config, name: &str, args: &Map<String, Value>) -> Outcome {
         }
         "rflap_analyze" => {
             let result = api(op("analyze", args))?;
+            let mut text = content::analysis(&result);
+            text.push_str(&catedra::analysis_notes(&result));
+            if let Some(extra) = args.get("document").and_then(catedra_table_md) {
+                text.push_str(&format!(
+                    "
+
+{extra}"
+                ));
+            }
             Ok(Done {
-                text: content::analysis(&result),
+                text,
                 structured: result,
             })
         }
@@ -259,6 +268,9 @@ fn dispatch(config: &Config, name: &str, args: &Map<String, Value>) -> Outcome {
         "rflap_pumping" => pumping(args),
         "rflap_capabilities" => capabilities(args),
         "rflap_call" => raw_call(args),
+        "rflap_mt_catedra" => mt_catedra(args),
+        "rflap_compose_tm" => compose_tm(args),
+        "rflap_membership" => membership(args),
         other => Err(format!("Unknown tool `{other}`.")),
     }
 }
@@ -311,6 +323,7 @@ fn show(args: &Map<String, Value>) -> Outcome {
 {}",
             content::analysis(&analysis)
         ));
+        text.push_str(&catedra::analysis_notes(&analysis));
         out.insert("analysis".into(), analysis);
     }
     if let Ok(explained) = api(json!({"op": "explain", "document": document})) {
@@ -319,7 +332,14 @@ fn show(args: &Map<String, Value>) -> Outcome {
     if let Some(svg) = svg_of(&document) {
         out.insert("svg".into(), json!(svg));
     }
-    if let Some(table) = table_of(&document) {
+    // A single-tape Turing machine shows the cátedra table only; everything else the generic one.
+    if let Some(extra) = catedra_table_md(&document) {
+        text.push_str(&format!(
+            "
+
+{extra}"
+        ));
+    } else if let Some(table) = table_of(&document) {
         text.push_str(&format!(
             "
 
@@ -342,9 +362,18 @@ fn simulate(args: &Map<String, Value>) -> Outcome {
         drop(&mut request, &["input", "tapes"]);
         request["op"] = json!("multiple_run");
         request["inputs"] = batch;
+        let inputs = request["inputs"].clone();
         let result = api(request)?;
+        let mut text = content::batch(&result);
+        if let Some(extra) = catedra_notation(&document, &inputs) {
+            text.push_str(&format!(
+                "
+
+{extra}"
+            ));
+        }
         return Ok(Done {
-            text: content::batch(&result),
+            text,
             structured: structured(result, Some(document)),
         });
     }
@@ -358,8 +387,19 @@ fn simulate(args: &Map<String, Value>) -> Outcome {
         .map(str::to_string)
         .or_else(|| args.get("tapes").map(Value::to_string))
         .unwrap_or_default();
+    let mut text = content::simulate(&result, &shown);
+    if args.get("tapes").is_none()
+        && let Some(input) = args.get("input")
+        && let Some(extra) = catedra_notation(&document, &json!([input]))
+    {
+        text.push_str(&format!(
+            "
+
+{extra}"
+        ));
+    }
     Ok(Done {
-        text: content::simulate(&result, &shown),
+        text,
         structured: structured(result, Some(document)),
     })
 }
@@ -448,7 +488,7 @@ fn render(args: &Map<String, Value>) -> Outcome {
     let text = match format {
         "markdown" => body.trim_end().to_string(),
         "svg" => {
-            let table = table_of(&document);
+            let table = catedra_table_md(&document).or_else(|| table_of(&document));
             let mut text = content::document(&document, table.as_deref());
             text.push_str(&format!("\n\n{}", content::fence("svg", body)));
             text
@@ -631,5 +671,132 @@ fn raw_call(args: &Map<String, Value>) -> Outcome {
     Ok(Done {
         text,
         structured: envelope,
+    })
+}
+
+// ---------------------------------------------------------------------------------------------
+// The notation of the course
+// ---------------------------------------------------------------------------------------------
+
+/// The cátedra table of a one-tape Turing machine; `None` for anything else (or a machine the
+/// notation cannot show, such as a multi-tape one).
+fn catedra_table_md(document: &Value) -> Option<String> {
+    if document["type"] != "turing" {
+        return None;
+    }
+    let result = api(json!({"op": "catedra_table", "document": document})).ok()?;
+    Some(catedra::table(&result))
+}
+
+/// The cátedra table and the configuration sequences of a single-tape Turing machine.
+fn catedra_notation(document: &Value, inputs: &Value) -> Option<String> {
+    let mut out = catedra_table_md(document)?;
+    let words: Vec<Value> = inputs
+        .as_array()?
+        .iter()
+        .filter(|w| w.is_string())
+        .take(10)
+        .cloned()
+        .collect();
+    if !words.is_empty()
+        && let Ok(run) = api(json!({"op": "catedra_run", "document": document, "inputs": words}))
+    {
+        out.push_str(&format!(
+            "
+
+{}",
+            catedra::run(&run)
+        ));
+    }
+    Some(out)
+}
+
+/// `rflap_mt_catedra`: the document with `input_alphabet` applied, then one API operation.
+fn mt_catedra(args: &Map<String, Value>) -> Outcome {
+    let mut args = args.clone();
+    if let Some(alphabet) = args.remove("input_alphabet").filter(|v| !v.is_null()) {
+        let symbols = match &alphabet {
+            Value::String(text) => json!(text.chars().map(String::from).collect::<Vec<_>>()),
+            other => other.clone(),
+        };
+        if let Some(Value::Object(document)) = args.get_mut("document") {
+            document.insert("input_alphabet".into(), symbols);
+        }
+    }
+    let document = normalized(&args, "document")?;
+    let action = args
+        .get("action")
+        .and_then(Value::as_str)
+        .unwrap_or_default();
+    let mut request = json!({"document": document});
+    for key in ["model", "max_steps"] {
+        if let Some(value) = args.get(key).filter(|v| !v.is_null()) {
+            request[key] = value.clone();
+        }
+    }
+    let (op, text) = match action {
+        "definition" => {
+            drop(&mut request, &["max_steps"]);
+            (
+                "catedra_definition",
+                catedra::definition as fn(&Value) -> String,
+            )
+        }
+        "table" => {
+            drop(&mut request, &["model", "max_steps"]);
+            ("catedra_table", catedra::table as fn(&Value) -> String)
+        }
+        "run" => {
+            let inputs = args
+                .get("inputs")
+                .filter(|v| !v.is_null())
+                .ok_or("`action` run needs `inputs`, a list of words (\"\" is the empty word).")?;
+            request["inputs"] = inputs.clone();
+            ("catedra_run", catedra::run as fn(&Value) -> String)
+        }
+        "all_check" => {
+            drop(&mut request, &["model"]);
+            if let Some(inputs) = args.get("inputs").filter(|v| !v.is_null()) {
+                request["inputs"] = inputs.clone();
+            }
+            ("all_check", catedra::all_check as fn(&Value) -> String)
+        }
+        other => {
+            return Err(format!(
+                "`action` must be definition, table, run or all_check (got `{other}`)."
+            ));
+        }
+    };
+    request["op"] = json!(op);
+    let document = request["document"].clone();
+    let result = api(request)?;
+    let text = text(&result);
+    let mut structured = object(result);
+    structured.insert("action".into(), json!(action));
+    Ok(Done {
+        text,
+        structured: self::structured(Value::Object(structured), Some(document)),
+    })
+}
+
+fn compose_tm(args: &Map<String, Value>) -> Outcome {
+    let result = api(op("compose_tm", args))?;
+    let document = result["document"].clone();
+    let table = api(json!({"op": "catedra_table", "document": document}))
+        .ok()
+        .map(|t| catedra::table(&t));
+    let text = catedra::compose(result["definition"]["text"].as_str(), table.as_deref());
+    Ok(Done {
+        text,
+        structured: result,
+    })
+}
+
+fn membership(args: &Map<String, Value>) -> Outcome {
+    let result = api(op("membership_tk", args))?;
+    let text = catedra::membership(&result);
+    Ok(Done {
+        structured: structured(result, Some(normalized(args, "grammar")?)),
+        text,
     })
 }

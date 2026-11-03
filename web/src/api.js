@@ -4,6 +4,8 @@
 // JSON of rflap-api). Local wasm is the default; when the host forbids WebAssembly (the default MCP Apps
 // CSP has no 'wasm-unsafe-eval') the app switches to the remote transport, which asks the MCP server.
 
+import { t } from './i18n.js';
+
 export class ApiError extends Error {
   constructor(error) {
     super(error && error.message ? error.message : 'unknown error');
@@ -31,7 +33,7 @@ export function remoteTransport(host, toolName = 'rflap_call') {
     }
     const text = result && result.content && result.content.find((c) => c.type === 'text');
     if (text) return JSON.parse(text.text);
-    throw new Error('the server answered without a result');
+    throw new Error(t('error.no_result'));
   };
 }
 

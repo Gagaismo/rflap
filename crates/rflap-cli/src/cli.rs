@@ -105,6 +105,15 @@ pub enum ParserArg {
     Cyk,
 }
 
+/// The model of a machine of the course.
+#[derive(Clone, Copy, ValueEnum)]
+pub enum ModelArg {
+    /// Turing machine
+    Mt,
+    /// linear bounded automaton
+    All,
+}
+
 /// What a machine run needs besides the document.
 #[derive(Args, Clone)]
 pub struct RunOptions {
@@ -402,6 +411,43 @@ Example:
         command: PumpingCommand,
     },
 
+    /// Turing machines and linear bounded automata in the notation of the course (Sintaxis y Semántica de los Lenguajes)
+    #[command(after_help = "\
+One-tape machines only. A label is `(e,s,m)` or `e,s,m` (move I left, N stay, D right; Δ is the
+blank), several labels of one edge are joined with ` / `, and JFLAP's `e;s,m` is read too.
+A document may declare Σ_E with \"input_alphabet\": \"ab\"; otherwise it is inferred.
+
+Example:
+  rflap catedra definition palindrome.json
+  rflap catedra table palindrome.json --markdown
+  rflap catedra run palindrome.json aba ab λ
+  rflap catedra run igual.json ab --all
+  rflap catedra all-check igual.json ab b")]
+    Catedra {
+        #[command(subcommand)]
+        command: CatedraCommand,
+    },
+
+    /// Membership of a word by the sets Tk (CLASE 41), for non-contracting grammars
+    #[command(after_help = "\
+Prints T0, T1, ... until Tk == Tk-1 or the word is in Tk. Exit 0 when the word belongs to the
+language, 1 when it does not, 2 on errors (a contracting grammar is refused with
+`contracting_grammar`).
+
+Example:
+  rflap membership grammar.txt abbc
+  rflap membership --grammar 'S -> aSb | λ' aabb")]
+    Membership {
+        #[command(flatten)]
+        inline: InlineGrammar,
+        /// FILE followed by the WORD (with --grammar only the word); `λ` is the empty word
+        #[arg(value_name = "GRAMMAR WORD")]
+        args: Vec<String>,
+        /// Forms the sets may hold before the search gives up
+        #[arg(long, value_name = "N")]
+        max_forms: Option<usize>,
+    },
+
     /// List every operation, document type, conversion, parser and layout
     #[command(after_help = "\
 Example:
@@ -426,6 +472,96 @@ Example:
         /// Print the URL but do not open the browser
         #[arg(long)]
         no_open: bool,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum CatedraCommand {
+    /// The formal definition ⟨Q, Σ_E, Σ_A, q0, F, f⟩ of a machine, with its warnings
+    #[command(after_help = "\
+Warnings: a transition leaving a final state (\"El dominio no incluye a F\") and nondeterminism.
+
+Example:
+  rflap catedra definition palindrome.json
+  rflap catedra definition igual.json --model all")]
+    Definition {
+        /// .json or .jff machine; `-` reads standard input
+        file: String,
+        /// The model (default: all when a transition mentions ⟨ or ⟩)
+        #[arg(long, value_enum)]
+        model: Option<ModelArg>,
+    },
+
+    /// The transition table: Estado Actual | Símbolo Entrada | Estado Nuevo | Símbolo Salida | Movimiento Cabezal
+    #[command(after_help = "\
+→ marks the initial state and * the finals (one row of dashes each).
+
+Example:
+  rflap catedra table palindrome.json
+  rflap catedra table palindrome.json --markdown")]
+    Table {
+        /// .json or .jff machine; `-` reads standard input
+        file: String,
+        /// Print a Markdown table instead of aligned text
+        #[arg(long)]
+        markdown: bool,
+    },
+
+    /// Run a machine and print the configuration sequences (c1 ├─ c2 ├─ ... final/acepta)
+    #[command(after_help = "\
+Exit 0 all accepted, 1 some rejected (bloqueo/rechazo, or a violation of an ALL), 3 some run does
+not stop within --max-steps, 2 errors. `λ` is the empty input.
+
+Example:
+  rflap catedra run palindrome.json aba bb ab λ
+  rflap catedra run igual.json ab b --all")]
+    Run {
+        /// .json or .jff machine; `-` reads standard input
+        file: String,
+        /// Inputs (`λ` is the empty word)
+        inputs: Vec<String>,
+        /// Read more inputs from this file, one per line
+        #[arg(long, value_name = "FILE")]
+        inputs_file: Option<String>,
+        /// Run as a linear bounded automaton (tape ⟨w⟩); same as --model all
+        #[arg(long, conflicts_with = "model")]
+        all: bool,
+        /// The model (default: all when a transition mentions ⟨ or ⟩)
+        #[arg(long, value_enum)]
+        model: Option<ModelArg>,
+        /// Transitions before a run is reported as not stopping (default 1000)
+        #[arg(long, value_name = "N")]
+        max_steps: Option<usize>,
+    },
+
+    /// Check that a machine follows the rules of an ALL (static rules, and a run per input)
+    #[command(after_help = "\
+Exit 0 when it does, 1 when there are violations.
+
+Example:
+  rflap catedra all-check igual.json ab b")]
+    AllCheck {
+        /// .json or .jff machine; `-` reads standard input
+        file: String,
+        /// Inputs to run for the dynamic check
+        inputs: Vec<String>,
+        #[arg(long, value_name = "N")]
+        max_steps: Option<usize>,
+    },
+
+    /// Compose two machines: MT1 followed by MT2
+    #[command(after_help = "\
+Transitions of A into its final states go to the initial state of B; the final states are
+those of B. Without -o the definition of the composite is printed.
+
+Example:
+  rflap catedra compose a.json b.json -o ab.json")]
+    Compose {
+        a: String,
+        b: String,
+        /// Output .jff, .json or .svg file
+        #[arg(short, long, value_name = "OUT")]
+        output: Option<String>,
     },
 }
 

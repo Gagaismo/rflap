@@ -10,6 +10,7 @@ use crate::error::{ApiError, code};
 use crate::request::Request;
 
 mod capabilities;
+mod catedra;
 mod convert;
 mod grammar;
 mod inspect;
@@ -46,6 +47,12 @@ pub fn dispatch(request: Request) -> Result<Response, ApiError> {
         Request::PumpingLanguages => misc::pumping_languages(),
         Request::PumpingNew(r) => misc::pumping_new(r)?,
         Request::PumpingMove(r) => misc::pumping_move(r)?,
+        Request::CatedraDefinition(r) => catedra::definition_op(r)?,
+        Request::CatedraTable(r) => catedra::table(r)?,
+        Request::CatedraRun(r) => catedra::run(r)?,
+        Request::AllCheck(r) => catedra::all_check(r)?,
+        Request::ComposeTm(r) => catedra::compose_tm(r)?,
+        Request::MembershipTk(r) => catedra::membership_tk(r)?,
     };
     Ok(Response {
         ok: true,

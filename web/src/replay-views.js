@@ -108,7 +108,7 @@ const edgeText = (e, nameOf) => `${nameOf(e.from)} —${e.label === '' ? 'λ' : 
 
 async function drawn(tab, document, alt, highlight = []) {
   try {
-    const r = await tab.api({ op: 'render', document, format: 'svg', highlight_states: highlight, dark: Boolean(tab.dark) });
+    const r = await tab.api({ op: 'render', document, format: 'svg', highlight_states: highlight });
     return svgImage(r.content, alt, 'engine-svg step-graph');
   } catch (error) {
     return h('p', { class: 'form-error', role: 'alert' }, t('replay.render_failed', { message: error.message }));

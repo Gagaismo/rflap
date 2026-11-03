@@ -49,7 +49,7 @@ test('states: add (lowest free name), rename, move, initial, final, remove with 
   renameState(doc, b, 'mid');
   assert.equal(stateByName(doc, 'mid').id, 1);
   assert.throws(() => renameState(doc, a, 'mid'), /already used/);
-  assert.throws(() => renameState(doc, a, '  '), /empty/);
+  assert.throws(() => renameState(doc, a, '  '), /vacío/);
   removeState(doc, c);
   assert.deepEqual(doc.transitions.map((t) => t.label), ['x']);
   assert.deepEqual(doc.finals, []);
