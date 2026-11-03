@@ -6,11 +6,15 @@
 //! of [`Production`]s so they are easy to build.
 
 mod check;
+mod membership;
 mod model;
 pub mod parse;
 mod transform;
 
 pub use check::{Classification, TypeReport};
+pub use membership::{
+    DEFAULT_MAX_FORMS, MembershipError, TkReport, membership_tk, membership_tk_limited,
+};
 pub use model::{Grammar, GrammarError, LAMBDA, Production, is_variable_symbol};
 pub use parse::*;
 pub use transform::{

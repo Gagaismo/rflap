@@ -45,6 +45,8 @@ pub mod code {
     pub const INVALID_MOVE: &str = "invalid_move";
     /// A size limit protects the caller.
     pub const LIMIT_EXCEEDED: &str = "limit_exceeded";
+    /// The grammar is contracting (some production has |α| > |β|), which `membership_tk` refuses.
+    pub const CONTRACTING_GRAMMAR: &str = "contracting_grammar";
     /// A bug: the operation panicked.
     pub const INTERNAL: &str = "internal";
 }

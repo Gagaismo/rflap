@@ -11,7 +11,7 @@ use crate::document::Document;
 use crate::error::{ApiError, code};
 
 /// Every operation, in the order `capabilities` lists them.
-pub const OPS: [&str; 23] = [
+pub const OPS: [&str; 29] = [
     "capabilities",
     "open_jff",
     "save_jff",
@@ -35,6 +35,12 @@ pub const OPS: [&str; 23] = [
     "pumping_languages",
     "pumping_new",
     "pumping_move",
+    "catedra_definition",
+    "catedra_table",
+    "catedra_run",
+    "all_check",
+    "compose_tm",
+    "membership_tk",
 ];
 
 /// An operation with its arguments. In JSON: `{"op": "simulate", "document": {...}, ...}`.
@@ -65,6 +71,12 @@ pub enum Request {
     PumpingLanguages,
     PumpingNew(PumpingNew),
     PumpingMove(PumpingMove),
+    CatedraDefinition(CatedraDefinition),
+    CatedraTable(OneDocument),
+    CatedraRun(CatedraRun),
+    AllCheck(AllCheck),
+    ComposeTm(Pair),
+    MembershipTk(MembershipTk),
 }
 
 impl Request {
@@ -94,6 +106,12 @@ impl Request {
             Request::PumpingLanguages => "pumping_languages",
             Request::PumpingNew(_) => "pumping_new",
             Request::PumpingMove(_) => "pumping_move",
+            Request::CatedraDefinition(_) => "catedra_definition",
+            Request::CatedraTable(_) => "catedra_table",
+            Request::CatedraRun(_) => "catedra_run",
+            Request::AllCheck(_) => "all_check",
+            Request::ComposeTm(_) => "compose_tm",
+            Request::MembershipTk(_) => "membership_tk",
         }
     }
 
@@ -528,4 +546,55 @@ pub struct PumpingMove {
     pub game: Document,
     #[serde(rename = "move")]
     pub mv: Move,
+}
+
+/// `catedra_definition`.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CatedraDefinition {
+    pub document: Document,
+    /// `mt` or `all`; default: `all` when a transition mentions `⟨` or `⟩`, otherwise `mt`.
+    #[serde(default)]
+    pub model: Option<String>,
+}
+
+/// `catedra_run`.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CatedraRun {
+    pub document: Document,
+    /// One input (possibly empty).
+    #[serde(default)]
+    pub input: Option<String>,
+    #[serde(default)]
+    pub inputs: Option<Vec<String>>,
+    /// `mt` or `all`; default: detected from the transitions.
+    #[serde(default)]
+    pub model: Option<String>,
+    /// Transitions applied before the run is reported as not halting (default 1000).
+    #[serde(default)]
+    pub max_steps: Option<usize>,
+}
+
+/// `all_check`.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AllCheck {
+    pub document: Document,
+    /// Inputs to run as an ALL for the dynamic check.
+    #[serde(default)]
+    pub inputs: Option<Vec<String>>,
+    #[serde(default)]
+    pub max_steps: Option<usize>,
+}
+
+/// `membership_tk`.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MembershipTk {
+    pub grammar: Document,
+    pub input: String,
+    /// Forms the sets may hold before the search gives up (default 100000).
+    #[serde(default)]
+    pub max_forms: Option<usize>,
 }

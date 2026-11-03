@@ -5,6 +5,7 @@
 
 mod api;
 mod caps;
+mod catedra;
 mod cli;
 mod design;
 mod error;
@@ -19,7 +20,7 @@ use std::io::Write;
 
 use clap::Parser;
 
-use cli::{Cli, Command, PumpingCommand};
+use cli::{CatedraCommand, Cli, Command, PumpingCommand};
 use error::Result;
 use text::{Reply, exit};
 
@@ -118,6 +119,36 @@ fn dispatch(cli: &Cli) -> Result<Reply> {
                 moves,
             } => pumping::play(kind, language, mode, *seed, moves, cli.json),
         },
+        Command::Catedra { command } => match command {
+            CatedraCommand::Definition { file, model } => catedra::definition(file, *model),
+            CatedraCommand::Table { file, markdown } => catedra::table(file, *markdown),
+            CatedraCommand::Run {
+                file,
+                inputs,
+                inputs_file,
+                all,
+                model,
+                max_steps,
+            } => catedra::run(
+                file,
+                inputs,
+                inputs_file.as_deref(),
+                *model,
+                *all,
+                *max_steps,
+            ),
+            CatedraCommand::AllCheck {
+                file,
+                inputs,
+                max_steps,
+            } => catedra::all_check(file, inputs, *max_steps),
+            CatedraCommand::Compose { a, b, output } => catedra::compose(a, b, output.as_deref()),
+        },
+        Command::Membership {
+            inline,
+            args,
+            max_forms,
+        } => catedra::membership(inline, args, *max_forms),
         Command::Capabilities => caps::capabilities(),
         Command::Gui {
             file,

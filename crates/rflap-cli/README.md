@@ -62,6 +62,12 @@ with the same exit codes. `run` with several inputs sends one `multiple_run` req
 | `parse G INPUT... --parser brute\|brute-unrestricted\|ll1\|slr1\|cyk [--tree]` | derivation and tree |
 | `tables G` | FIRST/FOLLOW, LL(1) table, SLR(1) states and ACTION/GOTO |
 | `design (--constraint T \| --regex R \| --grammar G \| --template N) --alphabet ab [--accept w,..] [--reject w,..] [-o OUT] [--svg OUT]` | build a minimal automaton and verify it |
+| `catedra definition FILE [--model mt\|all]` | the definition ⟨Q, Σ_E, Σ_A, q0, F, f⟩ of a one-tape MT or ALL, with warnings (a transition leaving a final state, nondeterminism) |
+| `catedra table FILE [--markdown]` | the transition table of the course (Estado Actual \| Símbolo Entrada \| Estado Nuevo \| Símbolo Salida \| Movimiento Cabezal) |
+| `catedra run FILE INPUT... [--all] [--model mt\|all] [--max-steps N] [--inputs-file F]` | configuration sequences `Δ1abaΔ ├─ ΔΔ2baΔ ... final/acepta` (exit 0 all accepted, 1 some rejected, 3 does not stop) |
+| `catedra all-check FILE [INPUT...]` | the ALL rules, statically and with a run per input (exit 1 on violations) |
+| `catedra compose A B [-o OUT]` | MT1 followed by MT2 |
+| `membership G WORD [--max-forms N]` | membership by the sets Tk for non-contracting grammars (exit 0 member, 1 not) |
 | `explain FILE` | plain-language summary |
 | `lsystem FILE --depth N [-o OUT.svg]` | expand and draw an L-system |
 | `pumping list`, `pumping play KIND LANG` | the pumping lemma games |
@@ -74,6 +80,28 @@ which the browser never sends to the server.
 
 On Windows consoles that are not UTF-8, run `chcp 65001` (or use Windows Terminal) to see `λ`
 and the tree characters correctly.
+
+## Turing machines and ALL in the course's notation
+
+`rflap catedra ...` follows the course "Sintaxis y Semántica de los Lenguajes" (Ing. Jorge
+Buabud, UTN FRT): one-tape machines with `Δ` as the blank, moves `I` (left), `N` (stay) and
+`D` (right), labels `(e,s,m)` and the configuration sequence `c1 ├─ c2 ...`. In a compact
+document a label can be `(a,X,D)`, `a,X,D` or JFLAP's `a;X,R`; several labels of one edge are
+written `(a,a,D) / (b,b,D)`; `"input_alphabet": "ab"` declares Σ_E (otherwise it is inferred).
+
+```text
+rflap catedra table palindrome.json
+rflap catedra run palindrome.json aba ab λ
+rflap catedra run igual.json ab --all          # linear bounded automaton: tape ⟨ab⟩
+rflap catedra all-check igual.json ab b
+rflap membership grammar.txt abbc              # T0, T1, ... until Tk == Tk-1
+```
+
+`catedra run`: model `mt` starts on a tape of `Δ` and shows the cells from one before the word to
+one after it plus every cell the head visited (so λ gives `Δ1Δ ├─ ΔΔ8Δ`, one blank more than the
+slide). Model `all` puts `⟨w⟩` on the tape and stops with a violation if the head leaves it or a
+delimiter is overwritten. Entering a final state is `final/acepta`; no transition is
+`bloqueo/rechazo` (`rechaza` for an ALL); too many steps is `no se detiene`.
 
 ## Building
 

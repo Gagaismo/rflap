@@ -1,7 +1,10 @@
 //! Turing machines, single and multi-tape, with building blocks (JFLAP `automata.turing`).
-//! Mealy and Moore machines (JFLAP `automata.mealy`) live in `mealy`.
+//! Mealy and Moore machines (JFLAP `automata.mealy`) live in `mealy`. The notation of the
+//! course "Sintaxis y Semántica de los Lenguajes" lives in `catedra`.
 
-use std::collections::BTreeMap;
+pub mod catedra;
+
+use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 use std::hash::{Hash, Hasher};
 
@@ -26,6 +29,8 @@ pub enum TmError {
         expected: usize,
         found: usize,
     },
+    /// A label text that is neither the cátedra `(e,s,m)` nor the JFLAP `e;s,m` form.
+    BadLabel(String),
 }
 
 impl fmt::Display for TmError {
@@ -40,6 +45,7 @@ impl fmt::Display for TmError {
             TmError::TapeCount { expected, found } => {
                 write!(f, "expected {expected} tapes but found {found}")
             }
+            TmError::BadLabel(s) => write!(f, "invalid transition label {s:?}"),
         }
     }
 }
@@ -362,6 +368,9 @@ pub struct TuringMachine {
     automaton: Automaton<TmLabel>,
     tapes: usize,
     blocks: BTreeMap<StateId, TuringMachine>,
+    /// The declared input alphabet Σ_E of the cátedra definition; `None` when it is inferred.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    input_alphabet: Option<BTreeSet<char>>,
 }
 
 impl TuringMachine {
@@ -371,11 +380,21 @@ impl TuringMachine {
             automaton: Automaton::new(),
             tapes: tapes.max(1),
             blocks: BTreeMap::new(),
+            input_alphabet: None,
         }
     }
 
     pub fn tapes(&self) -> usize {
         self.tapes
+    }
+
+    /// The declared input alphabet Σ_E, `None` when the machine does not declare one.
+    pub fn input_alphabet(&self) -> Option<&BTreeSet<char>> {
+        self.input_alphabet.as_ref()
+    }
+
+    pub fn set_input_alphabet(&mut self, alphabet: Option<BTreeSet<char>>) {
+        self.input_alphabet = alphabet;
     }
 
     /// The underlying states, transitions, initial and final states.
