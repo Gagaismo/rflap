@@ -19,6 +19,21 @@ pub enum JffError {
     UnknownState { id: u32, context: String },
     /// A transition label could not be read.
     BadLabel(String),
+    /// A production has no left side, or the first one is not restricted.
+    BadProduction(String),
+    /// A regular expression could not be parsed.
+    BadExpression(String),
+    /// A Turing machine transition does not describe exactly the tapes of the machine.
+    TapeCount { expected: usize, found: usize },
+    /// A `tape` attribute names a tape the machine does not have.
+    TapeOutOfRange { tape: usize, tapes: usize },
+    /// A building block names an inner machine that is not in the file.
+    UnknownBlock { tag: String },
+    /// A building block contains itself.
+    BlockCycle { tag: String },
+    /// The file holds a structure this reader does not handle (L-systems, pumping lemma
+    /// games, unknown types).
+    Unsupported { structure_type: String },
 }
 
 impl JffError {
@@ -56,6 +71,24 @@ impl fmt::Display for JffError {
                 write!(f, "{context} refers to the non-existent state {id}")
             }
             JffError::BadLabel(msg) => write!(f, "bad transition label: {msg}"),
+            JffError::BadProduction(msg) => write!(f, "bad production: {msg}"),
+            JffError::BadExpression(msg) => write!(f, "bad regular expression: {msg}"),
+            JffError::TapeCount { expected, found } => write!(
+                f,
+                "a transition describes {found} tapes but the machine has {expected}"
+            ),
+            JffError::TapeOutOfRange { tape, tapes } => {
+                write!(f, "tape {tape} is out of range: the machine has {tapes}")
+            }
+            JffError::UnknownBlock { tag } => {
+                write!(f, "the building block \"{tag}\" is not defined in the file")
+            }
+            JffError::BlockCycle { tag } => {
+                write!(f, "the building block \"{tag}\" contains itself")
+            }
+            JffError::Unsupported { structure_type } => {
+                write!(f, "structure type \"{structure_type}\" is not supported")
+            }
         }
     }
 }

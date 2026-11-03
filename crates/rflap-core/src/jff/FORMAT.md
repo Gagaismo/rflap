@@ -51,11 +51,19 @@ Inside the automaton node, in this order when written:
   - children: `<x>`, `<y>` (Java double text, e.g. `50.0`; JFLAP rounds to int when it
     loads), `<label>` (optional), `<initial/>`, `<final/>`, and for `moore` `<output>`.
   - states are created in id order; a duplicate id is an error.
-  - Turing machines write `<block id name>` instead of `<state>`, with `<tag>` (internal
-    name), `<x>`, `<y>`, `<initial/>`, `<final/>`; blocks reference extra
-    `<automaton>`-named elements (one per block name) listed after the transitions
-    under the comment `The list of automata`. Reading also accepts `<state>` with
-    `<tag>`. Transitions of a block carry the attribute `block="true"`.
+  - Turing machines write every state as `<block id name>` (never `<state>`), with `<tag>`
+    (internal name, `Machine<id>` by default), `<x>`, `<y>`, `<initial/>`, `<final/>` (no
+    `<label>`). After the transitions, under the comment `The list of automata`, comes one
+    element per tag, named after it, holding the inner machine in the same layout (states,
+    transitions, notes, nested tags); it is empty for an ordinary state. A tag is resolved
+    to the first element of the document with that name, so two blocks with the same tag
+    (the default `MachineN` of different levels) make JFLAP 7.1 recurse until
+    `StackOverflowError` when it reloads its own file; block tags must be unique. This port
+    writes `Block<id>` (and `<tag>_<id>` one level down) for real blocks and writes the
+    state `<label>` after `<y>`, which JFLAP reads. Reading also accepts `<state>` with
+    `<tag>`; an unknown tag is an error here (JFLAP silently makes an empty machine).
+    Inner machines have the tape count of the file. A transition with `block="true"` has
+    only `<read>`; JFLAP reads it as write `~`, move `S`.
 - `<!--The list of transitions.-->` (only if any), then one `<transition>` each:
   - `<from>ID</from>`, `<to>ID</to>` (required; an unknown state is an error),
     `<controlx>`, `<controly>` (integers, only when the curve was moved),
@@ -63,12 +71,17 @@ Inside the automaton node, in this order when written:
   - `fa`: `<read>` (empty = λ).
   - `pda`: `<read>`, `<pop>`, `<push>` (each empty = nothing).
   - `mealy`: `<read>`, `<transout>` (output). `moore`: same transition children as `mealy`
-    (JFLAP writes `<transout>` for Moore transitions too) plus `<output>` on each state.
+    plus `<output>` on each state (`<output/>` when empty). A Moore `<transout>` is the
+    output of the transition's destination: JFLAP copies it into that state when it loads
+    (after the states' own `<output>`), so a file with an empty `<transout>` loses the
+    destination's output. This port writes it, and reads it only when present.
   - `turing`: per tape `<read tape="i">`, `<write tape="i">`, `<move tape="i">`;
     the `tape` attribute is written only when there is more than one tape and defaults
     to 1 when reading. Blank is written as empty (read and write); a missing `<move>`
     is `R`; moves are `L`, `R`, `S`. A block transition has only `<read>` plus
-    `block="true"`.
+    `block="true"`. This port requires every tape of the machine to appear in a transition
+    (`TapeCount`) and rejects a `tape` beyond the machine's (`TapeOutOfRange`); JFLAP fills
+    missing tapes with blank/blank/R.
 - `<note>` elements (after transitions): `<text>`, `<x>`, `<y>`. A note without `<text>`
   is skipped when reading.
 
