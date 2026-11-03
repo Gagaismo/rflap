@@ -219,6 +219,34 @@ T4 = T3
 Como T4 = T3, "abbc" no pertenece al lenguaje.
 ```
 
+## Compatibilidad con JFLAP 7.1 y cómo correr un ALL en JFLAP
+
+Todo autómata que Rflap diseña, muestra o guarda tiene que ser compatible con el JFLAP clásico
+(7.1): el `.jff` abre con los mismos estados, inicial, finales, etiquetas y símbolos, y los AF, AP,
+Mealy, Moore y MT corren con los mismos veredictos que el simulador de JFLAP (se comprueba contra el
+`JFLAP7_1.JAR` real, ver [testing.md](testing.md)). La operación `jflap_check` de la API, que las
+herramientas MCP corren solas, avisa de lo que JFLAP no puede representar o corre distinto:
+
+* `⚠️ JFLAP 7.1: …` es un problema: una MT de más de 5 cintas (JFLAP se niega a abrirla) o una
+  etiqueta de rango `[x-y]` hacia un estado con una salida λ (el *Run* de JFLAP se detiene un estado
+  antes y rechaza lo que Rflap acepta). `save_jff` igual guarda el archivo, sin tocarlo, y avisa.
+* `ℹ️ JFLAP 7.1: …` es una nota: una MT sin estados finales solo acepta por detención (en JFLAP hay
+  que tildar *Accept by Halting*), un AP sin finales acepta por pila vacía (*Accept by Empty Stack*),
+  y el alfabeto de entrada Σ_E declarado no se guarda en el `.jff`.
+
+**Un ALL abre igual en JFLAP** (mismos estados, inicial, finales y etiquetas, con ⟨ y ⟩ como símbolos
+comunes), pero JFLAP no tiene el modelo ALL: no agrega los delimitadores, el cabezal arranca sobre el
+primer símbolo que escribas y la cinta no está acotada. La cinta `⟨w⟩` con el cabezal sobre el primer
+símbolo de `w` y la cinta que se achica solo valen en Rflap. Para correr un ALL en JFLAP:
+
+1. Agregá un estado inicial nuevo, con una transición `(⟨,⟨,D)` (en JFLAP, `⟨;⟨,R`) hacia el estado
+   inicial anterior.
+2. Escribí la entrada con los delimitadores: `⟨aba⟩`, no `aba`.
+3. Corré con *Input → Step* o *Run* (acepta por estado final).
+
+Con eso JFLAP da los veredictos del ALL de la cátedra (los cuatro ALL del 2.1 coinciden en una
+prueba contra el jar); sin el paso 1 el cabezal arrancaría sobre `⟨` y la máquina se bloquearía.
+
 ## Con IA
 
 Con el servidor MCP (Claude, ChatGPT, Claude Code, Codex) basta pedir, por ejemplo: *«Armá una MT

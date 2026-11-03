@@ -142,6 +142,29 @@ written by Rflap load in JFLAP (plan log L8).
   CRLF line ends and `&#13;` are accepted, element names are case-sensitive. The full list is in
   `crates/rflap-core/src/jff/FORMAT.md`.
 
+## Compatibility with classic JFLAP (`jflap_check`)
+
+Every machine Rflap designs, shows or saves must open in JFLAP 7.1 with the same states, initial
+state, finals, labels and symbols, and run with the same verdicts (S8 of the plan `odd/tasks/all-shrink.md`).
+`jflap_check` (API op; the MCP tools run it and put the lines `⚠️ JFLAP 7.1: …` / `ℹ️ JFLAP 7.1: …` in
+the reply and the result in `structuredContent.jflap`) reports `{compatible, issues, notes}`. What was
+found by comparing against the jar (`crates/rflap-api/tests/jflap_diff.rs`, harness `HarnessSim.java`):
+
+| Finding | Kind | Evidence |
+|---|---|---|
+| More than 5 tapes | issue `too_many_tapes` | JFLAP's loader throws `DataException: 6 invalid # of tapes. Valid # of tapes 1-5` |
+| Range `[x-y]` into a state with a λ exit | issue `range_before_lambda` | JFLAP's Run (`SimulatorFactory` gives `FSAStepWithClosureSimulator`) rejects `5` for `q0 -[0-9]-> q1 -λ-> q2`; Rflap accepts (the known closure bug, see above) |
+| ALL (⟨ ⟩) | note `all_model` | JFLAP has no ALL model: no delimiters are added and the head starts on the first symbol typed; the note says how to run it (see `catedra.md`) |
+| Declared Σ_E | note `input_alphabet_not_saved` | the `.jff` has no field for it |
+| Turing machine without finals | note `accepts_by_halting` | JFLAP accepts by final state unless "Accept by Halting" is ticked |
+| PDA without finals | note `accepts_by_empty_stack` | JFLAP asks "Accept by" at run time; the file does not store it |
+
+Everything else compared **equal**: states, names, labels, initial and finals; FA with λ, multi-character
+labels and ranges; PDA with multi-symbol pushes; Mealy and Moore outputs; one- and two-tape Turing machines
+(blank `Δ` written as the empty string, `N` as `S`, several labels on one edge as several transitions,
+nondeterministic machines run on the first applicable transition in both); the four ALL fixtures of the
+course load with the same graph.
+
 ## Drawing (`render`)
 
 * **Deviation: SVG instead of Swing.** The look follows `AutomatonDrawer`/`StateDrawer`/`CurvedArrow`
@@ -161,6 +184,7 @@ written by Rflap load in JFLAP (plan log L8).
 | `combine`, `remove_useless_states` for Turing machines | see above |
 | Step data of every conversion (`--steps`) for replay | all conversions |
 | Plain-language explanation of a document (`explain`) | `rflap explain` |
+| JFLAP 7.1 compatibility check (`jflap_check`), run by the MCP tools | `rflap call '{"op":"jflap_check",...}'`, `rflap_*` replies |
 
 ## JFLAP bugs found while porting
 
