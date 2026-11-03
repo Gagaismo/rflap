@@ -147,6 +147,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rflap-mcp"
+version = "0.1.0"
+dependencies = [
+ "rflap-api",
+ "serde_json",
+ "tiny_http",
+]
+
+[[package]]
 name = "rflap-wasm"
 version = "0.1.0"
 dependencies = [
