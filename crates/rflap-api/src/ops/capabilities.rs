@@ -143,8 +143,8 @@ fn op_entry(op: &str) -> Value {
             json!({"op": "layout", "document": nfa(), "algorithm": "circle"}),
         ),
         "render" => (
-            "Draws a document. format svg (machines, lsystems), markdown (transition table), dot (Graphviz) or text. Highlights states (names or ids) and transitions (indices).",
-            "document, format?, highlight_states?, highlight_transitions?, dark?, depth?",
+            "Draws a document. format svg (machines, lsystems), markdown (transition table), dot (Graphviz) or text. Highlights states (names or ids) and transitions (indices). Turing machine labels are drawn in the notation of the cátedra by default, (a,X,D) with Δ and I/N/D; notation jflap draws a ; X , R with □. join_labels writes the labels of parallel transitions on one line as (a,a,D) / (b,b,D) instead of stacking them.",
+            "document, format?, highlight_states?, highlight_transitions?, dark?, depth?, notation? (catedra|jflap), join_labels?",
             json!({"op": "render", "document": nfa(), "format": "svg",
                    "highlight_states": ["q1"], "highlight_transitions": [2]}),
         ),

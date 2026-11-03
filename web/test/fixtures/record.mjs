@@ -82,3 +82,64 @@ save('lsystem', {
   normalized: (await api({ op: 'normalize', document: lsystem })).document,
   rendered: await api({ op: 'lsystem_render', document: lsystem, depth: 1 }),
 });
+
+// Turing machines and ALL in the notation of the course (CLASE 39): the palindrome MT and the ALL "IGUAL"
+const palindrome = (await api({
+  op: 'normalize',
+  document: {
+    type: 'turing',
+    states: ['1', '2', '3', '4', '5', '6', '7', '8'],
+    initial: '1',
+    finals: ['8'],
+    transitions: [
+      ['1', '(a,Δ,D)', '2'], ['1', '(b,Δ,D)', '5'], ['1', '(Δ,Δ,D)', '8'],
+      ['2', '(a,a,D) / (b,b,D)', '2'], ['2', '(Δ,Δ,I)', '3'],
+      ['3', '(a,Δ,I)', '4'], ['3', '(Δ,Δ,D)', '8'],
+      ['4', '(a,a,I) / (b,b,I)', '4'], ['4', '(Δ,Δ,D)', '1'],
+      ['5', '(a,a,D) / (b,b,D)', '5'], ['5', '(Δ,Δ,I)', '6'],
+      ['6', '(b,Δ,I)', '7'], ['6', '(Δ,Δ,D)', '8'],
+      ['7', '(a,a,I) / (b,b,I)', '7'], ['7', '(Δ,Δ,D)', '1'],
+    ],
+  },
+})).document;
+const igual = (await api({
+  op: 'normalize',
+  document: {
+    type: 'turing',
+    states: ['I', 'A', 'B', 'C', 'D', 'F'],
+    initial: 'I',
+    finals: ['F'],
+    transitions: [
+      ['I', '(a,X,I)', 'A'], ['I', '(b,b,D) / (X,X,D)', 'I'], ['I', '(⟩,⟩,I)', 'D'],
+      ['A', '(b,b,I) / (X,X,I)', 'A'], ['A', '(⟨,⟨,D)', 'B'],
+      ['B', '(a,a,D)', 'B'], ['B', '(b,X,I)', 'C'], ['B', '(X,X,D)', 'B'],
+      ['C', '(a,a,I) / (X,X,I)', 'C'], ['C', '(⟨,⟨,D)', 'I'],
+      ['D', '(X,X,I)', 'D'], ['D', '(⟨,⟨,D)', 'F'],
+    ],
+  },
+})).document;
+const loop = (await api({ op: 'normalize', document: { type: 'turing', states: ['p', 'q'], initial: 'p', finals: ['q'], transitions: [['p', '(Δ,Δ,D)', 'p'], ['p', '(a,a,D)', 'p']] } })).document;
+const broken = (await api({ op: 'normalize', document: { type: 'turing', states: ['p', 'q'], initial: 'p', finals: ['q'], transitions: [['p', '(a,a,D)', 'p'], ['p', '(⟩,⟩,D)', 'q'], ['p', '(⟨,x,I)', 'q']] } })).document;
+const twoTapes = (await api({ op: 'normalize', document: { type: 'turing', states: ['p', 'q'], initial: 'p', finals: ['q'], transitions: [['p', 'a;b,R|c;d,R', 'q'], ['p', 'a;b,R|c;d,L', 'p']] } })).document;
+const tkGrammar = 'S -> T\nDB -> BD\nD -> c\nT -> aTBD\nT -> abD\nbB -> bb';
+save('catedra', {
+  palindrome,
+  igual,
+  loop,
+  broken,
+  twoTapes,
+  palindromeRuns: await api({ op: 'catedra_run', document: palindrome, inputs: ['aba', 'ab', 'bb', ''] }),
+  igualRuns: await api({ op: 'catedra_run', document: igual, inputs: ['ab', 'b'], model: 'all' }),
+  loopRun: await api({ op: 'catedra_run', document: loop, input: 'a', max_steps: 5 }),
+  brokenRun: await api({ op: 'catedra_run', document: broken, input: 'a', model: 'all' }),
+  palindromeDefinition: await api({ op: 'catedra_definition', document: palindrome }),
+  igualDefinition: await api({ op: 'catedra_definition', document: igual, model: 'all' }),
+  palindromeTable: await api({ op: 'catedra_table', document: palindrome }),
+  igualCheck: await api({ op: 'all_check', document: igual, inputs: ['ab'] }),
+  brokenCheck: await api({ op: 'all_check', document: broken, inputs: ['a'] }),
+  analysisTwoTapes: await api({ op: 'analyze', document: twoTapes }),
+  composed: await api({ op: 'compose_tm', a: palindrome, b: palindrome }),
+  svg: (await api({ op: 'render', document: palindrome, format: 'svg' })).content,
+  membership: { grammar: tkGrammar, report: await api({ op: 'membership_tk', grammar: tkGrammar, input: 'abbc' }) },
+  membershipContracting: await api({ op: 'membership_tk', grammar: 'S -> aS | A\nA -> λ', input: 'ab' }).catch((e) => ({ error: { code: e.code, message: e.message, details: e.details } })),
+});

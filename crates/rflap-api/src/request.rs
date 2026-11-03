@@ -4,6 +4,7 @@ use rflap_core::design::{DesignOptions, LanguageSpec};
 use rflap_core::layout::LayoutOptions;
 use rflap_core::lsystem::DrawOptions;
 use rflap_core::pumping::{Kind, Mode, Move};
+use rflap_core::turing::catedra::Notation;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -477,6 +478,14 @@ pub struct RenderArgs {
     /// Rewrite level when rendering an L-system (default 3).
     #[serde(default)]
     pub depth: Option<usize>,
+    /// How the labels of a Turing machine are written: `catedra` (default; `(e,s,m)` with `Δ`
+    /// and `I`/`N`/`D`) or `jflap` (`a ; b , R` with `□`). Other machines ignore it.
+    #[serde(default)]
+    pub notation: Option<Notation>,
+    /// Write the labels of parallel transitions on one line joined with ` / ` instead of
+    /// stacking them (default false).
+    #[serde(default)]
+    pub join_labels: bool,
 }
 
 /// `design`.

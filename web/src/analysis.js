@@ -6,6 +6,7 @@ import { t } from './i18n.js';
 import { registerPanel } from './registry.js';
 import { debounce } from './dom.js';
 import { machineDocument } from './doc.js';
+import { multipistaOf } from './tm-model.js';
 
 const yesNo = (b) => (b ? t('word.yes') : t('word.no'));
 const list = (items) => (items.length ? items.join(', ') : '—');
@@ -47,6 +48,11 @@ registerPanel({
         [t('analysis.unreachable'), list(info.unreachable_states || [])],
         [t('analysis.useless'), list(info.useless_states || [])],
       );
+      const multi = multipistaOf(info);
+      if (multi) {
+        rows.push([t('analysis.multipista'), multi.multipista ? t('word.yes') : t('analysis.multipista_not', { list: multi.offending.map((i) => i + 1).join(', ') })]);
+      }
+      if ((info.catedra_warnings || []).length) rows.push([t('analysis.catedra_warnings'), info.catedra_warnings.join(' ')]);
       clear(body).append(
         h('div', { class: 'button-row' }, flag('nondeterminism', t('test.highlight_nondeterminism')), flag('lambda', t('test.highlight_lambda'))),
         h('dl', { class: 'facts' }, rows.map(([k, v]) => [h('dt', {}, k), h('dd', {}, v)])),

@@ -1087,3 +1087,115 @@ pre.expansion {
 .conclusion {
   font-weight: 700;
 }
+
+/* ---------------------------------------------------------------- Turing machines in the cátedra notation */
+
+.catedra-row {
+  display: flex;
+  gap: 4px;
+  margin: 2px 0;
+}
+
+.catedra-row input {
+  flex: 1;
+}
+
+.catedra-result {
+  margin: 8px 0;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.catedra-result h4 {
+  margin: 0 0 4px;
+}
+
+.catedra-result.result-accept {
+  border-left-color: var(--ok);
+}
+
+.catedra-result.result-reject,
+.catedra-result.result-violation {
+  border-left-color: var(--danger);
+}
+
+.catedra-result.result-nohalt {
+  border-left-color: var(--warn);
+}
+
+.sequence {
+  margin: 4px 0;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+.sequence .cfg {
+  display: inline;
+  padding: 0 3px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+}
+
+.sequence .cfg.current {
+  background: var(--state);
+  border-color: var(--ink);
+}
+
+.seq-tail {
+  font-weight: 700;
+}
+
+.seq-accept {
+  color: var(--ok);
+}
+
+.seq-reject,
+.seq-violation {
+  color: var(--danger);
+}
+
+.seq-nohalt {
+  color: var(--warn);
+}
+
+.badge.verdict-accept {
+  color: var(--ok);
+}
+
+.badge.verdict-reject,
+.badge.verdict-violation {
+  color: var(--danger);
+}
+
+.badge.verdict-nohalt {
+  color: var(--warn);
+}
+
+ul.issues {
+  padding-left: 18px;
+  margin: 4px 0;
+}
+
+ul.issues li {
+  margin: 3px 0;
+}
+
+ul.issues button {
+  margin-left: 6px;
+}
+
+h3.formal {
+  font-family: var(--mono);
+}
+
+.catedra-table td,
+.catedra-table th,
+.tk-table td {
+  font-family: var(--mono);
+}

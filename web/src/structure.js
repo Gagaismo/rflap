@@ -28,6 +28,7 @@ registerPanel({
       const states = stateList(tab.doc, tab.path);
       const moore = tab.type === 'moore';
       const turing = tab.type === 'turing';
+      const notation = turing ? tab.app.notation : undefined;
 
       const stateRows = states.map((s) =>
         h(
@@ -59,13 +60,13 @@ registerPanel({
           'tr',
           {},
           h('td', {}, stateName(c, x.from)),
-          h('td', { class: 'mono' }, labelToText(tab.type, x.label)),
+          h('td', { class: 'mono' }, labelToText(tab.type, x.label, notation)),
           h('td', {}, stateName(c, x.to)),
           h(
             'td',
             {},
             h('button', { type: 'button', onclick: async () => {
-              const label = await askLabel({ api: tab.api, type: tab.type, tapes: realMachine(tab.doc, tab.path).tapes || 1, text: labelToText(tab.type, x.label), title: t('label.edit_transition', { from: stateName(c, x.from), to: stateName(c, x.to) }) });
+              const label = await askLabel({ api: tab.api, type: tab.type, tapes: realMachine(tab.doc, tab.path).tapes || 1, notation, text: labelToText(tab.type, x.label, notation), title: t('label.edit_transition', { from: stateName(c, x.from), to: stateName(c, x.to) }) });
               if (label) tab.edit((d, p) => setTransitionLabel(d, i, label, p));
             } }, t('structure.edit')),
             h('button', { type: 'button', 'aria-label': t('structure.delete_transition', { n: i + 1 }), onclick: () => tab.edit((d, p) => removeTransition(d, i, p)) }, '✕'),
@@ -83,7 +84,7 @@ registerPanel({
         '→',
         to,
         h('button', { type: 'button', disabled: !states.length, onclick: async () => {
-          const label = await askLabel({ api: tab.api, type: tab.type, tapes: realMachine(tab.doc, tab.path).tapes || 1, title: t('label.new_transition', { from: c.states[from.value].name, to: c.states[to.value].name }) });
+          const label = await askLabel({ api: tab.api, type: tab.type, tapes: realMachine(tab.doc, tab.path).tapes || 1, notation: tab.app.notation, title: t('label.new_transition', { from: c.states[from.value].name, to: c.states[to.value].name }) });
           if (label) tab.edit((d, p) => addTransition(d, Number(from.value), Number(to.value), label, p));
         } }, t('structure.add_transition')),
       );
@@ -109,7 +110,7 @@ registerPanel({
     }
 
     draw();
-    const offs = [tab.on('doc', (e) => e.cause !== 'flags' && draw())];
+    const offs = [tab.on('doc', (e) => e.cause !== 'flags' && draw()), tab.on('notation', draw)];
     return { destroy: () => offs.forEach((off) => off()) };
   },
 });

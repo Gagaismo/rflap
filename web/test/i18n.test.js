@@ -48,12 +48,12 @@ test('the app-wide instance starts in Spanish', async () => {
 
 test('every English string has a real Spanish translation (identical text only for names, symbols and cognates)', async () => {
   // load every panel so that their registerStrings() are in the dictionaries
-  for (const file of ['actions', 'sim', 'structure', 'analysis', 'steps', 'assistant', 'info', 'grammar-editor', 'grammar-transform', 'grammar-tables', 'grammar-parse', 'regex-panel', 'design-panel', 'lsystem-panel', 'pumping-panel']) {
+  for (const file of ['actions', 'sim', 'structure', 'analysis', 'steps', 'assistant', 'info', 'grammar-editor', 'grammar-transform', 'grammar-tables', 'grammar-parse', 'grammar-membership', 'catedra-panels', 'regex-panel', 'design-panel', 'lsystem-panel', 'pumping-panel']) {
     await import(`../src/${file}.js`);
   }
   const SAME_ON_PURPOSE = new Set([
     'convert.combined', 'layout.gem', 'word.final', 'word.no', 'state.final', 'multi.paste_hint', 'tables.col.variable',
-    'parse.parser.ll1', 'parse.parser.slr1', 'parse.col.n', 'parse.error', 'pumping.enter', 'pumping.m', 'pumping.w', 'pumping.i',
+    'parse.parser.ll1', 'parse.parser.slr1', 'tk.bound', 'tk.error', 'convert.composed_tm', 'catedra.empty_word', 'catedra.error', 'parse.col.n', 'parse.error', 'pumping.enter', 'pumping.m', 'pumping.w', 'pumping.i',
   ]);
   const same = Object.keys(dictionaries.en).filter((k) => !k.startsWith('test.') && dictionaries.es[k] === dictionaries.en[k]);
   const untranslated = same.filter((k) => !SAME_ON_PURPOSE.has(k) && !/^(help\.sc\..*\.keys|design\.template\.|.*\.keys)/.test(k));
