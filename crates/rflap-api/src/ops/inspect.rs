@@ -164,6 +164,9 @@ pub fn analyze(doc: &Document) -> Result<Value, ApiError> {
             out.insert("kind".into(), json!("turing"));
             out.insert("tapes".into(), json!(t.tapes()));
             out.insert("blocks".into(), json!(t.blocks().len()));
+            let (multipista, warnings) = super::catedra::analysis(t);
+            out.insert("multipista".into(), multipista);
+            out.insert("catedra_warnings".into(), json!(warnings));
         }
         Document::Mealy(a) => {
             out.extend(automaton_report(a));

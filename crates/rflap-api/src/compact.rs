@@ -15,7 +15,8 @@ use rflap_core::lsystem::LSystem;
 use rflap_core::mealy::{Mealy, MealyLabel, Moore, MooreLabel};
 use rflap_core::pda::{Pda, PdaLabel};
 use rflap_core::pumping::{Game, Kind, Language, Mode, catalogue};
-use rflap_core::turing::{TapeAction, TmLabel, TuringMachine};
+use rflap_core::turing::catedra::{parse_label, split_labels};
+use rflap_core::turing::{TmLabel, TuringMachine};
 use serde_json::{Map, Value};
 
 use crate::document::{Document, RegexDoc};
@@ -103,7 +104,7 @@ const MOORE_KEYS: [&str; 8] = [
     "layout",
     "outputs",
 ];
-const TURING_KEYS: [&str; 9] = [
+const TURING_KEYS: [&str; 10] = [
     "type",
     "states",
     "initial",
@@ -113,6 +114,7 @@ const TURING_KEYS: [&str; 9] = [
     "layout",
     "tapes",
     "blocks",
+    "input_alphabet",
 ];
 
 fn check_keys(kind: &str, object: &Object, allowed: &[&str]) -> Result<(), ApiError> {
@@ -169,30 +171,11 @@ fn mealy_label(s: &str) -> Result<MealyLabel, ApiError> {
     Ok(MealyLabel::new(lambda(input), lambda(output)))
 }
 
-/// `read;write,direction` per tape, joined by `|`; `_` is the blank.
+/// `(read,write,move)` (the course's notation) or `read;write,direction` per tape joined by `|`
+/// (JFLAP's); `Δ` and `_` are the blank.
 fn tm_label(s: &str) -> Result<TmLabel, ApiError> {
-    let expected = "`read;write,direction` per tape, joined by `|`, such as `a;b,R` (direction L, R or S; `_` is the blank)";
-    let blank = |t: &str| {
-        let t = t.trim();
-        if t == "_" {
-            String::new()
-        } else {
-            t.to_string()
-        }
-    };
-    let mut actions = Vec::new();
-    for part in s.split('|') {
-        let (read, rest) = part
-            .split_once(';')
-            .ok_or_else(|| bad_label("turing", s, expected))?;
-        let (write, direction) = rest
-            .rsplit_once(',')
-            .ok_or_else(|| bad_label("turing", s, expected))?;
-        let action = TapeAction::new(&blank(read), &blank(write), direction.trim())
-            .map_err(|e| bad_label("turing", s, &format!("{expected} ({e})")))?;
-        actions.push(action);
-    }
-    TmLabel::new(actions).map_err(|e| bad_label("turing", s, &e.to_string()))
+    let expected = "`(read,write,move)` such as `(a,X,D)` (move I, N or D; Δ is the blank) or JFLAP's `read;write,direction` per tape joined by `|` such as `a;b,R` (direction L, R or S; `_` is the blank). Several labels of one edge are joined with ` / `";
+    parse_label(s).map_err(|e| bad_label("turing", s, &format!("{expected} ({e})")))
 }
 
 /// The common shape of the compact machine documents.
@@ -615,7 +598,21 @@ fn place<T: Target>(
 
 fn build_turing(object: &Object, tapes_hint: Option<usize>) -> Result<TuringMachine, ApiError> {
     check_keys("turing", object, &TURING_KEYS)?;
-    let shape = Shape::read(object)?;
+    let mut shape = Shape::read(object)?;
+    shape.transitions = shape
+        .transitions
+        .into_iter()
+        .flat_map(|(from, label, to)| {
+            let parts = split_labels(&label);
+            if parts.len() < 2 {
+                return vec![(from, label, to)];
+            }
+            parts
+                .into_iter()
+                .map(|p| (from.clone(), p.to_string(), to.clone()))
+                .collect()
+        })
+        .collect();
     let counted = shape
         .transitions
         .first()
@@ -630,6 +627,9 @@ fn build_turing(object: &Object, tapes_hint: Option<usize>) -> Result<TuringMach
     }
     let mut tm = TuringMachine::new(tapes);
     let ids = populate(&mut tm, &shape, 80.0 * tapes as f64, tm_label)?;
+    if let Some(alphabet) = object.get("input_alphabet").filter(|v| !v.is_null()) {
+        tm.set_input_alphabet(Some(input_alphabet(alphabet)?));
+    }
     for (name, inner) in &shape.blocks {
         let Value::Object(inner_object) = inner else {
             return Err(ApiError::invalid_document(format!(
@@ -888,4 +888,31 @@ fn build_pumping(kind: &str, object: &Object) -> Result<Document, ApiError> {
     } else {
         Document::ContextFreePumpingLemma(game)
     })
+}
+
+/// `"ab"` or `["a", "b"]`: the declared input alphabet Σ_E of a Turing machine.
+fn input_alphabet(value: &Value) -> Result<BTreeSet<char>, ApiError> {
+    let bad = || {
+        ApiError::invalid_document(format!(
+            "\"input_alphabet\" must be a string such as \"ab\" or an array of one-character strings, got {value}"
+        ))
+    };
+    match value {
+        Value::String(s) => Ok(s
+            .chars()
+            .filter(|c| !c.is_whitespace() && *c != ',')
+            .collect()),
+        Value::Array(items) => items
+            .iter()
+            .map(|item| {
+                let s = item.as_str().ok_or_else(bad)?;
+                let mut chars = s.chars();
+                match (chars.next(), chars.next()) {
+                    (Some(c), None) => Ok(c),
+                    _ => Err(bad()),
+                }
+            })
+            .collect(),
+        _ => Err(bad()),
+    }
 }

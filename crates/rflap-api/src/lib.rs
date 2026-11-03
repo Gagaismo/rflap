@@ -27,7 +27,7 @@
 //! `invalid_label`, `invalid_grammar`, `invalid_regex`, `wrong_document_type`,
 //! `unsupported_option`, `invalid_argument`, `no_initial_state`, `jff_error`,
 //! `conversion_failed`, `design_error`, `parse_error`, `invalid_move`, `limit_exceeded`,
-//! `internal`.
+//! `contracting_grammar`, `internal`.
 //!
 //! `{"op": "capabilities"}` describes everything below (operations with an example each,
 //! document types with their compact syntax, conversions): it is what an AI reads to learn
@@ -90,6 +90,11 @@
 //! is read from the first label (or `"tapes"`). `"blocks": {"state": <compact turing>}` turns
 //! a state into a building block that runs an inner machine.
 //!
+//! The notation of the course "Sintaxis y Semántica de los Lenguajes" is also read: a one-tape label
+//! can be `(read,write,move)` or `read,write,move` (move `I`, `N`, `D`; `Δ` is the blank), several
+//! labels of one edge are joined with ` / `, and `"input_alphabet": "ab"` (or `["a", "b"]`) declares
+//! Σ_E. See the `catedra_*` operations below.
+//!
 //! ## Mealy and Moore machines
 //!
 //! ```json
@@ -145,7 +150,7 @@
 //! | `simulate` | `{"op": "simulate", "document": {...}, "input": "abb", "mode": "closure", "acceptance": "empty_stack", "max_configs": 10000}` | `outcome` (`accepted`/`rejected`/`undecided`), `accepted`, `trace`, `output` (Mealy/Moore), `tape_outputs` (Turing: the final content of each tape, blanks around it trimmed) |
 //! | `step` | `{"op": "step", "document": {...}, "input": "abb", "steps": 2}` | `steps_done`, `finished`, `truncated`, `frontier`, `accepted` (`config`, `trace`), `rejected` |
 //! | `multiple_run` | `{"op": "multiple_run", "document": {...}, "inputs": ["ab", "ba"]}` | `results`: `input`, `outcome`, `accepted`, `output`/`tape_outputs` |
-//! | `analyze` | `{"op": "analyze", "document": {...}}` | `type`, `kind` (`dfa`, `nfa`, `dpda`, `npda`, `turing`, `mealy`, `moore`), `alphabet`, `states`, `initial`, `finals`, `deterministic`, `nondeterministic_states`, `lambda_transitions`, `unreachable_states`, `useless_states`, `complete` (fa) |
+//! | `analyze` | `{"op": "analyze", "document": {...}}` | `type`, `kind` (`dfa`, `nfa`, `dpda`, `npda`, `turing`, `mealy`, `moore`), `alphabet`, `states`, `initial`, `finals`, `deterministic`, `nondeterministic_states`, `lambda_transitions`, `unreachable_states`, `useless_states`, `complete` (fa), `multipista` (`tapes`, `applicable`, `is_multipista`, `offending`) and `catedra_warnings` (list of messages) for a turing machine |
 //! | `convert` | `{"op": "convert", "document": {...}, "to": "minimal_dfa"}` | `to`, `document`, `steps`, plus conversion-specific keys |
 //! | `equivalent` | `{"op": "equivalent", "a": {...}, "b": {...}}` | `equivalent`, `counterexample` |
 //! | `combine` | `{"op": "combine", "a": {...}, "b": {...}}` | `document` |
@@ -161,6 +166,12 @@
 //! | `pumping_languages` | `{"op": "pumping_languages"}` | `languages`: `kind`, `index`, `title`, `explanation`, ... |
 //! | `pumping_new` | `{"op": "pumping_new", "kind": "regular", "language": 0, "mode": "computer_first"}` | `document`, `view`, `lemma`, `result`, `conclusion` |
 //! | `pumping_move` | `{"op": "pumping_move", "game": {...}, "move": {"move": "choose_w", "w": "aabb"}}` | like `pumping_new` plus `reply` |
+//! | `catedra_definition` | `{"op": "catedra_definition", "document": {...}, "model": "mt"}` | `model`, `states`, `input_alphabet`, `auxiliary_alphabet`, `initial`, `finals`, `input_alphabet_inferred`, `deterministic`, `issues` (`kind`, `message`, `transitions`), `text` |
+//! | `catedra_table` | `{"op": "catedra_table", "document": {...}}` | `header`, `rows`, `markdown`, `text` |
+//! | `catedra_run` | `{"op": "catedra_run", "document": {...}, "inputs": ["aba"], "model": "mt", "max_steps": 1000}` | `model`, `max_steps`, `results`: `input`, `model`, `verdict` (`accepted`/`rejected`/`no_halt`/`violation`), `accepted`, `steps`, `configurations`, `sequence`, `violation`? |
+//! | `all_check` | `{"op": "all_check", "document": {...}, "inputs": ["ab"]}` | `ok`, `violations` (`kind`, `message`, `transition`, `transition_text`, `step`?, `input`?), `runs` |
+//! | `compose_tm` | `{"op": "compose_tm", "a": {...}, "b": {...}}` | `document`, `definition` |
+//! | `membership_tk` | `{"op": "membership_tk", "grammar": "S -> T", "input": "abbc", "max_forms": 100000}` | `member`, `bound`, `sets`, `text` |
 //!
 //! `convert` targets (`to`): `dfa`, `minimal_dfa` (from a fa, a regex or a regular grammar),
 //! `regex` and `regular_grammar` (from a fa), `nfa` (from a regex), `fa` (from a right-linear
@@ -189,10 +200,10 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 pub use document::{Document, RegexDoc, TYPES};
 pub use error::{ApiError, code};
 pub use request::{
-    Acceptance, Convert, ConvertTo, DesignArgs, Format, GrammarArg, InputSpec, LanguageRef,
-    LayoutArgs, LsystemRender, MultipleRun, OPS, OneDocument, OpenJff, Pair, ParseArgs, Parser,
-    PumpKind, PumpingMove, PumpingNew, RenderArgs, Request, SimMode, Simulate, StateRef, Step,
-    UndoMove, UserMove, UserParse,
+    Acceptance, AllCheck, CatedraDefinition, CatedraRun, Convert, ConvertTo, DesignArgs, Format,
+    GrammarArg, InputSpec, LanguageRef, LayoutArgs, LsystemRender, MembershipTk, MultipleRun, OPS,
+    OneDocument, OpenJff, Pair, ParseArgs, Parser, PumpKind, PumpingMove, PumpingNew, RenderArgs,
+    Request, SimMode, Simulate, StateRef, Step, UndoMove, UserMove, UserParse,
 };
 
 use serde::Serialize;
