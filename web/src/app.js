@@ -8,6 +8,7 @@ import { panelsFor, actionsFor, allActions, appliesTo } from './registry.js';
 import { popupMenu, toast } from './dialogs.js';
 import { emptyDocument, normalizeDocument, compactOf, describe } from './doc.js';
 import { notationOf } from './tm-model.js';
+import { contentExtras, resultNotation, resultTitle } from './tool-result.js';
 import { documentFromHash } from './share.js';
 
 const LANGUAGES = ['es', 'en'];
@@ -109,7 +110,7 @@ export class App {
   setNotation(choice) {
     this.notation = notationOf(choice);
     store.set('rflap.notation', this.notation);
-    for (const tab of this.tabList) tab.emit('notation', this.notation);
+    for (const tab of this.tabList) tab.emit('notation', tab.notation);
   }
 
   applyLanguageChoice() {
@@ -190,6 +191,7 @@ export class App {
       if (e.cause === 'edit' || e.cause === 'undo' || e.cause === 'redo') this.syncModel(tab);
     });
     tab.on('path', () => this.refreshWorkspace(tab));
+    tab.on('caption', () => this.refreshWorkspace(tab));
     tab.on('steps', () => this.refreshPanels(tab));
     tab.on('extras', () => this.refreshPanels(tab));
     if (activate) this.activate(tab);
@@ -371,10 +373,11 @@ export class App {
     const panelTabs = h('div', { class: 'panel-tabs', role: 'tablist', 'aria-label': t('app.panels') });
     const panelHost = h('div', { class: 'panel-host' });
     side.append(panelTabs, panelHost);
-    el.append(h('div', { class: 'canvas-column' }, breadcrumb, canvasArea), side);
+    const caption = h('div', { class: 'diagram-title', role: 'heading', 'aria-level': '2', hidden: true });
+    el.append(h('div', { class: 'canvas-column' }, breadcrumb, caption, canvasArea), side);
     el.classList.toggle('graphless', !tab.isAutomaton);
     this.main.append(el);
-    const ws = { el, canvasArea, breadcrumb, panelTabs, panelHost, panels: new Map(), activePanel: null, canvas: null, offs: [] };
+    const ws = { el, canvasArea, breadcrumb, caption, panelTabs, panelHost, panels: new Map(), activePanel: null, canvas: null, offs: [] };
     this.workspaces.set(tab, ws);
 
     if (tab.isAutomaton) {
@@ -408,6 +411,8 @@ export class App {
     if (!ws) return;
     clear(ws.breadcrumb);
     ws.breadcrumb.hidden = tab.path.length === 0;
+    ws.caption.textContent = tab.caption || '';
+    ws.caption.hidden = !tab.caption;
     if (tab.path.length) {
       let machine = tab.doc;
       const names = [tab.title];
@@ -579,7 +584,9 @@ export class App {
     }
     const steps = Array.isArray(extras.steps) ? { title: t('steps.from_assistant'), steps: extras.steps, source: null } : null;
     delete extras.steps;
-    const hasExtras = Object.keys(extras).length > 0;
+    const hasExtras = Object.keys(contentExtras(extras)).length > 0;
+    const title = resultTitle(structured);
+    const notation = resultNotation(structured);
     if (!doc && !hasExtras && !steps) return null;
     let tab = this.aiTab && this.tabList.includes(this.aiTab) && !this.aiTab.dirty ? this.aiTab : null;
     if (!tab && this.tabList.length === 1 && this.isPristine(this.tabList[0])) tab = this.tabList[0];
@@ -589,13 +596,17 @@ export class App {
       if (typeChanged) this.destroyWorkspace(tab);
       tab.replace(doc, 'host');
       if (typeChanged) this.buildWorkspace(tab);
-      tab.title = t('host.from_assistant');
+      tab.title = title || t('host.from_assistant');
+      tab.setNotationOverride(doc.type === 'turing' ? notation : null);
+      tab.setCaption(title);
       this.renderTabs();
       tab.setExtras(hasExtras ? extras : null);
       tab.setSteps(steps);
       this.activate(tab);
     } else if (doc) {
-      tab = this.openTab(doc, { title: t('host.from_assistant'), steps, extras: hasExtras ? extras : null });
+      tab = this.openTab(doc, { title: title || t('host.from_assistant'), steps, extras: hasExtras ? extras : null });
+      if (doc.type === 'turing') tab.setNotationOverride(notation);
+      tab.setCaption(title);
       this.aiTab = tab;
     } else if (tab || this.active) {
       tab = tab || this.active;

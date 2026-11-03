@@ -90,7 +90,7 @@ test('T12b can register panels and actions for new types', () => {
 test('actions exist for the JFLAP menus and the types they apply to', () => {
   const ids = (menu, type) => actionsFor(menu, type).map((a) => a.id);
   assert.ok(ids('file', 'fa').includes('file.open') && ids('file', 'fa').includes('file.save_jff') && ids('file', 'fa').includes('file.share'));
-  assert.deepEqual(ids('layout', 'pda'), ['circle', 'gem', 'random', 'spiral', 'tree', 'tree-degree', 'two-circle'].map((a) => `layout.${a}`));
+  assert.deepEqual(ids('layout', 'pda'), ['layered', 'circle', 'gem', 'random', 'spiral', 'tree', 'tree-degree', 'two-circle'].map((a) => `layout.${a}`));
   assert.ok(ids('convert', 'fa').includes('convert.combine') && ids('convert', 'fa').includes('convert.equivalent'));
   assert.equal(ids('convert', 'pda').includes('convert.combine'), false);
   assert.ok(ids('input', 'fa').includes('input.step_closure') && ids('input', 'turing').includes('input.step'));

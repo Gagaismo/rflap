@@ -54,16 +54,26 @@ pub fn run(config: &Config, name: &str, args: &Value) -> ToolOutput {
             names.join(", ")
         ));
     };
-    let args = match check_args(def, args) {
+    let mut args = match check_args(def, args) {
         Ok(args) => args,
         Err(message) => return ToolOutput::error(message),
     };
+    let title = take_title(&mut args);
     let done = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         dispatch(config, name, &args)
     }))
     .unwrap_or_else(|_| Err("the tool panicked; this is a bug in rflap-mcp".into()));
     match done {
         Ok(mut done) => {
+            if let Some(title) = title {
+                done.text = format!(
+                    "**{title}**
+
+{}",
+                    done.text
+                );
+                done.structured["title"] = json!(title);
+            }
             if def.visual {
                 done.structured["tool"] = json!(name);
                 if let (Some(base), Some(doc)) =
@@ -162,6 +172,42 @@ fn take(request: &mut Value, key: &str) -> Option<Value> {
     request.as_object_mut().and_then(|map| map.remove(key))
 }
 
+/// Takes `title` (alias `name`) out of the compact documents among the arguments: the API does
+/// not need it, and the tool shows it as the first line of the text and in `structuredContent`.
+fn take_title(args: &mut Map<String, Value>) -> Option<String> {
+    let mut title = None;
+    for key in ["document", "grammar"] {
+        if let Some(Value::Object(document)) = args.get_mut(key) {
+            for field in ["title", "name"] {
+                let value = document.remove(field);
+                if title.is_none()
+                    && let Some(Value::String(text)) = value
+                    && !text.trim().is_empty()
+                {
+                    title = Some(text.trim().to_string());
+                }
+            }
+        }
+    }
+    title
+}
+
+/// An optional argument restricted to a few values.
+fn choice_arg(
+    args: &Map<String, Value>,
+    key: &str,
+    allowed: &[&str],
+) -> Result<Option<String>, String> {
+    match args.get(key) {
+        None | Some(Value::Null) => Ok(None),
+        Some(Value::String(value)) if allowed.contains(&value.as_str()) => Ok(Some(value.clone())),
+        Some(other) => Err(format!(
+            "`{key}` must be {} (got {other}).",
+            allowed.join(" or ")
+        )),
+    }
+}
+
 fn object(v: Value) -> Map<String, Value> {
     match v {
         Value::Object(o) => o,
@@ -181,14 +227,27 @@ fn normalized(args: &Map<String, Value>, key: &str) -> Result<Value, String> {
 
 /// A transition table or production list, when the document has one.
 fn table_of(document: &Value) -> Option<String> {
-    let rendered = api(json!({"op": "render", "document": document, "format": "markdown"})).ok()?;
+    table_in(document, None)
+}
+
+/// The same, with the labels of a Turing machine in the given notation.
+fn table_in(document: &Value, notation: Option<&str>) -> Option<String> {
+    let mut request = json!({"op": "render", "document": document, "format": "markdown"});
+    if let Some(notation) = notation {
+        request["notation"] = json!(notation);
+    }
+    let rendered = api(request).ok()?;
     rendered["content"]
         .as_str()
         .map(|s| s.trim_end().to_string())
 }
 
-fn svg_of(document: &Value) -> Option<String> {
-    let rendered = api(json!({"op": "render", "document": document, "format": "svg"})).ok()?;
+fn svg_of(document: &Value, notation: Option<&str>) -> Option<String> {
+    let mut request = json!({"op": "render", "document": document, "format": "svg"});
+    if let Some(notation) = notation {
+        request["notation"] = json!(notation);
+    }
+    let rendered = api(request).ok()?;
     rendered["content"].as_str().map(str::to_string)
 }
 
@@ -312,9 +371,38 @@ fn design(args: &Map<String, Value>) -> Outcome {
     })
 }
 
+const MODELS: [&str; 2] = ["mt", "all"];
+const NOTATIONS: [&str; 2] = ["catedra", "jflap"];
+
+/// Whether a Turing machine runs as an ALL: `model: "all"`, or no `model` and the API finds
+/// ⟨ ⟩ in its labels. Other documents never do.
+fn runs_as_all(args: &Map<String, Value>, document: &Value) -> Result<bool, String> {
+    let model = choice_arg(args, "model", &MODELS)?;
+    if document["type"] != "turing" {
+        return Ok(false);
+    }
+    Ok(match model.as_deref() {
+        Some(model) => model == "all",
+        None => api(json!({"op": "catedra_definition", "document": document}))
+            .is_ok_and(|definition| definition["model"] == "all"),
+    })
+}
+
+/// The ALL rules the machine breaks, as a warning (empty when it obeys them).
+fn all_warnings(document: &Value) -> String {
+    api(json!({"op": "all_check", "document": document}))
+        .map(|check| catedra::warnings(&check))
+        .unwrap_or_default()
+}
+
 fn show(args: &Map<String, Value>) -> Outcome {
     let document = normalized(args, "document")?;
+    let notation = choice_arg(args, "notation", &NOTATIONS)?;
+    let all = runs_as_all(args, &document)?;
     let mut out = object(json!({"document": document}));
+    if let Some(notation) = &notation {
+        out.insert("notation".into(), json!(notation));
+    }
     let mut text = content::document(&document, None);
     if let Ok(analysis) = api(json!({"op": "analyze", "document": document})) {
         text.push_str(&format!(
@@ -329,17 +417,22 @@ fn show(args: &Map<String, Value>) -> Outcome {
     if let Ok(explained) = api(json!({"op": "explain", "document": document})) {
         out.insert("explanation".into(), explained["markdown"].clone());
     }
-    if let Some(svg) = svg_of(&document) {
+    if let Some(svg) = svg_of(&document, notation.as_deref()) {
         out.insert("svg".into(), json!(svg));
     }
-    // A single-tape Turing machine shows the cátedra table only; everything else the generic one.
-    if let Some(extra) = catedra_table_md(&document) {
+    // A single-tape Turing machine shows the cátedra table by default; everything else the
+    // generic one.
+    let one_tape = catedra_table_md(&document);
+    let course = one_tape
+        .clone()
+        .filter(|_| notation.as_deref() != Some("jflap"));
+    if let Some(extra) = course {
         text.push_str(&format!(
             "
 
 {extra}"
         ));
-    } else if let Some(table) = table_of(&document) {
+    } else if let Some(table) = table_in(&document, notation.as_deref()) {
         text.push_str(&format!(
             "
 
@@ -348,15 +441,110 @@ Transition table / productions:
 {table}"
         ));
     }
+    if all {
+        let definition =
+            api(json!({"op": "catedra_definition", "document": document, "model": "all"}))?;
+        let check = api(json!({"op": "all_check", "document": document}))?;
+        text.push_str(&format!(
+            "
+
+{}
+
+{}",
+            catedra::definition(&definition),
+            catedra::all_check(&check)
+        ));
+        out.insert("model".into(), json!("all"));
+        out.insert("definition".into(), definition);
+        out.insert("all_check".into(), check);
+    } else if one_tape.is_some() {
+        text.push_str(&format!(
+            "
+
+{}",
+            catedra::ALL_HINT
+        ));
+    }
     Ok(Done {
         text,
         structured: Value::Object(out),
     })
 }
 
+/// The words of an ALL run: `input` or the strings of `inputs`.
+fn all_words(args: &Map<String, Value>) -> Result<Vec<Value>, String> {
+    if args.get("tapes").is_some_and(|v| !v.is_null()) {
+        return Err("An ALL has one tape: pass `input` or `inputs` (strings), not `tapes`.".into());
+    }
+    if let Some(inputs) = args.get("inputs").filter(|v| !v.is_null()) {
+        let words = inputs.as_array().filter(|a| a.iter().all(Value::is_string));
+        return words
+            .cloned()
+            .ok_or_else(|| "An ALL has one tape: every item of `inputs` must be a string.".into());
+    }
+    match args.get("input").filter(|v| v.is_string()) {
+        Some(input) => Ok(vec![input.clone()]),
+        None => Err("Pass `input` or `inputs` (\"\" is the empty word).".into()),
+    }
+}
+
+/// `catedra_run` for the words, with the tape ⟨w⟩ and the head on the first symbol.
+fn all_run(
+    args: &Map<String, Value>,
+    document: &Value,
+    inputs: Vec<Value>,
+    max_steps: Option<Value>,
+) -> Result<Value, String> {
+    let mut request = json!({"op": "catedra_run", "document": document, "model": "all",
+                             "inputs": inputs});
+    if let Some(max_steps) = max_steps.or_else(|| args.get("max_steps").cloned()) {
+        request["max_steps"] = max_steps;
+    }
+    api(request)
+}
+
 fn simulate(args: &Map<String, Value>) -> Outcome {
     let document = normalized(args, "document")?;
+    let notation = choice_arg(args, "notation", &NOTATIONS)?;
+    let mut done = if runs_as_all(args, &document)? {
+        let result = all_run(args, &document, all_words(args)?, None)?;
+        let mut text = catedra::run(&result);
+        let warnings = all_warnings(&document);
+        if !warnings.is_empty() {
+            text.push_str(&format!("\n\n{warnings}"));
+        }
+        Done {
+            text,
+            structured: structured(result, Some(document)),
+        }
+    } else {
+        simulate_generic(args, &document, notation.as_deref())?
+    };
+    if let Some(notation) = notation {
+        done.structured["notation"] = json!(notation);
+    }
+    Ok(done)
+}
+
+/// What a Turing machine adds to a run: the table and the sequences in the course notation, or
+/// the table with JFLAP's labels.
+fn run_extra(document: &Value, inputs: &Value, notation: Option<&str>) -> Option<String> {
+    if notation == Some("jflap") {
+        if document["type"] != "turing" {
+            return None;
+        }
+        return table_in(document, notation);
+    }
+    catedra_notation(document, inputs)
+}
+
+fn simulate_generic(
+    args: &Map<String, Value>,
+    document: &Value,
+    notation: Option<&str>,
+) -> Outcome {
     let mut request = op("simulate", args);
+    drop(&mut request, &["model", "notation", "max_steps"]);
     request["document"] = document.clone();
     if let Some(batch) = take(&mut request, "inputs") {
         drop(&mut request, &["input", "tapes"]);
@@ -365,7 +553,7 @@ fn simulate(args: &Map<String, Value>) -> Outcome {
         let inputs = request["inputs"].clone();
         let result = api(request)?;
         let mut text = content::batch(&result);
-        if let Some(extra) = catedra_notation(&document, &inputs) {
+        if let Some(extra) = run_extra(document, &inputs, notation) {
             text.push_str(&format!(
                 "
 
@@ -374,7 +562,7 @@ fn simulate(args: &Map<String, Value>) -> Outcome {
         }
         return Ok(Done {
             text,
-            structured: structured(result, Some(document)),
+            structured: structured(result, Some(document.clone())),
         });
     }
     if let Some(tapes) = take(&mut request, "tapes") {
@@ -390,7 +578,7 @@ fn simulate(args: &Map<String, Value>) -> Outcome {
     let mut text = content::simulate(&result, &shown);
     if args.get("tapes").is_none()
         && let Some(input) = args.get("input")
-        && let Some(extra) = catedra_notation(&document, &json!([input]))
+        && let Some(extra) = run_extra(document, &json!([input]), notation)
     {
         text.push_str(&format!(
             "
@@ -400,13 +588,17 @@ fn simulate(args: &Map<String, Value>) -> Outcome {
     }
     Ok(Done {
         text,
-        structured: structured(result, Some(document)),
+        structured: structured(result, Some(document.clone())),
     })
 }
 
 fn step(args: &Map<String, Value>) -> Outcome {
     let document = normalized(args, "document")?;
+    if runs_as_all(args, &document)? {
+        return step_all(args, document);
+    }
     let mut request = op("step", args);
+    drop(&mut request, &["model"]);
     request["document"] = document.clone();
     if let Some(tapes) = take(&mut request, "tapes") {
         request["inputs"] = tapes;
@@ -420,6 +612,28 @@ fn step(args: &Map<String, Value>) -> Outcome {
         text: content::step(&result, shown),
         structured: structured(result, Some(document)),
     })
+}
+
+/// The first `steps` configurations of the ALL run (the same walk as `rflap_mt_catedra run`).
+fn step_all(args: &Map<String, Value>, document: Value) -> Outcome {
+    let steps = args.get("steps").and_then(Value::as_u64).unwrap_or(1);
+    let input = args.get("input").cloned().unwrap_or_else(|| json!(""));
+    let run = all_run(args, &document, vec![input], Some(json!(steps)))?;
+    let mut text = catedra::step(&run, steps);
+    let warnings = all_warnings(&document);
+    if !warnings.is_empty() {
+        text.push_str(&format!("\n\n{warnings}"));
+    }
+    let first = &run["results"][0];
+    let structured = json!({
+        "model": "all",
+        "steps_done": first["steps"],
+        "finished": first["verdict"] != "no_halt",
+        "configurations": first["configurations"],
+        "results": run["results"],
+        "document": document,
+    });
+    Ok(Done { text, structured })
 }
 
 fn convert(args: &Map<String, Value>) -> Outcome {
@@ -641,6 +855,12 @@ fn capabilities(args: &Map<String, Value>) -> Outcome {
         .get("section")
         .and_then(Value::as_str)
         .unwrap_or("overview");
+    if !content::CAPABILITY_SECTIONS.contains(&section) {
+        return Err(format!(
+            "Unknown section `{section}`; the sections are {}.",
+            content::CAPABILITY_SECTIONS.join(", ")
+        ));
+    }
     let result = api(json!({"op": "capabilities"}))?;
     Ok(Done {
         text: content::capabilities(&result, section),
@@ -688,7 +908,8 @@ fn catedra_table_md(document: &Value) -> Option<String> {
     Some(catedra::table(&result))
 }
 
-/// The cátedra table and the configuration sequences of a single-tape Turing machine.
+/// The cátedra table and the configuration sequences of a single-tape Turing machine, as an MT
+/// (the ALL has its own path).
 fn catedra_notation(document: &Value, inputs: &Value) -> Option<String> {
     let mut out = catedra_table_md(document)?;
     let words: Vec<Value> = inputs
@@ -699,7 +920,8 @@ fn catedra_notation(document: &Value, inputs: &Value) -> Option<String> {
         .cloned()
         .collect();
     if !words.is_empty()
-        && let Ok(run) = api(json!({"op": "catedra_run", "document": document, "inputs": words}))
+        && let Ok(run) =
+            api(json!({"op": "catedra_run", "document": document, "model": "mt", "inputs": words}))
     {
         out.push_str(&format!(
             "

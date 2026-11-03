@@ -29,10 +29,13 @@ pub enum Algorithm {
     #[serde(rename = "tree-degree", alias = "tree-by-degree")]
     TreeByDegree,
     TwoCircle,
+    /// Initial state on the far left, the rest in columns by BFS distance along the
+    /// transitions (not part of JFLAP).
+    Layered,
 }
 
 impl Algorithm {
-    pub const ALL: [Algorithm; 7] = [
+    pub const ALL: [Algorithm; 8] = [
         Algorithm::Circle,
         Algorithm::Gem,
         Algorithm::Random,
@@ -40,6 +43,7 @@ impl Algorithm {
         Algorithm::Tree,
         Algorithm::TreeByDegree,
         Algorithm::TwoCircle,
+        Algorithm::Layered,
     ];
 
     pub fn name(self) -> &'static str {
@@ -51,6 +55,7 @@ impl Algorithm {
             Algorithm::Tree => "tree",
             Algorithm::TreeByDegree => "tree-degree",
             Algorithm::TwoCircle => "two-circle",
+            Algorithm::Layered => "layered",
         }
     }
 }
@@ -122,7 +127,10 @@ pub fn compute<L: Label>(
     algorithm: Algorithm,
     options: &LayoutOptions,
 ) -> BTreeMap<StateId, Point> {
-    let mut g = Graph::new(automaton, algorithm == Algorithm::Tree);
+    let mut g = Graph::new(
+        automaton,
+        matches!(algorithm, Algorithm::Tree | Algorithm::Layered),
+    );
     let movable: Vec<usize> = (0..g.len())
         .filter(|&i| !options.fixed.contains(&g.ids[i]))
         .collect();
@@ -137,6 +145,7 @@ pub fn compute<L: Label>(
                 tree(&mut g, &movable, algorithm == Algorithm::Tree, options)
             }
             Algorithm::TwoCircle => two_circle(&mut g, &movable, options),
+            Algorithm::Layered => layered(&mut g, &movable, options),
         }
         separate(&mut g, options);
     }
@@ -187,6 +196,7 @@ struct Graph {
     ids: Vec<StateId>,
     pos: Vec<(f64, f64)>,
     adj: Vec<BTreeSet<usize>>,
+    initial: Option<usize>,
 }
 
 impl Graph {
@@ -203,7 +213,13 @@ impl Graph {
                 adj[to].insert(f);
             }
         }
-        Graph { ids, pos, adj }
+        let initial = a.initial().and_then(|id| ids.binary_search(&id).ok());
+        Graph {
+            ids,
+            pos,
+            adj,
+            initial,
+        }
     }
 
     fn len(&self) -> usize {
@@ -640,6 +656,48 @@ fn process_children(g: &Graph, levels: &mut Vec<Vec<usize>>, level: usize, rest:
     if levels.last().is_some_and(Vec::is_empty) {
         levels.pop();
     }
+}
+
+// ---------------------------------------------------------------- layered
+
+/// Column of every vertex: BFS distance from the initial state (the first state without one);
+/// what it does not reach is numbered by BFS from its lowest-index vertex, to the right.
+fn layer_columns(g: &Graph) -> Vec<usize> {
+    let mut column: Vec<Option<usize>> = vec![None; g.len()];
+    let mut next_start = 0;
+    let mut start = g.initial.or((g.len() > 0).then_some(0));
+    while let Some(root) = start {
+        column[root] = Some(next_start);
+        let mut queue = std::collections::VecDeque::from([root]);
+        while let Some(v) = queue.pop_front() {
+            let at = column[v].unwrap_or(next_start);
+            for &w in &g.adj[v] {
+                if column[w].is_none() {
+                    column[w] = Some(at + 1);
+                    queue.push_back(w);
+                }
+            }
+        }
+        next_start = column.iter().flatten().max().map_or(0, |m| m + 1);
+        start = column.iter().position(Option::is_none);
+    }
+    column.into_iter().flatten().collect()
+}
+
+fn layered(g: &mut Graph, movable: &[usize], o: &LayoutOptions) {
+    let column = layer_columns(g);
+    let step = spacing(o);
+    let last = column.iter().max().map_or(0, |m| m + 1);
+    for c in 0..last {
+        let members: Vec<usize> = (0..g.len()).filter(|&v| column[v] == c).collect();
+        let middle = (members.len() as f64 - 1.0) / 2.0;
+        for (row, &v) in members.iter().enumerate() {
+            if movable.contains(&v) {
+                g.pos[v] = (c as f64 * step, (row as f64 - middle) * step);
+            }
+        }
+    }
+    shift_onto_screen(g, o);
 }
 
 // ---------------------------------------------------------------- two circles

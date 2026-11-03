@@ -40,12 +40,16 @@ presenting it. Present the 6-tuple, the table, the graph (widget) and the sequen
 states halt (f is defined on Q-F); a missing transition is a bloqueo, which rejects; an MT may never \
 halt, an ALL always accepts or rejects. Multitape machines use JFLAP notation (multipista: all heads \
 move together). rflap_compose_tm composes MT1 and MT2; rflap_membership builds the sets T0..Tk of a \
-non-contracting grammar.
+non-contracting grammar. rflap_simulate, rflap_step and rflap_show also run a Turing machine as an ALL \
+with model \"all\" (or when its labels use ⟨ ⟩) and rflap_show / rflap_simulate take notation \
+\"catedra\" (default) or \"jflap\"; give each machine a title (alias name) so the answers and the widgets \
+tell them apart.
 
 Write documents in the compact form, e.g. {\"type\":\"fa\",\"initial\":\"q0\",\"finals\":[\"q2\"],\
 \"transitions\":[[\"q0\",\"a\",\"q1\"],[\"q1\",\"b\",\"q2\"]]}; \"\" or λ is the empty string. A grammar \
 is plain text, one production per line (\"S -> aSb | λ\"), uppercase letters are variables. Call \
-rflap_capabilities when you need the exact syntax of a PDA, Turing machine or L-system. Tool errors \
+rflap_capabilities when you need the exact syntax of a PDA, Turing machine or L-system (section \"layout\" \
+lists the layout algorithms and the compact layout, points and title fields). Tool errors \
 carry a code and a precise message: read it, fix the input and retry.";
 
 /// `prompts/list`.

@@ -62,6 +62,14 @@ Con la CLI (`rflap catedra …`) o con la herramienta MCP `rflap_mt_catedra` (ac
 `table`, `run` y `all_check`). El modelo (`mt` o `all`) se detecta: es `all` si alguna transición
 nombra `⟨` o `⟩`; se puede forzar con `--all` (CLI) o `model` (MCP).
 
+Fuera de `rflap_mt_catedra`, `rflap_simulate`, `rflap_step` y `rflap_show` aceptan `model: "all"`
+(o detectan `⟨` `⟩`): la cinta es ⟨w⟩ con los delimitadores puestos automáticamente y el cabezal
+sobre el primer símbolo; `simulate` informa acepta/rechaza con las secuencias de configuraciones,
+`step` devuelve las primeras configuraciones y `show` agrega la definición del ALL y el chequeo
+estático. Todo resultado ALL avisa de las transiciones que leen o escriben Δ o que pueden salir de
+⟨…⟩. `rflap_show` y `rflap_simulate` aceptan además `notation`: `catedra` (por defecto, etiquetas
+`(e,s,m)`) o `jflap`.
+
 ### Definición formal
 
 `rflap catedra definition palindromo.json`

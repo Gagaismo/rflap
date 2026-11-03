@@ -23,6 +23,8 @@ export class Tab {
     this.selection = { states: [], transition: null };
     this.steps = steps; // conversion steps: { kind, title, steps: [...] }
     this.extras = extras; // what the assistant sent: svg, analysis, verification, simulation, ...
+    this.caption = null; // title shown over the diagram (from the tool result), null = none
+    this.notationOverride = null; // 'catedra' | 'jflap' asked by the tool result for this tab, null = the app's choice
     this.dirty = false;
     this.overlays = new Map();
     this.listeners = new Map();
@@ -46,6 +48,11 @@ export class Tab {
     return this.doc.type;
   }
 
+  /** How a Turing machine writes its labels here: what the tool result asked for, else the app's View > Notation. */
+  get notation() {
+    return this.notationOverride || this.app.notation || 'catedra';
+  }
+
   get isAutomaton() {
     return isAutomaton(this.doc.type);
   }
@@ -58,7 +65,7 @@ export class Tab {
     this.app.notify(message, kind);
   }
 
-  // ---- events: 'doc' | 'selection' | 'overlay' | 'path' | 'flags' | 'activate' | 'title' | 'notation' | 'model'
+  // ---- events: 'doc' | 'selection' | 'overlay' | 'path' | 'flags' | 'activate' | 'title' | 'caption' | 'notation' | 'model'
 
   on(event, fn) {
     if (!this.listeners.has(event)) this.listeners.set(event, new Set());
@@ -149,6 +156,16 @@ export class Tab {
   setSteps(steps) {
     this.steps = steps;
     this.emit('steps');
+  }
+
+  setCaption(caption) {
+    this.caption = caption || null;
+    this.emit('caption', this.caption);
+  }
+
+  setNotationOverride(notation) {
+    this.notationOverride = notation || null;
+    this.emit('notation', this.notation);
   }
 
   setExtras(extras) {

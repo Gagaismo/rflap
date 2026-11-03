@@ -117,13 +117,26 @@ const TURING_KEYS: [&str; 10] = [
     "input_alphabet",
 ];
 
+/// Metadata every compact document may carry: a title (`name` is its alias). The operations
+/// ignore it; whoever shows the document reads it from the raw document.
+const TITLE_KEYS: [&str; 2] = ["title", "name"];
+
 fn check_keys(kind: &str, object: &Object, allowed: &[&str]) -> Result<(), ApiError> {
-    match object.keys().find(|k| !allowed.contains(&k.as_str())) {
+    for key in TITLE_KEYS {
+        if let Some(value) = object.get(key).filter(|v| !v.is_string()) {
+            return Err(ApiError::invalid_document(format!(
+                "\"{key}\" must be a string, got {value}"
+            )));
+        }
+    }
+    let known = |k: &String| allowed.contains(&k.as_str()) || TITLE_KEYS.contains(&k.as_str());
+    match object.keys().find(|k| !known(k)) {
         Some(key) => Err(ApiError::invalid_document(format!(
             "unknown field \"{key}\" in a compact {kind} document; the fields are {}",
             allowed
                 .iter()
                 .filter(|k| **k != "type")
+                .chain(&["title"])
                 .copied()
                 .collect::<Vec<_>>()
                 .join(", ")
@@ -221,7 +234,8 @@ fn name_list(value: &Value, what: &str) -> Result<Vec<String>, ApiError> {
     }
 }
 
-/// Algorithm by its name (`circle`, `gem`, `random`, `spiral`, `tree`, `tree-degree`, `two-circle`).
+/// Algorithm by its name (`layered`, `circle`, `gem`, `random`, `spiral`, `tree`, `tree-degree`,
+/// `two-circle`).
 pub fn parse_algorithm(name: &str) -> Result<Algorithm, ApiError> {
     Algorithm::from_str(name)
         .or_else(|_| serde_json::from_value(Value::String(name.to_string())))
@@ -312,7 +326,7 @@ impl Shape {
             }
         }
         let layout = match object.get("layout") {
-            None | Some(Value::Null) => Algorithm::Circle,
+            None | Some(Value::Null) => Algorithm::Layered,
             Some(Value::String(name)) => parse_algorithm(name)?,
             Some(other) => {
                 return Err(ApiError::invalid_document(format!(

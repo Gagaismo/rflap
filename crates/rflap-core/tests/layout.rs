@@ -253,3 +253,62 @@ fn algorithm_names_agree_between_serde_and_from_str() {
         Algorithm::TreeByDegree
     );
 }
+
+#[test]
+fn layered_layout_puts_the_initial_state_leftmost_and_columns_by_bfs_distance() {
+    // 2 is initial; 2->0, 2->1, 0->3, 1->3, 3->4; state 5 is unreachable.
+    let mut a = fa(6, &[(2, 0), (2, 1), (0, 3), (1, 3), (3, 4)]);
+    a.set_initial(Some(2));
+    apply(&mut a, Algorithm::Layered, &LayoutOptions::default());
+    let p = points(&a);
+    assert!(p[2].0 < p[0].0, "{p:?}");
+    assert_eq!(p[0].0, p[1].0, "{p:?}");
+    assert!(
+        p[0].0 < p[3].0 && p[3].0 < p[4].0 && p[4].0 < p[5].0,
+        "{p:?}"
+    );
+    // creation order inside a column
+    assert!(p[0].1 < p[1].1, "{p:?}");
+    assert_fits(&a, &LayoutOptions::default(), "layered");
+}
+
+#[test]
+fn layered_layout_without_an_initial_state_starts_at_the_first_state() {
+    let mut a = fa(3, &[(0, 1), (1, 2)]);
+    apply(&mut a, Algorithm::Layered, &LayoutOptions::default());
+    let p = points(&a);
+    assert!(p[0].0 < p[1].0 && p[1].0 < p[2].0, "{p:?}");
+    assert_eq!(p[0].1, p[1].1);
+}
+
+#[test]
+fn layered_layout_follows_the_direction_of_the_transitions_and_the_buffer() {
+    // the initial state 1 has an edge INTO 0 only through 0->1: 0 is not reachable from 1
+    let mut a = fa(2, &[(0, 1)]);
+    a.set_initial(Some(1));
+    let wide = LayoutOptions {
+        vertex_buffer: 100.0,
+        ..LayoutOptions::default()
+    };
+    apply(&mut a, Algorithm::Layered, &wide);
+    let p = points(&a);
+    assert!(
+        p[1].0 < p[0].0,
+        "unreachable state goes to the right: {p:?}"
+    );
+    assert!(p[0].0 - p[1].0 >= 100.0, "{p:?}");
+}
+
+#[test]
+fn layered_layout_leaves_fixed_states_where_they_are() {
+    let mut a = fa(3, &[(0, 1), (1, 2)]);
+    a.state_mut(1).unwrap().point = Point { x: 500.0, y: 400.0 };
+    let options = LayoutOptions {
+        fixed: [1].into_iter().collect(),
+        ..LayoutOptions::default()
+    };
+    let positions = rflap_core::layout::compute(&a, Algorithm::Layered, &options);
+    // the others sit on one row; the fixed state keeps its own place far below it
+    assert_eq!(positions[&0].y, positions[&2].y);
+    assert!(positions[&1].y > positions[&0].y + 100.0, "{positions:?}");
+}

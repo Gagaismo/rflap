@@ -514,7 +514,7 @@ for (const [index, notation] of ['catedra', 'jflap'].entries()) {
     order: 10 + index,
     separator: index === 0,
     appliesTo: TURING,
-    checked: (tab) => tab.app.notation === notation,
+    checked: (tab) => tab.notation === notation,
     run: (tab) => tab.app.setNotation(notation),
   });
 }
