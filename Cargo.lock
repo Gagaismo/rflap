@@ -42,6 +42,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rflap-api"
+version = "0.1.0"
+dependencies = [
+ "rflap-core",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "rflap-core"
 version = "0.1.0"
 dependencies = [
