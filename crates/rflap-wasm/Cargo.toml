@@ -1,0 +1,17 @@
+[package]
+name = "rflap-wasm"
+description = "WebAssembly build of rflap-api: a raw C ABI (no wasm-bindgen) for the web editor and the chat widget"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+rflap-api = { path = "../rflap-api" }
+
+[dev-dependencies]
+serde_json.workspace = true
