@@ -5,13 +5,14 @@ import { h, clear } from './dom.js';
 import { t } from './i18n.js';
 import { registerPanel } from './registry.js';
 import { tapeCount } from './doc.js';
+import { acceptanceUsed, catedraBatchRequest, catedraRows, inputHasDelimiters } from './tm-model.js';
 
 const MAX_ROWS = 200;
 
 /** Settings shared by the simulation panels of a tab. */
 export function simSettings(tab) {
   if (!tab.simSettings) {
-    tab.simSettings = { mode: 'closure', acceptance: tab.type === 'turing' ? 'both' : 'final_state', inputs: [''] };
+    tab.simSettings = { mode: 'closure', acceptance: 'final_state', inputs: [''] };
   }
   const tapes = tapeCount(tab.doc);
   while (tab.simSettings.inputs.length < tapes) tab.simSettings.inputs.push('');
@@ -246,12 +247,13 @@ registerPanel({
     const body = h('tbody');
     const paste = h('textarea', { rows: 4, 'aria-label': t('multi.paste'), placeholder: t('multi.paste_hint') });
 
-    function rowView(row, index, result) {
-      return h(
-        'tr',
-        {},
-        row.map((value, tape) =>
-          h(
+    const isAll = () => tab.type === 'turing' && tab.model === 'all';
+
+    function rowViews(row, index, result) {
+      const mark = h('tr', {},
+        row.map((value, tape) => {
+          const warning = h('small', { class: 'warn', role: 'status' }, tab.type === 'turing' && inputHasDelimiters(value) ? t('sim.delimiters_warning') : '');
+          return h(
             'td',
             {},
             h('input', {
@@ -259,34 +261,55 @@ registerPanel({
               value,
               spellcheck: 'false',
               'aria-label': t('multi.row_input', { n: index + 1 }),
-              oninput: (e) => (row[tape] = e.target.value),
+              oninput: (e) => {
+                row[tape] = e.target.value;
+                warning.textContent = tab.type === 'turing' && inputHasDelimiters(e.target.value) ? t('sim.delimiters_warning') : '';
+              },
             }),
-          ),
-        ),
+            warning,
+          );
+        }),
         h('td', { class: result ? `outcome-${result.outcome}` : '' }, result ? t(`sim.${result.outcome}`) : ''),
         h('td', {}, result && result.output != null ? blankLabel(result.output) : result && result.tape_outputs ? result.tape_outputs.join(' | ') : ''),
         h('td', {}, h('button', { type: 'button', 'aria-label': t('multi.remove_row', { n: index + 1 }), onclick: () => ((rows.splice(index, 1), draw())) }, '✕')),
       );
+      const notes = result && result.notes && result.notes.length ? result.notes : result && result.message ? [result.message] : [];
+      if (!notes.length) return [mark];
+      const span = row.length + 3;
+      return [mark, h('tr', { class: 'notes' }, h('td', { colspan: String(span) }, notes.map((n) => h('p', { class: 'muted' }, `ℹ️ ${n}`))))];
     }
 
     function draw(results = []) {
       clear(body);
-      rows.forEach((row, i) => body.append(rowView(row, i, results[i])));
+      rows.forEach((row, i) => body.append(...rowViews(row, i, results[i])));
+    }
+
+    function showCriterion() {
+      criterion.textContent = tab.type === 'turing' ? t('multi.criterion', { criterion: t(`sim.acceptance.${acceptanceUsed(tab.model, simSettings(tab).acceptance)}`) }) : '';
     }
 
     async function runAll() {
       const settings = simSettings(tab);
       const list = rows.filter((r) => r.some((x) => x !== '') || rows.length === 1);
       try {
-        const args = { op: 'multiple_run', document: tab.doc, inputs: list.map((r) => (tapes() > 1 ? r : r[0])) };
-        if (tab.type === 'fa' || tab.type === 'pda') args.mode = settings.mode;
-        if (tab.type === 'pda' || tab.type === 'turing') args.acceptance = settings.acceptance;
-        const r = await tab.api(args);
+        const inputs = list.map((r) => (tapes() > 1 ? r : r[0]));
+        let results;
+        if (isAll()) {
+          // an ALL runs on ⟨w⟩ and accepts by final state: the cátedra engine, not the JFLAP simulation
+          const r = await tab.api(catedraBatchRequest(tab.doc, inputs, 'all', catedraMaxSteps()));
+          results = catedraRows(r.results);
+        } else {
+          const args = { op: 'multiple_run', document: tab.doc, inputs };
+          if (tab.type === 'fa' || tab.type === 'pda') args.mode = settings.mode;
+          if (tab.type === 'pda' || tab.type === 'turing') args.acceptance = acceptanceUsed(tab.model, settings.acceptance);
+          results = (await tab.api(args)).results;
+        }
         rows.length = 0;
         list.forEach((l) => rows.push(l));
-        draw(r.results);
-        const accepted = r.results.filter((x) => x.accepted).length;
-        summary.textContent = t('multi.summary', { accepted, total: r.results.length });
+        draw(results);
+        showCriterion();
+        const accepted = results.filter((x) => x.accepted).length;
+        summary.textContent = t('multi.summary', { accepted, total: results.length });
       } catch (error) {
         summary.textContent = error.message;
       }
@@ -305,11 +328,26 @@ registerPanel({
     }
 
     const summary = h('p', { role: 'status', 'aria-live': 'polite', class: 'muted' });
+    const criterion = h('p', { class: 'muted', role: 'status' });
+    const catedraMaxSteps = () => (tab.catedra && tab.catedra.maxSteps) || 1000;
+    const settingsBar = tab.type === 'turing' ? h('div', { class: 'sim-options' }) : null;
+    function drawBar() {
+      if (!settingsBar) return;
+      const settings = simSettings(tab);
+      const modelSelect = h('select', { 'aria-label': t('catedra.model'), onchange: (e) => tab.setModel(e.target.value) }, ['mt', 'all'].map((m) => h('option', { value: m, selected: tab.model === m }, t(`catedra.model_${m}`))));
+      const acceptance = h(
+        'select',
+        { 'aria-label': t('sim.acceptance'), disabled: tab.model === 'all', onchange: (e) => ((settings.acceptance = e.target.value), showCriterion()) },
+        ['final_state', 'halting', 'both'].map((v) => h('option', { value: v, selected: acceptanceUsed(tab.model, settings.acceptance) === v }, t(`sim.acceptance.${v}`))),
+      );
+      clear(settingsBar).append(h('label', { class: 'inline' }, t('catedra.model'), modelSelect), h('label', { class: 'inline' }, t('sim.acceptance'), acceptance));
+    }
     const head = h('tr', {}, Array.from({ length: tapes() }, (_, i) => h('th', { scope: 'col' }, tapes() > 1 ? t('sim.input_tape', { n: i + 1 }) : t('sim.input'))), h('th', { scope: 'col' }, t('multi.result')), h('th', { scope: 'col' }, t('sim.col.output')), h('th', {}));
     container.append(
       h(
         'div',
         { class: 'panel-body' },
+        settingsBar,
         h('table', { class: 'configs multi' }, h('thead', {}, head), body),
         h(
           'div',
@@ -318,10 +356,19 @@ registerPanel({
           h('button', { type: 'button', class: 'primary', onclick: runAll }, t('multi.run_all')),
         ),
         summary,
+        criterion,
         h('details', {}, h('summary', {}, t('multi.paste')), paste, h('button', { type: 'button', onclick: loadPasted }, t('multi.load'))),
       ),
     );
+    drawBar();
     draw();
+    showCriterion();
+    const offModel = tab.on('model', () => {
+      drawBar();
+      draw();
+      summary.textContent = '';
+      showCriterion();
+    });
     const off = tab.on('doc', (e) => {
       if (e.cause === 'path' || e.cause === 'flags') return;
       const n = tapes();
@@ -331,6 +378,6 @@ registerPanel({
       }
       draw();
     });
-    return { destroy: off, run: runAll };
+    return { destroy: () => (off(), offModel()), run: runAll };
   },
 });

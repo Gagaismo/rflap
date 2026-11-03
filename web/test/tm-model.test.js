@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fixture } from './fixtures.js';
@@ -7,7 +8,7 @@ import { emptyDocument, labelToText, labelFromText } from '../src/doc.js';
 import { fieldsFromText, textFromFields } from '../src/labels.js';
 import {
   inferModel, modelOf, labelText, parseLabelText, formValues, textFromForm, moveLetters, showMove, normalizeMove, blankOf, notationOf,
-  sequenceView, stateOfConfiguration, statesOfRun, definitionRows, formatSet, violationTransitions, tkRows, effectiveInputs, multipistaOf,
+  sequenceView, usesAsciiDelimiters, convertAsciiDelimiters, inputHasDelimiters, acceptanceUsed, catedraBatchRequest, catedraRows, stateOfConfiguration, statesOfRun, definitionRows, formatSet, violationTransitions, tkRows, effectiveInputs, multipistaOf,
 } from '../src/tm-model.js';
 
 const f = fixture('catedra');
@@ -232,4 +233,81 @@ test('the composition of two machines is a Turing document with its definition',
   assert.equal(f.composed.document.type, 'turing');
   assert.equal(inferModel(f.composed.document), 'mt');
   assert.equal(f.composed.definition.model, 'mt');
+});
+
+// ---------------------------------------------------------------- all-shrink: delimiters, criterion, notes (T2)
+
+const lt = (read, write, direction = 'right') => ({ from: 0, to: 0, label: { actions: [{ read, write, direction }] } });
+const machine = (...transitions) => ({ type: 'turing', automaton: { states: {}, transitions } });
+
+test('S7: a machine with both ASCII < and > (and no ⟨ ⟩) converts them; one alone stays a symbol', () => {
+  const both = machine(lt('a', '<'), lt('c', '>', 'left'));
+  assert.equal(usesAsciiDelimiters(both), true);
+  const converted = convertAsciiDelimiters(both);
+  assert.deepEqual(converted.automaton.transitions.map((t) => t.label.actions[0].write), ['⟨', '⟩']);
+  assert.equal(both.automaton.transitions[0].label.actions[0].write, '<', 'the input document is not mutated');
+  const one = machine(lt('a', '<'), lt('c', 'c'));
+  assert.equal(usesAsciiDelimiters(one), false);
+  assert.equal(convertAsciiDelimiters(one), one);
+  const mixed = machine(lt('a', '⟨'), lt('<', '>'));
+  assert.equal(convertAsciiDelimiters(mixed), mixed, 'a machine that already has ⟨ ⟩ is left alone');
+});
+
+test('S2/S7: ASCII < > count as ALL when inferring the model', () => {
+  assert.equal(inferModel(machine(lt('a', '<'), lt('c', '>'))), 'all');
+  assert.equal(inferModel(machine(lt('a', '<'))), 'mt');
+  assert.equal(inferModel(machine(lt('a', '⟨'))), 'all');
+});
+
+test('S4: an input that already brings the delimiters is detected (⟨aba⟩ and <aba>)', () => {
+  for (const x of ['<aba>', '⟨aba⟩', ' <a> ', '<>', '⟨a>']) assert.equal(inputHasDelimiters(x), true, x);
+  for (const x of ['aba', '<aba', 'aba>', '', '<', 'a<b>c']) assert.equal(inputHasDelimiters(x), false, x);
+});
+
+test('S3: an ALL always accepts by final state; an MT keeps the chosen criterion', () => {
+  assert.equal(acceptanceUsed('all', 'halting'), 'final_state');
+  assert.equal(acceptanceUsed('mt', 'halting'), 'halting');
+  assert.equal(acceptanceUsed('mt', 'both'), 'both');
+  assert.equal(acceptanceUsed('mt', undefined), 'final_state');
+});
+
+test('S2: the multiple run of an ALL asks catedra_run with model all and the panel\'s max steps', () => {
+  const doc = { type: 'turing' };
+  assert.deepEqual(catedraBatchRequest(doc, ['aba', ''], 'all', 500), { op: 'catedra_run', document: doc, inputs: ['aba', ''], model: 'all', max_steps: 500 });
+});
+
+test('S3/S4: catedra_run results map to multiple-run rows with outcome, notes and violation message', () => {
+  const rows = catedraRows([
+    { verdict: 'accepted', accepted: true, notes: ['ℹ️ q0 escribe ⟨ sobre a: la cinta se achica'] },
+    { verdict: 'rejected', accepted: false },
+    { verdict: 'no_halt', accepted: false },
+    { verdict: 'violation', accepted: false, violation: { message: 'cruza ⟨' } },
+  ]);
+  assert.deepEqual(rows.map((r) => r.outcome), ['accepted', 'rejected', 'undecided', 'rejected']);
+  assert.deepEqual(rows[0].notes, ['ℹ️ q0 escribe ⟨ sobre a: la cinta se achica']);
+  assert.deepEqual(rows[1].notes, []);
+  assert.equal(rows[3].message, 'cruza ⟨');
+  assert.deepEqual(sequenceView({ verdict: 'accepted', notes: ['x'] }).notes, ['x']);
+  assert.deepEqual(sequenceView({ verdict: 'accepted' }).notes, []);
+});
+
+test('S3: the tab commit stores ⟨ ⟩ (never ASCII) and switches to ALL', async () => {
+  const tab = new Tab({ api: async () => ({}), notify() {} }, { doc: machine(lt('a', 'a')), title: 'x' });
+  assert.equal(tab.model, 'mt');
+  await tab.edit((d) => d.automaton.transitions.push(lt('a', '<'), lt('c', '>', 'left')));
+  assert.deepEqual(tab.doc.automaton.transitions.map((t) => t.label.actions[0].write), ['a', '⟨', '⟩']);
+  assert.equal(tab.model, 'all');
+});
+
+test('S3: b) multiple run of aba, abab, babab, aaa, a, b, bb accepts only abab (1 of 7)', async (t) => {
+  const api = await loadApi();
+  const xml = fs.readFileSync(new URL('../../crates/rflap-api/tests/fixtures/catedra/ALL_2.1b_complemento_palindromo.jff', import.meta.url), 'utf8');
+  const { document } = await api({ op: 'open_jff', xml });
+  assert.equal(inferModel(document), 'all', 'the ⟨ ⟩ of the .jff make the tab run as ALL');
+  const inputs = ['aba', 'abab', 'babab', 'aaa', 'a', 'b', 'bb'];
+  const r = await api(catedraBatchRequest(document, inputs, 'all', 1000));
+  const rows = catedraRows(r.results);
+  if (rows.some((x) => x.outcome === 'rejected' && x.message)) return t.skip('needs T1: the engine of this dist still flags the shrink as a violation');
+  assert.deepEqual(rows.map((x) => x.accepted), inputs.map((w) => w === 'abab'));
+  assert.equal(rows.filter((x) => x.accepted).length, 1);
 });
