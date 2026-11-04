@@ -118,6 +118,13 @@ fn model_arg() -> Value {
     )
 }
 
+/// `allow_shrink` of the tools that run an ALL.
+fn allow_shrink_arg() -> Value {
+    boolean(
+        "ALL only (default true): writing ⟨ over another symbol moving D, or ⟩ moving I, is valid (the tape shrinks, reported as a note). false = the strict rule, where ⟨ and ⟩ are only written over themselves.",
+    )
+}
+
 /// `notation` of the tools that show a Turing machine.
 fn notation_arg() -> Value {
     choice(
@@ -183,8 +190,10 @@ fn design_automaton() -> ToolDef {
             your examples and against a brute-force cross-check. Give the alphabet, exactly ONE \
             of constraint_text / constraint / regex / grammar / template, and accept/reject \
             examples (include the empty string and boundary cases). If the verification reports \
-            a failing example, your spec or example is wrong: fix it and call again. \
-            constraint_text syntax: starts_with(\"ab\"), ends_with(\"ab\"), contains(\"aa\"), \
+            a failing example, your spec or example is wrong: fix it and call again. The \
+            result must be JFLAP 7.1 compatible (the .jff opens and runs the same in classic \
+            JFLAP); a \"⚠️ JFLAP 7.1\" line in the reply names a construction JFLAP cannot \
+            represent: fix the design. constraint_text syntax: starts_with(\"ab\"), ends_with(\"ab\"), contains(\"aa\"), \
             length >= 3, length % 2 == 0, count(a) % 2 == 0, count(a,b) >= 2 (a or b), \
             count(a) == count(b) (NOT regular), regex(\"(a+b)*\"), combined with and / or / \
             xor / not and parentheses. Regex syntax is JFLAP's: + union, \
@@ -271,7 +280,10 @@ fn show() -> ToolDef {
         description: "Shows any Rflap document (automaton, grammar, regex, L-system…) in the \
             interactive widget and returns its analysis (deterministic?, unreachable states…), \
             a transition table and an explanation. Use it to display something you wrote by \
-            hand. Optional fields of a compact document: `title` (alias `name`; shown as the \
+            hand. Every automaton must be JFLAP 7.1 compatible: the reply adds \"⚠️ JFLAP 7.1\" \
+            lines for what classic JFLAP cannot open or runs differently, and \"ℹ️ JFLAP 7.1\" \
+            notes (an ALL carries how to run it in JFLAP); relay them to the student. \
+            Optional fields of a compact document: `title` (alias `name`; shown as the \
             first line and the header of the widget), `layout` (algorithm for the state \
             positions: layered = default, initial state at the left and the rest in columns by \
             distance; circle, gem, random, spiral, tree, tree-degree, two-circle) and `points` \
@@ -287,6 +299,7 @@ fn show() -> ToolDef {
             vec![
                 ("document", document("The document to show.")),
                 ("model", model_arg()),
+                ("allow_shrink", allow_shrink_arg()),
                 ("notation", notation_arg()),
             ],
             &["document"],
@@ -350,6 +363,7 @@ fn simulate() -> ToolDef {
                     integer("Configurations explored before answering undecided (default 10000)."),
                 ),
                 ("model", model_arg()),
+                ("allow_shrink", allow_shrink_arg()),
                 ("notation", notation_arg()),
                 (
                     "max_steps",
@@ -413,6 +427,7 @@ fn step() -> ToolDef {
                     integer("Frontier size at which the run stops as truncated (default 10000)."),
                 ),
                 ("model", model_arg()),
+                ("allow_shrink", allow_shrink_arg()),
             ],
             &["document", "input"],
         ),
@@ -722,7 +737,9 @@ fn open_jff() -> ToolDef {
                 ("xml", string("The text of the .jff file.")),
                 (
                     "path",
-                    string("Path of a .jff file to read (local servers only)."),
+                    string(
+                        "Path of a .jff file to read (local servers only). A leading ~ (or ~/, ~\\) and %VAR% on Windows are expanded.",
+                    ),
                 ),
             ],
             &[],
@@ -741,14 +758,20 @@ fn save_jff() -> ToolDef {
         title: "Save as a JFLAP file",
         description: "Writes a document as .jff text that JFLAP 7.1 opens. Returns the XML; with \
             `path` (a .jff file on the machine where this server runs, local use only) it also \
-            writes the file, refusing to overwrite unless `overwrite` is true."
+            writes the file, refusing to overwrite unless `overwrite` is true. The document is \
+            checked first: the reply adds \"⚠️ JFLAP 7.1\" lines for what classic JFLAP cannot \
+            open or runs differently (it still saves it, unchanged) and \"ℹ️ JFLAP 7.1\" notes \
+            (an ALL says how to run it in JFLAP); a design should be JFLAP 7.1 compatible, so \
+            fix the warnings unless the student asked for the Rflap-only construction."
             .to_string(),
         input: schema(
             vec![
                 ("document", document("The document to save.")),
                 (
                     "path",
-                    string("Where to write the file; must end in .jff (local servers only)."),
+                    string(
+                        "Where to write the file; must end in .jff (local servers only). A leading ~ (or ~/, ~\\) and %VAR% on Windows are expanded; ~/Desktop falls back to ~/OneDrive/Desktop (or Escritorio) when the plain folder does not exist, and the reply says the real path.",
+                    ),
                 ),
                 ("overwrite", boolean("Allow replacing an existing file.")),
             ],
@@ -892,7 +915,7 @@ fn mt_catedra() -> ToolDef {
             Símbolo Salida | Movimiento Cabezal); \"run\" = the configuration sequences \
             (Δ1abaΔ ├─ ΔΔ2baΔ … final/acepta or bloqueo/rechazo) for `inputs`; \"all_check\" = \
             whether the machine obeys the rules of an ALL (reads ⟨ moving D, reads ⟩ moving I, \
-            never reads or writes Δ, the head never leaves ⟨…⟩) and lists every violation. Write \
+            never reads or writes Δ, the head never leaves ⟨…⟩) and lists every violation; writing ⟨ over another symbol moving D (or ⟩ moving I) shrinks the tape and is valid unless `allow_shrink` is false, reported as a note. An input that already carries its delimiters (⟨aba⟩ or <aba>) is run without them and says so. Write \
             the machine as a compact turing document with cátedra labels (e,s,m): move I left, N \
             stay, D right, Δ the blank, several labels on one edge joined with \" / \"; final \
             states halt. Example: {\"document\":{\"type\":\"turing\",\"initial\":\"1\",\
@@ -930,6 +953,7 @@ fn mt_catedra() -> ToolDef {
                         "Steps before a run is reported as not halting (default 1000, at most 100000).",
                     ),
                 ),
+                ("allow_shrink", allow_shrink_arg()),
                 (
                     "input_alphabet",
                     json!({"anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}],
@@ -946,6 +970,7 @@ fn mt_catedra() -> ToolDef {
             "results": {"type": "array"},
             "ok": {"type": "boolean"},
             "violations": {"type": "array"},
+            "notes": {"type": "array"},
         }))),
         visual: true,
         read_only: true,

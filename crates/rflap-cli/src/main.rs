@@ -129,6 +129,7 @@ fn dispatch(cli: &Cli) -> Result<Reply> {
                 all,
                 model,
                 max_steps,
+                no_shrink,
             } => catedra::run(
                 file,
                 inputs,
@@ -136,12 +137,14 @@ fn dispatch(cli: &Cli) -> Result<Reply> {
                 *model,
                 *all,
                 *max_steps,
+                *no_shrink,
             ),
             CatedraCommand::AllCheck {
                 file,
                 inputs,
                 max_steps,
-            } => catedra::all_check(file, inputs, *max_steps),
+                no_shrink,
+            } => catedra::all_check(file, inputs, *max_steps, *no_shrink),
             CatedraCommand::Compose { a, b, output } => catedra::compose(a, b, output.as_deref()),
         },
         Command::Membership {

@@ -42,8 +42,26 @@ pub fn table(file: &str, markdown: bool) -> Result<Reply> {
     Ok(Reply::new(out, &answer, exit::OK))
 }
 
+/// `ℹ️ note` per line.
+fn note_lines(notes: &Value, skip: &Value) -> String {
+    let skip = skip.as_array().cloned().unwrap_or_default();
+    notes
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter(|n| !skip.contains(n))
+        .map(|n| {
+            format!(
+                "ℹ️ {}
+",
+                plain(n)
+            )
+        })
+        .collect()
+}
+
 /// `"input": sequence` per run.
-fn run_lines(results: &Value) -> String {
+fn run_lines(results: &Value, skip: &Value) -> String {
     let mut out = String::new();
     for r in results.as_array().into_iter().flatten() {
         out.push_str(&format!(
@@ -51,6 +69,7 @@ fn run_lines(results: &Value) -> String {
             quote(r["input"].as_str().unwrap_or("")),
             plain(&r["sequence"])
         ));
+        out.push_str(&note_lines(&r["notes"], skip));
     }
     out
 }
@@ -92,6 +111,7 @@ pub fn run(
     model: Option<ModelArg>,
     all: bool,
     max_steps: Option<usize>,
+    no_shrink: bool,
 ) -> Result<Reply> {
     let inputs = inputs_of(positional, inputs_file)?;
     let mut request = json!({
@@ -105,16 +125,24 @@ pub fn run(
     if let Some(max) = max_steps {
         request["max_steps"] = json!(max);
     }
+    if no_shrink {
+        request["allow_shrink"] = json!(false);
+    }
     let answer = api::call(&request)?;
     let results = &api::result(&answer)["results"];
     Ok(Reply::new(
-        run_lines(results),
+        run_lines(results, &Value::Null),
         &answer,
         verdict_code(results),
     ))
 }
 
-pub fn all_check(file: &str, positional: &[String], max_steps: Option<usize>) -> Result<Reply> {
+pub fn all_check(
+    file: &str,
+    positional: &[String],
+    max_steps: Option<usize>,
+    no_shrink: bool,
+) -> Result<Reply> {
     let inputs: Vec<String> = positional.iter().map(|s| input::input_string(s)).collect();
     let mut request = json!({
         "op": "all_check", "document": input::load_document(file)?, "inputs": inputs
@@ -122,9 +150,13 @@ pub fn all_check(file: &str, positional: &[String], max_steps: Option<usize>) ->
     if let Some(max) = max_steps {
         request["max_steps"] = json!(max);
     }
+    if no_shrink {
+        request["allow_shrink"] = json!(false);
+    }
     let answer = api::call(&request)?;
     let r = api::result(&answer);
-    let mut out = run_lines(&r["runs"]);
+    let mut out = run_lines(&r["runs"], &r["notes"]);
+    out.push_str(&note_lines(&r["notes"], &Value::Null));
     let ok = r["ok"] == true;
     if ok {
         out.push_str("La máquina cumple las reglas de un ALL.\n");

@@ -8,6 +8,7 @@ pub mod fa;
 pub mod fa_convert;
 pub mod grammar;
 pub mod jff;
+pub mod jflap;
 pub mod layout;
 pub mod lsystem;
 pub mod mealy;

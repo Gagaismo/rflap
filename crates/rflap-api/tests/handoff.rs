@@ -185,7 +185,7 @@ fn all_check_reads_lt_gt_as_the_delimiters_of_an_all() {
 }
 
 #[test]
-fn catedra_run_with_explicit_all_reads_lt_gt_as_delimiters_but_mt_keeps_them_as_symbols() {
+fn catedra_run_reads_lt_gt_as_delimiters_with_or_without_an_explicit_model() {
     let run = |model: Option<&str>| {
         let mut req = json!({"op": "catedra_run", "document": all_machine("<", ">"),
                              "inputs": INPUTS});
@@ -194,47 +194,32 @@ fn catedra_run_with_explicit_all_reads_lt_gt_as_delimiters_but_mt_keeps_them_as_
         }
         ok(req)
     };
-    let all = run(Some("all"));
-    assert_eq!(all["model"], "all");
-    let accepted: Vec<bool> = all["results"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|r| r["accepted"] == true)
-        .collect();
-    assert_eq!(accepted, ACCEPTED);
     let real = ok(
         json!({"op": "catedra_run", "document": all_machine("⟨", "⟩"),
                          "inputs": INPUTS, "model": "all"}),
     );
-    assert_eq!(all["results"], real["results"]);
-    // detected (not explicit) and MT: `<` and `>` are ordinary tape symbols
-    for model in [None, Some("mt")] {
+    // a machine using both `<` and `>` is normalized to ⟨ ⟩, so it is detected as an ALL
+    for model in [None, Some("all")] {
         let r = run(model);
-        assert_eq!(r["model"], "mt");
-        assert!(
-            r["results"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .all(|x| x["accepted"] == false),
-            "{r}"
-        );
+        assert_eq!(r["model"], "all");
+        let accepted: Vec<bool> = r["results"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x["accepted"] == true)
+            .collect();
+        assert_eq!(accepted, ACCEPTED);
+        assert_eq!(r["results"], real["results"]);
     }
 }
 
 #[test]
-fn catedra_definition_with_explicit_all_shows_the_delimiters() {
+fn catedra_definition_shows_the_normalized_delimiters() {
     let d = ok(
         json!({"op": "catedra_definition", "document": all_machine("<", ">"),
                       "model": "all"}),
     );
     assert_eq!(strings(&d["auxiliary_alphabet"]), ["⟨", "⟩", "X", "Y"]);
-    let mt = ok(
-        json!({"op": "catedra_definition", "document": all_machine("<", ">"),
-                       "model": "mt"}),
-    );
-    assert!(strings(&mt["auxiliary_alphabet"]).contains(&"<".to_string()));
 }
 
 #[test]

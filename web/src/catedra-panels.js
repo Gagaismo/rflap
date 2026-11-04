@@ -11,7 +11,7 @@ import { container, emptyDocument } from './doc.js';
 import { dataTable } from './widgets.js';
 import { formDialog } from './dialogs.js';
 import { guarded, copyText } from './actions.js';
-import { CONFIG_STEP, definitionRows, effectiveInputs, sequenceView, statesOfRun, violationTransitions } from './tm-model.js';
+import { CONFIG_STEP, definitionRows, effectiveInputs, inputHasDelimiters, sequenceView, statesOfRun, violationTransitions } from './tm-model.js';
 
 registerStrings({
   en: {
@@ -298,6 +298,7 @@ registerPanel({
     function drawRows() {
       clear(rowsBox);
       settings.rows.forEach((value, i) => {
+        const warning = h('small', { class: 'warn', role: 'status' }, inputHasDelimiters(value) ? t('sim.delimiters_warning') : '');
         rowsBox.append(
           h(
             'div',
@@ -310,9 +311,13 @@ registerPanel({
               autocomplete: 'off',
               'aria-label': t('catedra.input_n', { n: i + 1 }),
               placeholder: t('catedra.input_n', { n: i + 1 }),
-              oninput: (e) => (settings.rows[i] = e.target.value),
+              oninput: (e) => {
+                settings.rows[i] = e.target.value;
+                warning.textContent = inputHasDelimiters(e.target.value) ? t('sim.delimiters_warning') : '';
+              },
               onkeydown: (e) => (e.key === 'Enter' ? run() : null),
             }),
+            warning,
             settings.rows.length > 1
               ? h('button', { type: 'button', 'aria-label': t('catedra.remove_input', { n: i + 1 }), onclick: () => ((settings.rows.splice(i, 1), drawRows())) }, '✕')
               : null,
@@ -362,6 +367,7 @@ registerPanel({
           h('h4', {}, t('catedra.word', { word: wordText(view.input) }), ' ', h('span', { class: `badge verdict-${view.verdictClass}` }, t(`catedra.verdict.${view.verdict}`) ), ' ', h('span', { class: 'muted' }, t('catedra.steps', { n: view.steps }))),
           sequence,
           view.violation ? h('p', { class: 'warn' }, t('catedra.violation', { message: view.violation.message })) : null,
+          ...view.notes.map((n) => h('p', { class: 'muted' }, `ℹ️ ${n}`)),
           h('div', { class: 'button-row' }, prev, next, position),
         ),
         go,

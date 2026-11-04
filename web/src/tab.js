@@ -2,7 +2,7 @@
 // The Tab IS the context handed to panels and actions (`ctx` in `mount(container, ctx)` / `run(ctx)`).
 
 import { History, clone, isAutomaton } from './doc.js';
-import { inferModel, modelOf } from './tm-model.js';
+import { convertAsciiDelimiters, inferModel, modelOf } from './tm-model.js';
 
 let nextTabId = 1;
 
@@ -82,7 +82,9 @@ export class Tab {
   /** Commits a new document (a clone edited by the caller): records undo history and notifies. */
   async commit(next) {
     this.history.record(this.doc);
-    this.doc = next;
+    const converted = convertAsciiDelimiters(next); // the editor never stores ASCII < >: they are the alias of ⟨ ⟩
+    this.doc = converted;
+    if (converted !== next) this.setModel('all');
     this.dirty = true;
     this.emit('doc', { cause: 'edit' });
   }

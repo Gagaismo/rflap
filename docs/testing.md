@@ -42,6 +42,7 @@ without Java; they compare what Rflap computes with what JFLAP computed.
 | `fixtures/t8/LHarness.java` | `t8/lsystem_expected.txt` and `t8/lsystem_*.jff` (expansions, image sizes, bounds, colours) | `lsystem_jflap_diff.rs` |
 | `fixtures/t8/PHarness.java` | `t8/pumping_expected.txt` and `t8/pumping_*.jff` (the 26 languages, seeded choices) | `pumping_jflap_diff.rs` |
 | `fixtures/jff/harness/HarnessAll.java`, `Harness.java` | `jff/jflap/*.jff` and `jff/sample*.jff`: files saved by JFLAP's own `XMLCodec` | `jff_fa.rs`, `jff_machines.rs`, `jff_structure.rs` |
+| `fixtures/jff/harness/HarnessSim.java` | nothing is committed: it runs live, on files Rflap writes (see below) | `crates/rflap-api/tests/jflap_diff.rs` |
 
 ### Regenerating them
 
@@ -89,6 +90,24 @@ java -Dline.separator=$'\n' -Djava.awt.headless=true -cp "$JAR" PHarness.java lo
 (`RFLAP_JFF_OUT=<dir> cargo test -p rflap-core --test jff_fa -- --ignored dump` does the same for
 finite automata, with `Harness.java load`.) The harness prints what JFLAP read; a Java exception or a
 different summary is a bug of the writer.
+
+### Live tests against the jar (S8)
+
+`crates/rflap-api/tests/jflap_diff.rs` runs `java` with `fixtures/jff/harness/HarnessSim.java` on files
+that Rflap writes (designed automata, a PDA, Mealy, Moore, Turing machines, the ALL fixtures of the
+course): JFLAP's `XMLCodec` loads them, the harness prints the graph and the verdict of JFLAP's own
+simulators (FA with closure, PDA, Mealy, Moore and Turing step by state, acceptance by final state), and
+the test compares both with Rflap's model and `simulate`. The jar is looked up in `$JFLAP_JAR`, then as
+`JFLAP7_1.JAR` at the workspace root, then at the root of the main checkout of the repository (for linked
+worktrees). **Without Java or the jar every test prints `SKIPPED` and passes**:
+
+```bash
+cargo test -p rflap-api --test jflap_diff -- --nocapture     # look for SKIPPED in the output
+JFLAP_JAR=/path/to/JFLAP7_1.JAR cargo test -p rflap-api --test jflap_diff
+```
+
+(JFLAP's PDA simulator asks "Accept by" in a dialog from its constructor, so the harness builds it
+without the constructor and sets final-state acceptance, which is what the dialog does.)
 
 ### Adding a case
 

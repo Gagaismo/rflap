@@ -442,9 +442,9 @@ fn moving_left_of_the_left_delimiter_and_using_blanks_are_violations() {
 }
 
 #[test]
-fn writing_a_delimiter_over_another_symbol_is_a_violation() {
+fn writing_a_delimiter_over_another_symbol_is_a_violation_without_shrink() {
     let m = machine(&["I", "F"], "I", &["F"], &["I a F ⟨ D"]);
-    let r = catedra::all_check(&m, &[], 100).unwrap();
+    let r = catedra::all_check_with(&m, &[], 100, false).unwrap();
     assert_eq!(r.violations.len(), 1);
     assert_eq!(r.violations[0].kind, "escribe_delimitador");
     assert_eq!(
@@ -569,4 +569,195 @@ fn states_are_listed_initial_first_then_in_natural_order() {
     );
     let def = catedra::definition(&igual_scrambled, Some(Model::All)).unwrap();
     assert_eq!(def.states, strings(&["I", "A", "B", "C", "D", "F"]));
+}
+
+// ALL shrink (S1), final-state stay (S6), delimiters in the input (S4)
+
+fn texts(v: &[String]) -> Vec<&str> {
+    v.iter().map(String::as_str).collect()
+}
+
+#[test]
+fn s1_shrink_writing_a_delimiter_inward_is_valid_and_noted_statically() {
+    let m = machine(
+        &["I", "F"],
+        "I",
+        &["F"],
+        &["I a I ⟨ D", "I b I ⟩ I", "I ⟨ I ⟨ D", "I ⟩ F ⟩ I"],
+    );
+    let r = catedra::all_check(&m, &[], 100).unwrap();
+    assert!(r.ok, "{:?}", r.violations);
+    assert_eq!(
+        texts(&r.notes),
+        [
+            "I escribe ⟨ sobre a: la cinta se achica",
+            "I escribe ⟩ sobre b: la cinta se achica"
+        ]
+    );
+}
+
+#[test]
+fn s1_static_notes_are_deduplicated() {
+    let m = machine(
+        &["I", "F"],
+        "I",
+        &["F"],
+        &["I a I ⟨ D", "I a F ⟨ D", "I ⟩ F ⟩ I"],
+    );
+    let r = catedra::all_check(&m, &[], 100).unwrap();
+    // I --(a,⟨,D)--> I and I --(a,⟨,D)--> F are the same remark
+    assert_eq!(r.notes.len(), 1, "{:?}", r.notes);
+}
+
+#[test]
+fn s1_3_writing_a_delimiter_with_the_wrong_move_is_still_a_violation() {
+    for (row, message) in [
+        (
+            "I a F ⟨ I",
+            "La transición I --(a,⟨,I)--> F escribe ⟨ sobre a moviéndose a la izquierda (I): ⟨ solo se escribe sobre otro símbolo moviéndose a la derecha (D).",
+        ),
+        (
+            "I a F ⟨ N",
+            "La transición I --(a,⟨,N)--> F escribe ⟨ sobre a moviéndose a N: ⟨ solo se escribe sobre otro símbolo moviéndose a la derecha (D).",
+        ),
+        (
+            "I a F ⟩ D",
+            "La transición I --(a,⟩,D)--> F escribe ⟩ sobre a moviéndose a la derecha (D): ⟩ solo se escribe sobre otro símbolo moviéndose a la izquierda (I).",
+        ),
+        (
+            "I a F ⟩ N",
+            "La transición I --(a,⟩,N)--> F escribe ⟩ sobre a moviéndose a N: ⟩ solo se escribe sobre otro símbolo moviéndose a la izquierda (I).",
+        ),
+    ] {
+        let m = machine(&["I", "F"], "I", &["F"], &[row]);
+        let r = catedra::all_check(&m, &[], 100).unwrap();
+        assert_eq!(r.violations.len(), 1, "{row}");
+        assert_eq!(r.violations[0].kind, "escribe_delimitador", "{row}");
+        assert_eq!(r.violations[0].message, message, "{row}");
+        assert!(r.notes.is_empty(), "{row}");
+    }
+}
+
+#[test]
+fn s1_a_shrinking_run_shows_the_real_cells_and_notes_the_shrink() {
+    // q0 -(a,⟨,D)-> q1 -(a,⟨,D)-> q2, q2 -(⟩,⟩,I)-> F
+    let m = machine(
+        &["q0", "q1", "q2", "F"],
+        "q0",
+        &["F"],
+        &["q0 a q1 ⟨ D", "q1 a q2 ⟨ D", "q2 ⟩ F ⟩ I"],
+    );
+    let r = catedra::run(&m, "aa", Model::All, 100).unwrap();
+    assert_eq!(r.verdict, Verdict::Accepted);
+    assert_eq!(r.configurations, ["⟨q0aa⟩", "⟨⟨q1a⟩", "⟨⟨⟨q2⟩", "⟨⟨F⟨⟩"]);
+    assert_eq!(
+        texts(&r.notes),
+        [
+            "q0 escribe ⟨ sobre a: la cinta se achica",
+            "q1 escribe ⟨ sobre a: la cinta se achica"
+        ]
+    );
+}
+
+#[test]
+fn s1_a_shrinking_run_is_a_violation_without_shrink() {
+    let m = machine(&["I", "F"], "I", &["F"], &["I a F ⟨ D"]);
+    let r = catedra::run_with(&m, "a", Model::All, 100, false).unwrap();
+    assert_eq!(r.verdict, Verdict::Violation);
+    assert_eq!(r.violation.unwrap().kind, "escribe_delimitador");
+    let r = catedra::run(&m, "a", Model::All, 100).unwrap();
+    assert_eq!(r.verdict, Verdict::Accepted);
+    assert_eq!(texts(&r.notes), ["I escribe ⟨ sobre a: la cinta se achica"]);
+}
+
+#[test]
+fn s1_3_reading_a_shrunk_delimiter_and_moving_left_crosses_it() {
+    // after ⟨ over a, the head moves left onto the new ⟨ and tries to go further left
+    let m = machine(
+        &["I", "B", "F"],
+        "I",
+        &["F"],
+        &["I a B ⟨ D", "B b B b I", "B ⟨ F ⟨ I"],
+    );
+    let r = catedra::run(&m, "ab", Model::All, 100).unwrap();
+    assert_eq!(r.verdict, Verdict::Violation);
+    assert_eq!(r.violation.unwrap().kind, "sale_por_izquierda");
+}
+
+#[test]
+fn s6_reading_a_delimiter_and_staying_into_a_final_state_is_valid_with_a_note() {
+    let m = machine(
+        &["I", "F"],
+        "I",
+        &["F"],
+        &["I ⟨ I ⟨ D", "I ⟩ F ⟩ N", "I a I a D"],
+    );
+    let r = catedra::all_check(&m, &strings(&["a"]), 100).unwrap();
+    assert!(r.ok, "{:?}", r.violations);
+    assert_eq!(
+        texts(&r.notes),
+        ["I lee ⟩ y escribe ⟩ sin moverse (N) hacia F: los estados finales son de parada"]
+    );
+    assert_eq!(r.runs[0].verdict, Verdict::Accepted);
+    assert_eq!(
+        texts(&r.runs[0].notes),
+        ["I lee ⟩ y escribe ⟩ sin moverse (N) hacia F: los estados finales son de parada"]
+    );
+}
+
+#[test]
+fn s6_staying_on_a_delimiter_into_a_non_final_state_is_still_a_violation() {
+    let m = machine(&["I", "Q"], "I", &["Q"], &["I ⟨ I ⟨ N"]);
+    let r = catedra::all_check(&m, &[], 100).unwrap();
+    assert_eq!(r.violations.len(), 1);
+    assert_eq!(r.violations[0].kind, "delimitador_izquierdo");
+    assert!(r.notes.is_empty());
+}
+
+#[test]
+fn s6_moving_the_wrong_way_into_a_final_state_is_still_a_violation() {
+    let m = machine(&["I", "F"], "I", &["F"], &["I ⟨ F ⟨ I", "I ⟩ F ⟩ D"]);
+    let r = catedra::all_check(&m, &[], 100).unwrap();
+    let kinds: Vec<&str> = r.violations.iter().map(|v| v.kind.as_str()).collect();
+    assert_eq!(kinds, ["delimitador_izquierdo", "delimitador_derecho"]);
+    assert!(r.notes.is_empty());
+}
+
+#[test]
+fn s4_an_input_with_its_own_delimiters_is_run_without_them_and_noted() {
+    let m = igual();
+    let plain = catedra::run(&m, "ab", Model::All, 1000).unwrap();
+    for given in ["⟨ab⟩", "<ab>", "⟨ab>"] {
+        let r = catedra::run(&m, given, Model::All, 1000).unwrap();
+        assert_eq!(r.configurations, plain.configurations, "{given}");
+        assert_eq!(r.verdict, plain.verdict, "{given}");
+        assert_eq!(
+            texts(&r.notes),
+            [format!(
+                "La entrada «{given}» ya traía los delimitadores; se quitaron y se corre ⟨ab⟩."
+            )],
+            "{given}"
+        );
+    }
+    assert!(plain.notes.is_empty());
+}
+
+#[test]
+fn s4_only_a_word_that_starts_and_ends_with_delimiters_is_trimmed() {
+    let m = igual();
+    for bad in ["⟨ab", "ab⟩", "a⟩"] {
+        assert!(
+            matches!(
+                catedra::run(&m, bad, Model::All, 10).unwrap_err(),
+                CatedraError::InvalidInput { .. }
+            ),
+            "{bad}"
+        );
+    }
+    // the empty word between delimiters
+    let r = catedra::run(&m, "⟨⟩", Model::All, 10).unwrap();
+    assert_eq!(r.notes.len(), 1);
+    // an MT keeps its input as is
+    let r = catedra::run(&m, "<ab>", Model::Mt, 10).unwrap();
+    assert!(r.notes.is_empty());
 }

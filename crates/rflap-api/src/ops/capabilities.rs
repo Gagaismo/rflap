@@ -94,6 +94,11 @@ fn op_entry(op: &str) -> Value {
             "document, inputs, mode?, acceptance?, max_configs?",
             json!({"op": "multiple_run", "document": nfa(), "inputs": ["abb", "ab", "aabb"]}),
         ),
+        "jflap_check" => (
+            "Whether classic JFLAP 7.1 opens the document with the same states, initial, finals, labels and symbols and runs it with the same verdicts. Returns {compatible, issues: [{code, message, transition?}], notes: [{code, message}]}: an issue is a construction JFLAP cannot represent or runs differently (such as more than 5 tapes), a note says how to use the file in JFLAP (an ALL, a PDA or a Turing machine without final states, a declared Σ_E the .jff does not store).",
+            "document",
+            json!({"op": "jflap_check", "document": nfa()}),
+        ),
         "analyze" => (
             "Structure of a document: kind (dfa, nfa, dpda, npda, ...), alphabet, nondeterministic states, λ transitions, unreachable and useless states.",
             "document",

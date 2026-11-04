@@ -203,6 +203,17 @@ bB -> bb' abbc
 En el chat, las herramientas `rflap_mt_catedra`, `rflap_compose_tm` y `rflap_membership` y el prompt
 `mt_catedra` hacen lo mismo. Guía completa: [docs/catedra.md](docs/catedra.md).
 
+## Compatibility with classic JFLAP 7.1
+
+Every automaton an AI designs, shows or saves through the MCP server must open in classic JFLAP 7.1
+with the same states, initial state, finals, labels and symbols, and run with the same verdicts. The
+API operation `jflap_check` reports what JFLAP cannot represent or runs differently (`issues`) and what
+the user must know to use the file there (`notes`); the MCP tools append `⚠️ JFLAP 7.1: …` and
+`ℹ️ JFLAP 7.1: …` lines to their replies and put the result in `structuredContent.jflap`. An ALL opens
+the same but carries a note on how to run it in JFLAP (which has no ALL model). Details and the list of
+findings: [docs/differences-from-jflap.md](docs/differences-from-jflap.md) and
+[docs/catedra.md](docs/catedra.md).
+
 ## The design engine
 
 You describe the language, Rflap builds the **minimal** automaton, names what each state remembers,

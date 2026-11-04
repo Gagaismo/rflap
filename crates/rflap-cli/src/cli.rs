@@ -532,6 +532,9 @@ Example:
         /// Transitions before a run is reported as not stopping (default 1000)
         #[arg(long, value_name = "N")]
         max_steps: Option<usize>,
+        /// In an ALL, reject writing ⟨ over a symbol (or ⟩) to shrink the tape (the strict rule)
+        #[arg(long)]
+        no_shrink: bool,
     },
 
     /// Check that a machine follows the rules of an ALL (static rules, and a run per input)
@@ -547,6 +550,9 @@ Example:
         inputs: Vec<String>,
         #[arg(long, value_name = "N")]
         max_steps: Option<usize>,
+        /// Reject writing ⟨ over a symbol (or ⟩) to shrink the tape (the strict rule)
+        #[arg(long)]
+        no_shrink: bool,
     },
 
     /// Compose two machines: MT1 followed by MT2

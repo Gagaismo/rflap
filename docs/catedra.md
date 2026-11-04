@@ -138,13 +138,52 @@ el estado va antes de `⟨`. `rflap catedra run igual.json ab b --all`:
 reglas de un ALL y nombra cada violación:
 
 * **Estáticas**: toda transición que lee `⟨` escribe `⟨` y mueve `D` (`f(q,⟨) = (q′,⟨,D)`); toda
-  transición que lee `⟩` escribe `⟩` y mueve `I` (`f(q,⟩) = (q′,⟩,I)`); ninguna lee ni escribe `Δ`.
+  transición que lee `⟩` escribe `⟩` y mueve `I` (`f(q,⟩) = (q′,⟩,I)`) (salvo `N` hacia un estado
+  final); ninguna lee ni escribe `Δ`; `⟨` y `⟩` solo se escriben sobre sí mismos, o sobre otro símbolo
+  achicando la cinta (ver más abajo).
 * **Dinámicas** (con palabras de prueba): al simular, el cabezal nunca sale de `⟨…⟩` ni se pisa un
   delimitador.
 
 Cada violación dice la transición o el paso que la produce, por ejemplo:
 `La transición I --(⟩,X,I)--> D lee ⟩: debe escribir ⟩ y moverse a la izquierda (I).` Sale con
 código 0 si cumple y 1 si hay violaciones.
+
+### Delimitadores ⟨ ⟩ y entradas que ya los traen
+
+Los delimitadores del ALL son siempre `⟨` (U+27E8) y `⟩` (U+27E9): en las etiquetas, las tablas, las
+secuencias y el archivo `.jff`. Si una máquina de Turing sin `⟨` `⟩` usa **los dos** `<` y `>` en
+sus etiquetas (`(a,<,D)`, `(c,>,I)`), Rflap los convierte a `⟨` y `⟩` al construir el documento, al
+normalizarlo y al abrir un `.jff` viejo; `save_jff` escribe entonces `⟨ ⟩` y la máquina se trata
+como un ALL. Si usa solo uno de los dos, queda como un símbolo común de la cinta.
+
+Si la palabra de entrada ya trae sus delimitadores (`⟨aba⟩` o `<aba>`: empieza con `⟨`/`<` y termina
+con `⟩`/`>`), Rflap los quita y corre `⟨aba⟩`; el resultado lleva la nota
+`ℹ️ La entrada «<aba>» ya traía los delimitadores; se quitaron y se corre ⟨aba⟩.`
+
+### La cinta se achica
+
+La bibliografía usa una técnica que ahorra celdas: escribir el delimitador sobre un símbolo para
+consumirlo, por ejemplo `(a,⟨,D)` por la izquierda y `(c,⟩,I)` por la derecha. En Rflap es válido
+por defecto: escribir `⟨` sobre un símbolo que no es delimitador moviéndose a `D`, o `⟩` moviéndose
+a `I`. No es una violación sino una nota: `ℹ️ q0 escribe ⟨ sobre a: la cinta se achica`. La cinta
+se muestra con sus celdas reales; ALL «m = 2p + 1» (inciso e), entrada `aab`:
+
+```text
+⟨q0aab⟩ ├─ ⟨⟨q1ab⟩ ├─ ⟨⟨⟨q2b⟩ ├─ ⟨⟨⟨⟨q3⟩ ├─ ⟨⟨⟨qf⟨⟩ final/acepta
+```
+
+Siguen siendo violaciones: escribir `⟨` moviéndose a `I` o `N`, escribir `⟩` moviéndose a `D` o `N`,
+leer un delimitador sin reescribirlo y que el cabezal cruce un delimitador. Quien siga una
+definición más estricta (la de Hopcroft, donde `⟨` y `⟩` solo se escriben sobre sí mismos) usa
+`allow_shrink: false` (MCP y API) o `--no-shrink` (CLI: `catedra run` y `catedra all-check`), que
+restaura la regla estricta y sus mensajes.
+
+### Leer un delimitador y quedarse en un estado final
+
+`(⟨,⟨,N)` o `(⟩,⟩,N)` hacia un estado final es válido: al entrar en un estado final la máquina se
+detiene, así que no necesita moverse. Rflap lo informa como nota: `ℹ️ q1 lee ⟩ y escribe ⟩ sin
+moverse (N) hacia qf: los estados finales son de parada`. Con `I` sobre `⟨` (o `D` sobre `⟩`) sigue
+siendo una violación.
 
 ## Composición de MT
 
@@ -179,6 +218,34 @@ T3 = { S, T, aTBD, abD, aTBc, abc }
 T4 = T3
 Como T4 = T3, "abbc" no pertenece al lenguaje.
 ```
+
+## Compatibilidad con JFLAP 7.1 y cómo correr un ALL en JFLAP
+
+Todo autómata que Rflap diseña, muestra o guarda tiene que ser compatible con el JFLAP clásico
+(7.1): el `.jff` abre con los mismos estados, inicial, finales, etiquetas y símbolos, y los AF, AP,
+Mealy, Moore y MT corren con los mismos veredictos que el simulador de JFLAP (se comprueba contra el
+`JFLAP7_1.JAR` real, ver [testing.md](testing.md)). La operación `jflap_check` de la API, que las
+herramientas MCP corren solas, avisa de lo que JFLAP no puede representar o corre distinto:
+
+* `⚠️ JFLAP 7.1: …` es un problema: una MT de más de 5 cintas (JFLAP se niega a abrirla) o una
+  etiqueta de rango `[x-y]` hacia un estado con una salida λ (el *Run* de JFLAP se detiene un estado
+  antes y rechaza lo que Rflap acepta). `save_jff` igual guarda el archivo, sin tocarlo, y avisa.
+* `ℹ️ JFLAP 7.1: …` es una nota: una MT sin estados finales solo acepta por detención (en JFLAP hay
+  que tildar *Accept by Halting*), un AP sin finales acepta por pila vacía (*Accept by Empty Stack*),
+  y el alfabeto de entrada Σ_E declarado no se guarda en el `.jff`.
+
+**Un ALL abre igual en JFLAP** (mismos estados, inicial, finales y etiquetas, con ⟨ y ⟩ como símbolos
+comunes), pero JFLAP no tiene el modelo ALL: no agrega los delimitadores, el cabezal arranca sobre el
+primer símbolo que escribas y la cinta no está acotada. La cinta `⟨w⟩` con el cabezal sobre el primer
+símbolo de `w` y la cinta que se achica solo valen en Rflap. Para correr un ALL en JFLAP:
+
+1. Agregá un estado inicial nuevo, con una transición `(⟨,⟨,D)` (en JFLAP, `⟨;⟨,R`) hacia el estado
+   inicial anterior.
+2. Escribí la entrada con los delimitadores: `⟨aba⟩`, no `aba`.
+3. Corré con *Input → Step* o *Run* (acepta por estado final).
+
+Con eso JFLAP da los veredictos del ALL de la cátedra (los cuatro ALL del 2.1 coinciden en una
+prueba contra el jar); sin el paso 1 el cabezal arrancaría sobre `⟨` y la máquina se bloquearía.
 
 ## Con IA
 

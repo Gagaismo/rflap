@@ -12,10 +12,11 @@ use crate::document::Document;
 use crate::error::{ApiError, code};
 
 /// Every operation, in the order `capabilities` lists them.
-pub const OPS: [&str; 29] = [
+pub const OPS: [&str; 30] = [
     "capabilities",
     "open_jff",
     "save_jff",
+    "jflap_check",
     "normalize",
     "simulate",
     "step",
@@ -52,6 +53,7 @@ pub enum Request {
     Capabilities,
     OpenJff(OpenJff),
     SaveJff(OneDocument),
+    JflapCheck(OneDocument),
     Normalize(OneDocument),
     Simulate(Simulate),
     Step(Step),
@@ -87,6 +89,7 @@ impl Request {
             Request::Capabilities => "capabilities",
             Request::OpenJff(_) => "open_jff",
             Request::SaveJff(_) => "save_jff",
+            Request::JflapCheck(_) => "jflap_check",
             Request::Normalize(_) => "normalize",
             Request::Simulate(_) => "simulate",
             Request::Step(_) => "step",
@@ -583,6 +586,10 @@ pub struct CatedraRun {
     /// Transitions applied before the run is reported as not halting (default 1000).
     #[serde(default)]
     pub max_steps: Option<usize>,
+    /// Writing `⟨` over another symbol moving right (or `⟩` moving left) is valid in an ALL
+    /// (default `true`); `false` restores the strict rule.
+    #[serde(default)]
+    pub allow_shrink: Option<bool>,
 }
 
 /// `all_check`.
@@ -595,6 +602,9 @@ pub struct AllCheck {
     pub inputs: Option<Vec<String>>,
     #[serde(default)]
     pub max_steps: Option<usize>,
+    /// See `catedra_run`.
+    #[serde(default)]
+    pub allow_shrink: Option<bool>,
 }
 
 /// `membership_tk`.

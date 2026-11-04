@@ -169,8 +169,8 @@
 //! | `pumping_move` | `{"op": "pumping_move", "game": {...}, "move": {"move": "choose_w", "w": "aabb"}}` | like `pumping_new` plus `reply` |
 //! | `catedra_definition` | `{"op": "catedra_definition", "document": {...}, "model": "mt"}` | `model`, `states`, `input_alphabet`, `auxiliary_alphabet`, `initial`, `finals`, `input_alphabet_inferred`, `deterministic`, `issues` (`kind`, `message`, `transitions`), `text` |
 //! | `catedra_table` | `{"op": "catedra_table", "document": {...}}` | `header`, `rows`, `markdown`, `text` |
-//! | `catedra_run` | `{"op": "catedra_run", "document": {...}, "inputs": ["aba"], "model": "mt", "max_steps": 1000}` | `model`, `max_steps`, `results`: `input`, `model`, `verdict` (`accepted`/`rejected`/`no_halt`/`violation`), `accepted`, `steps`, `configurations`, `sequence`, `violation`? |
-//! | `all_check` | `{"op": "all_check", "document": {...}, "inputs": ["ab"]}` | `ok`, `violations` (`kind`, `message`, `transition`, `transition_text`, `step`?, `input`?), `runs` |
+//! | `catedra_run` | `{"op": "catedra_run", "document": {...}, "inputs": ["aba"], "model": "mt", "max_steps": 1000, "allow_shrink": true}` | `model`, `max_steps`, `results`: `input`, `model`, `verdict` (`accepted`/`rejected`/`no_halt`/`violation`), `accepted`, `steps`, `configurations`, `sequence`, `notes`, `violation`? |
+//! | `all_check` | `{"op": "all_check", "document": {...}, "inputs": ["ab"], "allow_shrink": true}` | `ok`, `notes`, `violations` (`kind`, `message`, `transition`, `transition_text`, `step`?, `input`?), `runs` |
 //! | `compose_tm` | `{"op": "compose_tm", "a": {...}, "b": {...}}` | `document`, `definition` |
 //! | `membership_tk` | `{"op": "membership_tk", "grammar": "S -> T", "input": "abbc", "max_forms": 100000}` | `member`, `bound`, `sets`, `text` |
 //!
